@@ -2,6 +2,7 @@
 export 'app/navigation_service.dart';
 export 'app/storage_service.dart';
 export 'app/push_notification_service.dart';
+export 'app/dialog_service.dart';
 
 // data
 export 'data/auth_service.dart';
@@ -18,4 +19,6 @@ export 'data/nema_activity_service.dart';
 export 'data/advert_service.dart';
 export 'data/event_service.dart';
 export 'data/task_service.dart';
+export 'data/project_service.dart';
+export 'data/iap_service.dart';
 export 'payment_service.dart';

@@ -3,6 +3,8 @@ import 'package:the_eap_app/src/core/arguments/arguments.dart';
 import 'package:the_eap_app/src/core/constants/constants.dart';
 import 'package:the_eap_app/src/core/models/models.dart';
 import 'package:the_eap_app/src/ui/views/views.dart';
+import 'package:the_eap_app/src/ui/views/projects/iap_database_view/iap_database_view.dart';
+import 'package:the_eap_app/src/ui/views/projects/iap_database_view/add_iap_entry_view.dart';
 
 class AppRouter {
   static Route<dynamic>? generateRoute(RouteSettings settings) {
@@ -20,6 +22,43 @@ class AppRouter {
         return MaterialPageRoute<TabsView>(builder: (_) => TabsView());
       case RoutePaths.account:
         return MaterialPageRoute<AccountView>(builder: (_) => AccountView());
+      case RoutePaths.projects:
+        return MaterialPageRoute<ProjectsView>(builder: (_) => ProjectsView());
+      case RoutePaths.createProject:
+        final projectId = settings.arguments as String?;
+        return MaterialPageRoute<CreateProjectView>(builder: (_) => CreateProjectView(projectId: projectId));
+      case RoutePaths.projectDetails:
+        final project = settings.arguments as Project;
+        return MaterialPageRoute<ProjectDetailsView>(builder: (_) => ProjectDetailsView(project: project));
+      case RoutePaths.iapDatabase:
+        final projectId = settings.arguments as String;
+        return MaterialPageRoute<IAPDatabaseView>(builder: (_) => IAPDatabaseView(projectId: projectId));
+      case RoutePaths.addIapEntry:
+        final args = settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute<AddIAPEntryView>(
+          builder: (_) => AddIAPEntryView(
+            projectId: args['projectId'] as String,
+            projectName: args['projectName'] as String,
+          ),
+        );
+      case RoutePaths.editIapEntry:
+        final args = settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute<AddIAPEntryView>(
+          builder: (_) => AddIAPEntryView(
+            projectId: args['projectId'] as String,
+            projectName: args['projectName'] as String,
+            iap: args['iap'] as IAP,
+          ),
+        );
+      case RoutePaths.schedule:
+        return MaterialPageRoute<ScheduleView>(builder: (_) => ScheduleView());
+      case RoutePaths.createToDo:
+        return MaterialPageRoute<CreateToDoView>(builder: (_) => CreateToDoView());
+      case RoutePaths.editToDo:
+        final task = settings.arguments as Task;
+        return MaterialPageRoute<CreateToDoView>(builder: (_) => CreateToDoView(task: task));
+      case RoutePaths.myToDoList:
+        return MaterialPageRoute<MyToDoListView>(builder: (_) => MyToDoListView());
       case RoutePaths.support:
         return MaterialPageRoute<SupportView>(builder: (_) => SupportView());
       case RoutePaths.network:
@@ -93,8 +132,7 @@ class AppRouter {
         return MaterialPageRoute<CreateAdvertView>(
           builder: (_) => CreateAdvertView(),
         );
-      case RoutePaths.events:
-        return MaterialPageRoute<EventsView>(builder: (_) => EventsView());
+      // Events case is handled in the networkEvents case above
       case RoutePaths.eventDetails:
         final event = settings.arguments as Event;
         return MaterialPageRoute<EventDetailsView>(

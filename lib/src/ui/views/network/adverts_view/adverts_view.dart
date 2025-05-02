@@ -4,7 +4,6 @@ import 'package:stacked/stacked.dart';
 import 'package:the_eap_app/src/core/constants/route_constants.dart';
 import 'package:the_eap_app/src/core/view_models/view_models.dart';
 import 'package:the_eap_app/src/ui/shared/widgets/widgets.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class AdvertsView extends StatelessWidget {
   @override

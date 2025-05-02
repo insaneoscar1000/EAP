@@ -6,6 +6,7 @@ import 'package:the_eap_app/src/core/services/services.dart';
 import 'package:the_eap_app/src/ui/router.dart';
 import 'package:the_eap_app/src/ui/shared/theme.dart';
 import 'package:the_eap_app/src/ui/views/views.dart';
+import 'package:the_eap_app/src/ui/managers/dialog_manager.dart';
 
 class App extends StatefulWidget {
   @override
@@ -18,13 +19,17 @@ class _AppState extends State<App> {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
     return OverlaySupport(
-        child: MaterialApp(
-      title: 'The EAP App',
-      debugShowCheckedModeBanner: false,
-      home: SplashView(),
-      navigatorKey: locator<NavigationService>().navigationKey,
-      onGenerateRoute: AppRouter.generateRoute,
-      theme: AppTheme.themeData,
-    ));
+      child: MaterialApp(
+        title: 'The EAP App',
+        debugShowCheckedModeBanner: false,
+        navigatorKey: locator<NavigationService>().navigationKey,
+        onGenerateRoute: AppRouter.generateRoute,
+        theme: AppTheme.themeData,
+        builder: (context, child) => DialogManager(
+          child: child ?? Container(),
+        ),
+        home: SplashView(),
+      ),
+    );
   }
 }

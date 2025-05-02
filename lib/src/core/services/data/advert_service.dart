@@ -23,15 +23,14 @@ class AdvertService {
 
   Future<String> createAdvert(Map<String, dynamic> advert) async {
     try {
-      if (advert['title']?.isEmpty ??
-          true || advert['company']?.isEmpty ??
-          true || advert['role']?.isEmpty ??
-          true || advert['location']?.isEmpty ??
-          true || advert['services']?.isEmpty ??
-          true || advert['contact']['name']?.isEmpty ??
-          true || advert['contact']['emailAddress']?.isEmpty ??
-          true) {
-
+      // Validate required fields
+      if (advert['title'] == null || advert['title'].isEmpty || 
+          advert['company'] == null || advert['company'].isEmpty || 
+          advert['role'] == null || advert['role'].isEmpty || 
+          advert['location'] == null || advert['location'].isEmpty || 
+          advert['services'] == null || advert['services'].isEmpty || 
+          advert['contact'] == null || advert['contact']['name'] == null || advert['contact']['name'].isEmpty || 
+          advert['contact']['emailAddress'] == null || advert['contact']['emailAddress'].isEmpty) {
         throw Exception('Please fill in all required fields');
       }
       

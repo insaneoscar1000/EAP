@@ -11,6 +11,10 @@ export 'home/support_view_model.dart';
 export 'home/update_profile_details_view_model.dart';
 export 'home/schedule_view_model.dart';
 
+// projects
+export 'projects/projects_view_model.dart';
+export 'projects/create_project_view_model.dart';
+
 // network
 export 'network/network_view_model.dart';
 export 'network/associations_view_model.dart';

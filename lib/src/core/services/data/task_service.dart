@@ -16,6 +16,19 @@ class TaskService {
           .toList();
     });
   }
+  
+  // Get all tasks for a user without date filtering
+  Stream<List<Task>> getAllTasksForUser(String userId) {
+    return _tasksCollection
+        .where('userId', isEqualTo: userId)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs
+          .map((doc) =>
+              Task.fromMap(doc.data() as Map<String, dynamic>, doc.id))
+          .toList();
+    });
+  }
 
   Stream<List<Task>> getTasksForDate(String userId, DateTime date) {
     // Create DateTime range for the selected date (start of day to end of day)

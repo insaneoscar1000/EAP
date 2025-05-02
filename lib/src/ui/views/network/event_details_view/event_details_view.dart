@@ -74,7 +74,8 @@ class EventDetailsView extends StatelessWidget {
                           _buildInfoSection(
                             context,
                             'Date',
-                            DateFormat('HH:mm, dd MMMM yyyy').format(model.event.expiryDate.toDate()),
+                            DateFormat('HH:mm, dd MMMM yyyy')
+                                .format(model.event.expiryDate.toDate()),
                             IconsaxPlusLinear.calendar,
                           ),
                           _buildInfoSection(
@@ -121,7 +122,10 @@ class EventDetailsView extends StatelessWidget {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(IconsaxPlusLinear.global),
+                            Icon(
+                              IconsaxPlusLinear.global,
+                              color: Colors.white,
+                            ),
                             SizedBox(width: 10),
                             Text(
                               'Visit Website',

@@ -11,6 +11,8 @@ class RoutePaths {
   static const String account = '/account';
   static const String updateProfileDetails = '/update_profile_details';
   static const String projects = '/projects';
+  static const String createProject = '/projects/create_project';
+  static const String projectDetails = '/projects/project_details';
   static const String schedule = '/schedule';
   static const String network = '/network';
   static const String networkContacts = '/network/contacts';
@@ -43,4 +45,10 @@ class RoutePaths {
   static const String createEvent = '/network/create_event';
   static const String myEventListings = '/network/my_event_listings';
   static const String editEvent = '/network/edit_event';
+  static const String createToDo = '/schedule/create_to_do';
+  static const String editToDo = '/schedule/edit_to_do';
+  static const String myToDoList = '/schedule/my_to_do_list';
+  static const String iapDatabase = '/projects/iap_database';
+  static const String addIapEntry = '/projects/iap_database/add_entry';
+  static const String editIapEntry = '/projects/iap_database/edit_entry';
 }

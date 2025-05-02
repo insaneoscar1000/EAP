@@ -8,6 +8,7 @@ Future<void> setupLocator() async {
   locator.registerLazySingleton(() => NavigationService());
   locator.registerLazySingleton(() => StorageService());
   locator.registerLazySingleton(() => PushNotificationService());
+  locator.registerLazySingleton(() => DialogService());
 
   // Firebase Services
   locator.registerLazySingleton(() => AuthService());
@@ -24,4 +25,7 @@ Future<void> setupLocator() async {
   locator.registerLazySingleton(() => AdvertService());
   locator.registerLazySingleton(() => EventService());
   locator.registerLazySingleton(() => PaymentService());
+  locator.registerLazySingleton(() => TaskService());
+  locator.registerLazySingleton(() => ProjectService());
+  locator.registerLazySingleton(() => IAPService());
 }

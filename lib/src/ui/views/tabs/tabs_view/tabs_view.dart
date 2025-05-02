@@ -76,13 +76,13 @@ class _TabsViewState extends State<TabsView> {
         _currentView = HomeView();
         break;
       case 1:
-        _currentView = Center(child: Text('Projects'));
+        _currentView = ProjectsView();
         break;
       case 2:
         _currentView = EIABasicsView();
         break;
       case 3:
-        _currentView = Center(child: Text('Schedule'));
+        _currentView = ScheduleView();
         break;
       default:
         break;

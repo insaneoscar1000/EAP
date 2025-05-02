@@ -30,8 +30,7 @@ class AdvertDetailsView extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (model.advert.photoUrl != null &&
-                        model.advert.photoUrl.isNotEmpty)
+                    if (model.advert.photoUrl.isNotEmpty)
                       Padding(
                         padding: EdgeInsets.fromLTRB(24, 24, 24, 0),
                         child: Container(
@@ -120,7 +119,10 @@ class AdvertDetailsView extends StatelessWidget {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(IconsaxPlusLinear.link),
+                            Icon(
+                              IconsaxPlusLinear.link,
+                              color: Colors.white,
+                            ),
                             SizedBox(width: 10),
                             Text(
                               'Visit Website',

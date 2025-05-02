@@ -48,6 +48,7 @@ class ContactsView extends StatelessWidget {
                       children: [
                         Icon(
                           IconsaxPlusLinear.message_add_1,
+                          color: Colors.white,
                         ),
                         SizedBox(width: 10),
                         Text(

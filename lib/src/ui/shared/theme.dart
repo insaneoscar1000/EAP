@@ -10,5 +10,6 @@ abstract class AppTheme {
     primaryColorDark: Color(0xff000000),
     primaryColorLight: Color(0xffF4F4F4),
     fontFamily: 'Urbanist',
+    iconTheme: IconThemeData(color: Colors.white),
   );
 }

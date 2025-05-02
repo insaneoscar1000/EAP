@@ -10,12 +10,14 @@ import 'package:the_eap_app/src/ui/views/network/edit_contact_view/edit_contact_
 class ContactDetailsView extends StatelessWidget {
   final Contact initialContact;
 
-  const ContactDetailsView({Key? key, required this.initialContact}) : super(key: key);
+  const ContactDetailsView({Key? key, required this.initialContact})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<ContactDetailsViewModel>.reactive(
-        viewModelBuilder: () => ContactDetailsViewModel()..setContact(initialContact),
+        viewModelBuilder: () =>
+            ContactDetailsViewModel()..setContact(initialContact),
         builder: (context, model, child) => Scaffold(
               appBar: DefaultAppBar(
                 title: model.contact.name,
@@ -113,9 +115,11 @@ class ContactDetailsView extends StatelessWidget {
                                   ),
                                 );
 
-                                if (confirmed == true && model.contact.id != null) {
+                                if (confirmed == true &&
+                                    model.contact.id != null) {
                                   try {
-                                    await model.deleteContact(model.contact.id!);
+                                    await model
+                                        .deleteContact(model.contact.id!);
                                     Navigator.pop(context);
                                   } catch (e) {
                                     ScaffoldMessenger.of(context).showSnackBar(
@@ -141,7 +145,8 @@ class ContactDetailsView extends StatelessWidget {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(IconsaxPlusLinear.trash),
+                                  Icon(IconsaxPlusLinear.trash,
+                                      color: Colors.white),
                                   SizedBox(width: 10),
                                   Text(
                                     'Delete',
@@ -158,10 +163,12 @@ class ContactDetailsView extends StatelessWidget {
                           Expanded(
                             child: ElevatedButton(
                               onPressed: () async {
-                                final updatedContact = await Navigator.push<Contact>(
+                                final updatedContact =
+                                    await Navigator.push<Contact>(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => EditContactView(contact: model.contact),
+                                    builder: (context) =>
+                                        EditContactView(contact: model.contact),
                                   ),
                                 );
                                 if (updatedContact != null) {
@@ -180,7 +187,8 @@ class ContactDetailsView extends StatelessWidget {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(IconsaxPlusLinear.edit),
+                                  Icon(IconsaxPlusLinear.edit,
+                                      color: Colors.black),
                                   SizedBox(width: 10),
                                   Text(
                                     'Edit',
@@ -220,7 +228,8 @@ class ContactDetailsView extends StatelessWidget {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(IconsaxPlusLinear.call),
+                                Icon(IconsaxPlusLinear.call,
+                                    color: Colors.white),
                                 SizedBox(width: 10),
                                 Text(
                                   'Call',

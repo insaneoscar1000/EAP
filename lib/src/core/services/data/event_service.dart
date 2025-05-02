@@ -23,11 +23,11 @@ class EventService {
 
   Future<String> createEvent(Map<String, dynamic> event) async {
     try {
-      if (event['name']?.isEmpty ??
-          true || event['organization']?.isEmpty ??
-          true || event['contact']?['name']?.isEmpty ??
-          true || event['contact']?['emailAddress']?.isEmpty ??
-          true) {
+      // Validate required fields
+      if (event['name'] == null || event['name'].isEmpty || 
+          event['organization'] == null || event['organization'].isEmpty || 
+          event['contact'] == null || event['contact']['name'] == null || event['contact']['name'].isEmpty || 
+          event['contact']['emailAddress'] == null || event['contact']['emailAddress'].isEmpty) {
         throw Exception('Please fill in all required fields');
       }
 

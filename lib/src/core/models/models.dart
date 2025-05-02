@@ -10,6 +10,8 @@ export 'contact.dart';
 export 'advert.dart';
 export 'event.dart';
 export 'task.dart';
+export 'project.dart';
+export 'iap.dart';
 
 // shared
 export 'shared/meta.dart';

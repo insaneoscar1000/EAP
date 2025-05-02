@@ -13,6 +13,15 @@ export 'home/home_view/home_view.dart';
 export 'home/account_view/account_view.dart';
 export 'home/support_view/support_view.dart';
 export 'home/update_profile_details_view/update_profile_details_view.dart';
+export 'home/schedule_view/schedule_view.dart';
+export 'home/schedule_view/create_to_do_view.dart';
+export 'home/schedule_view/my_to_do_list_view.dart';
+
+// projects
+export 'projects/projects_view/projects_view.dart';
+export 'projects/create_project_view/create_project_view.dart';
+export 'projects/project_details_view/project_details_view.dart';
+export 'projects/iap_database_view/iap_database_view.dart';
 
 // network
 export 'network/network_view/network_view.dart';
