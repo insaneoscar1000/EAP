@@ -25,20 +25,27 @@ class AssociationsView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Voluntary Associations recognized by SACNASP in\nterms of the Natural Scientific Professions Act (No\n27 of 2003).',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: Theme.of(context).primaryColorDark,
+                  Card(
+                    color: Colors.grey[200],
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    'Ngamanye amagama: The clubs you receive CPD\npoints for joining.',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Theme.of(context).primaryColorDark,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Voluntary Associations recognised by SACNASP in terms of the Natural Scientific Professions Act (No 27 of 2003).',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Theme.of(context).primaryColorDark,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   SizedBox(height: 24),
@@ -72,18 +79,19 @@ class AssociationsView extends StatelessWidget {
                                   ],
                                 ),
                               )
-                            : ListView.builder(
+                            : ListView.separated(
                                 itemCount: model.associations.length,
+                                separatorBuilder: (context, index) =>
+                                    SizedBox(height: 16),
                                 itemBuilder: (context, index) {
                                   final association = model.associations[index];
                                   return InkWell(
-                                    onTap: () =>
-                                        model.launchAssociationUrl(association.url),
+                                    onTap: () => model
+                                        .launchAssociationUrl(association.url),
                                     child: Container(
-                                      margin: EdgeInsets.only(bottom: 16),
                                       padding: EdgeInsets.all(16),
                                       decoration: BoxDecoration(
-                                        color: Colors.white,
+                                        color: Colors.grey[200],
                                         borderRadius: BorderRadius.circular(12),
                                         boxShadow: [
                                           BoxShadow(
@@ -99,7 +107,8 @@ class AssociationsView extends StatelessWidget {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            association.title,
+                                            association.title
+                                                .replaceAll('\n', ' '),
                                             style: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w500,
@@ -107,7 +116,8 @@ class AssociationsView extends StatelessWidget {
                                           ),
                                           SizedBox(height: 4),
                                           Text(
-                                            association.description,
+                                            association.description
+                                                .replaceAll('\n', ' '),
                                             style: TextStyle(
                                               fontSize: 14,
                                               color: Colors.grey,

@@ -9,12 +9,19 @@ class AcronymsViewModel extends StreamViewModel<List<Acronym>> {
   String _searchQuery = '';
 
   List<Acronym> get acronyms {
-    if (_searchQuery.isEmpty) return data ?? [];
-    return _allAcronyms.where((acronym) {
+    List<Acronym> listToSort;
+    if (_searchQuery.isEmpty) {
+      listToSort = (data ?? []).toList();
+    } else {
       final query = _searchQuery.toLowerCase();
-      return acronym.title.toLowerCase().contains(query) ||
-          acronym.meaning.toLowerCase().contains(query);
-    }).toList();
+      listToSort = _allAcronyms.where((acronym) {
+        return acronym.title.toLowerCase().contains(query) ||
+            acronym.meaning.toLowerCase().contains(query);
+      }).toList();
+    }
+    listToSort
+        .sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+    return listToSort;
   }
 
   @override

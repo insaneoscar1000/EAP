@@ -11,7 +11,7 @@ class NFATreesView extends StatelessWidget {
       viewModelBuilder: () => NFATreesViewModel(),
       builder: (context, model, child) => Scaffold(
         appBar: DefaultAppBar(
-          title: 'Check NFA Trees',
+          title: 'NFA Protected Trees (GNR 650 of 29 Aug 2014)',
           backgroundColor: Color(0xffE3BD36),
           showBackButton: true,
         ),
@@ -24,9 +24,48 @@ class NFATreesView extends StatelessWidget {
               child: Column(
                 children: [
                   SizedBox(height: 16),
+                  Container(
+                    width: double.infinity,
+                    margin: EdgeInsets.only(bottom: 16),
+                    padding: EdgeInsets.symmetric(vertical: 14, horizontal: 18),
+                    decoration: BoxDecoration(
+                      color: Color(0xFFF4F4F4),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Color(0xFFE0E0E0)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'English Common Name (National Tree Number)',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            height: 1.5,
+                          ),
+                        ),
+                        Text(
+                          'Botanical/Latin Name',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'Other names: Afrikaans (A) Northern Sotho (NS) Southern Sotho (SA) Tswana (T) Venda (V) Xhosa (X) Zulu (Z)',
+                          style: TextStyle(
+                            fontSize: 15,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 16),
                   SearchInput(
                     hintText: 'Search trees...',
                     onChanged: model.onSearchQueryChanged,
+                    borderColor: Color(0xffE3BD36),
                   ),
                   SizedBox(height: 16),
                   Expanded(
@@ -64,7 +103,7 @@ class NFATreesView extends StatelessWidget {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            tree.botanicalName,
+                                            tree.commonName,
                                             style: TextStyle(
                                               fontSize: 18,
                                               fontWeight: FontWeight.w600,
@@ -73,7 +112,7 @@ class NFATreesView extends StatelessWidget {
                                           ),
                                           SizedBox(height: 8),
                                           Text(
-                                            'Common name: ${tree.commonName}',
+                                            tree.botanicalName,
                                             style: TextStyle(
                                               fontSize: 16,
                                               color: Colors.black87,
@@ -83,22 +122,13 @@ class NFATreesView extends StatelessWidget {
                                               .otherCommonName.isNotEmpty) ...[
                                             SizedBox(height: 4),
                                             Text(
-                                              'Also known as: ${tree.otherCommonName}',
+                                              '${tree.otherCommonName}',
                                               style: TextStyle(
                                                 fontSize: 14,
                                                 color: Colors.grey[700],
                                               ),
                                             ),
                                           ],
-                                          SizedBox(height: 8),
-                                          Text(
-                                            'Tree number: ${tree.nationalTreeNumber}',
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              color: Colors.grey[600],
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
                                         ],
                                       ),
                                     ),

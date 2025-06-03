@@ -230,7 +230,6 @@ class _AddIAPEntryViewState extends State<AddIAPEntryView> {
       initialValue: model.editingIAP?.email,
       onChanged: model.setEmail,
       keyboardType: TextInputType.emailAddress,
-      isRequired: true,
     );
   }
 
@@ -241,7 +240,6 @@ class _AddIAPEntryViewState extends State<AddIAPEntryView> {
       initialValue: model.editingIAP?.phone,
       onChanged: model.setPhone,
       keyboardType: TextInputType.phone,
-      isRequired: true,
     );
   }
 
@@ -335,7 +333,6 @@ class _AddIAPEntryViewState extends State<AddIAPEntryView> {
       initialValue: model.editingIAP?.issueRaised,
       onChanged: model.setIssueRaised,
       maxLines: 3,
-      isRequired: true,
     );
   }
 
@@ -347,7 +344,6 @@ class _AddIAPEntryViewState extends State<AddIAPEntryView> {
       initialValue: model.editingIAP?.eapResponse,
       onChanged: model.setEAPResponse,
       maxLines: 3,
-      isRequired: true,
     );
   }
 
@@ -368,10 +364,10 @@ class _AddIAPEntryViewState extends State<AddIAPEntryView> {
                 border: Border.all(color: Colors.red.shade200),
               ),
               child: Text(
-                model.getValidationError() ?? '',
+                model.getValidationError()!,
                 style: TextStyle(
-                  color: Colors.red.shade800,
-                  fontSize: 14,
+                  color: Colors.red.shade900,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ),
@@ -423,8 +419,8 @@ class _AddIAPEntryViewState extends State<AddIAPEntryView> {
                     backgroundColor: Colors.green,
                   ),
                 );
-
-                // Navigate back to the previous screen
+                // The StreamViewModel will update the main list automatically
+                // Just pop this view/dialog
                 Navigator.of(context).pop();
               } else {
                 // Show error dialog if save failed

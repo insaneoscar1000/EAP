@@ -70,42 +70,42 @@ class NEMAActivitiesView extends StatelessWidget {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            Row(
-                                              children: [
-                                                Text(
-                                                  activity.legislation,
-                                                  style: TextStyle(
-                                                    fontSize: 18,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: Color(0xFF60788E),
-                                                  ),
-                                                ),
-                                                Spacer(),
-                                                Container(
-                                                  padding: EdgeInsets.symmetric(
-                                                    horizontal: 12,
-                                                    vertical: 6,
-                                                  ),
-                                                  decoration: BoxDecoration(
-                                                    color: Color(0xFF60788E)
-                                                        .withOpacity(0.1),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            20),
-                                                  ),
-                                                  child: Text(
-                                                    activity.activityNumber
-                                                        .toString(),
-                                                    style: TextStyle(
-                                                      fontSize: 14,
-                                                      color: Color(0xFF60788E),
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
+                                            // Row(
+                                            //   children: [
+                                            //     Text(
+                                            //       activity.legislation,
+                                            //       style: TextStyle(
+                                            //         fontSize: 18,
+                                            //         fontWeight: FontWeight.w600,
+                                            //         color: Color(0xFF60788E),
+                                            //       ),
+                                            //     ),
+                                            //     Spacer(),
+                                            //     Container(
+                                            //       padding: EdgeInsets.symmetric(
+                                            //         horizontal: 12,
+                                            //         vertical: 6,
+                                            //       ),
+                                            //       decoration: BoxDecoration(
+                                            //         color: Color(0xFF60788E)
+                                            //             .withOpacity(0.1),
+                                            //         borderRadius:
+                                            //             BorderRadius.circular(
+                                            //                 20),
+                                            //       ),
+                                            //       child: Text(
+                                            //         activity.activityNumber
+                                            //             .toString(),
+                                            //         style: TextStyle(
+                                            //           fontSize: 14,
+                                            //           color: Color(0xFF60788E),
+                                            //           fontWeight:
+                                            //               FontWeight.w500,
+                                            //         ),
+                                            //       ),
+                                            //     ),
+                                            //   ],
+                                            // ),
                                             SizedBox(height: 12),
                                             Text(
                                               activity.selectedListActivity,
@@ -114,34 +114,34 @@ class NEMAActivitiesView extends StatelessWidget {
                                                 color: Colors.black87,
                                               ),
                                             ),
-                                            SizedBox(height: 12),
-                                            Text(
-                                              'Authorization: ${activity.authorizationProcess}',
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                color: Colors.grey[700],
-                                              ),
-                                            ),
-                                            if (activity
-                                                .exclusions.isNotEmpty) ...[
-                                              SizedBox(height: 12),
-                                              Text(
-                                                'Exclusions:',
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w500,
-                                                  color: Colors.grey[800],
-                                                ),
-                                              ),
-                                              SizedBox(height: 4),
-                                              Text(
-                                                activity.exclusions,
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  color: Colors.grey[700],
-                                                ),
-                                              ),
-                                            ],
+                                            // SizedBox(height: 12),
+                                            // Text(
+                                            //   'Authorization: ${activity.authorizationProcess}',
+                                            //   style: TextStyle(
+                                            //     fontSize: 14,
+                                            //     color: Colors.grey[700],
+                                            //   ),
+                                            // ),
+                                            // if (activity
+                                            //     .exclusions.isNotEmpty) ...[
+                                            //   SizedBox(height: 12),
+                                            //   Text(
+                                            //     'Exclusions:',
+                                            //     style: TextStyle(
+                                            //       fontSize: 14,
+                                            //       fontWeight: FontWeight.w500,
+                                            //       color: Colors.grey[800],
+                                            //     ),
+                                            //   ),
+                                            //   SizedBox(height: 4),
+                                            //   Text(
+                                            //     activity.exclusions,
+                                            //     style: TextStyle(
+                                            //       fontSize: 14,
+                                            //       color: Colors.grey[700],
+                                            //     ),
+                                            //   ),
+                                            // ],
                                           ],
                                         ),
                                       ));

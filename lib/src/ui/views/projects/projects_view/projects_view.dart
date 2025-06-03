@@ -13,11 +13,21 @@ class ProjectsView extends StatelessWidget {
       viewModelBuilder: () => ProjectsViewModel(),
       onModelReady: (model) => model.initialize(),
       builder: (context, model, child) => Scaffold(
-        appBar: DefaultAppBar(
-          title: 'My Projects',
-          showBackButton: false,
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).primaryColor,
+          foregroundColor: Colors.white,
+          leading: (ModalRoute.of(context)?.settings.arguments is Map &&
+                  (ModalRoute.of(context)?.settings.arguments
+                          as Map)['fromHome'] ==
+                      true)
+              ? IconButton(
+                  icon: Icon(Icons.arrow_back, color: Colors.white),
+                  onPressed: () => Navigator.of(context).pop(),
+                )
+              : null,
+          title: Text('My Projects', style: TextStyle(color: Colors.white)),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         body: BackgroundContainer(
           background: 'background-2',
           child: Padding(
@@ -49,6 +59,36 @@ class ProjectsView extends StatelessWidget {
                         SizedBox(width: 10),
                         Text(
                           'New',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+                Container(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    onPressed: model.navigateToArchivedProjects,
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Theme.of(context).primaryColor,
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      side: BorderSide(color: Theme.of(context).primaryColor),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(IconsaxPlusLinear.archive,
+                            color: Theme.of(context).primaryColor),
+                        SizedBox(width: 10),
+                        Text(
+                          'Archived',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -99,8 +139,9 @@ class ProjectsView extends StatelessWidget {
                     ],
                   ),
                 )
-              : ListView.builder(
+              : ListView.separated(
                   itemCount: model.projects.length,
+                  separatorBuilder: (context, index) => SizedBox(height: 16),
                   itemBuilder: (context, index) {
                     final project = model.projects[index];
                     return _buildProjectCard(context, project);
@@ -129,7 +170,6 @@ class ProjectsView extends StatelessWidget {
     }
 
     return Card(
-      margin: EdgeInsets.only(bottom: 16),
       elevation: 2,
       shadowColor: Colors.black.withOpacity(0.1),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -157,19 +197,19 @@ class ProjectsView extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _buildProjectStatus(context, project),
-                    Text(
-                      dateText,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[700],
-                      ),
-                    ),
-                  ],
-                ),
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //   children: [
+                //     _buildProjectStatus(context, project),
+                //     Text(
+                //       dateText,
+                //       style: TextStyle(
+                //         fontSize: 12,
+                //         color: Colors.grey[700],
+                //       ),
+                //     ),
+                //   ],
+                // ),
                 SizedBox(height: 12),
                 Text(
                   project.overview.title,

@@ -5,6 +5,7 @@ import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:the_eap_app/src/core/constants/constants.dart';
 import 'package:the_eap_app/src/core/view_models/view_models.dart';
 import 'package:the_eap_app/src/ui/shared/widgets/widgets.dart';
+import 'package:the_eap_app/src/ui/views/home/home_view/home_projects_tasks_toggle.dart';
 
 class HomeView extends StatelessWidget {
   @override
@@ -19,12 +20,14 @@ class HomeView extends StatelessWidget {
               child: SafeArea(
                 child: Padding(
                   padding: EdgeInsets.all(20.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      StreamBuilder(
-                        stream: Stream.periodic(Duration(seconds: 1)),
-                        builder: (BuildContext context, snapshot) {
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        StreamBuilder(
+                          stream: Stream.periodic(Duration(seconds: 1)),
+                          builder: (BuildContext context, snapshot) {
                           DateTime now = DateTime.now();
                           String dateStr =
                               DateFormat("EEEE, d'th' MMMM y").format(now);
@@ -53,17 +56,30 @@ class HomeView extends StatelessWidget {
                               'Account',
                               IconsaxPlusLinear.profile_circle,
                               RoutePaths.account),
+                          _buildMenuItem(context, model, 'Projects',
+                              IconsaxPlusLinear.briefcase, RoutePaths.projects),
+                          _buildMenuItem(context, model, 'Schedule',
+                              IconsaxPlusLinear.calendar, RoutePaths.schedule),
                           _buildMenuItem(context, model, 'Network',
                               IconsaxPlusLinear.people, RoutePaths.network),
+                          _buildMenuItem(
+                              context,
+                              model,
+                              'EIA Basics',
+                              IconsaxPlusLinear.attach_square,
+                              RoutePaths.eiaBasics),
                           _buildMenuItem(context, model, "Check REG's",
                               IconsaxPlusLinear.book_1, RoutePaths.checkRegs),
                         ],
                       ),
+                      SizedBox(height: 24),
+                      HomeProjectsTasksToggle(),
                     ],
                   ),
                 ),
               ),
-            ));
+            )));
+
       },
     );
   }
@@ -72,18 +88,25 @@ class HomeView extends StatelessWidget {
       IconData icon, String routePath) {
     return GestureDetector(
       onTap: () {
-        switch (routePath) {
-          case RoutePaths.network:
-            model.navigateToNetwork();
-            break;
-          case RoutePaths.eiaBasics:
-            model.navigateToEIABasics();
-            break;
-          case RoutePaths.checkRegs:
-            model.navigateToCheckRegs();
-            break;
-          default:
-            Navigator.of(context).pushNamed(routePath);
+        if (routePath == RoutePaths.projects ||
+            routePath == RoutePaths.schedule ||
+            routePath == RoutePaths.eiaBasics) {
+          Navigator.pushNamed(context, routePath,
+              arguments: {'fromHome': true});
+        } else {
+          switch (routePath) {
+            case RoutePaths.network:
+              model.navigateToNetwork();
+              break;
+            case RoutePaths.eiaBasics:
+              model.navigateToEIABasics();
+              break;
+            case RoutePaths.checkRegs:
+              model.navigateToCheckRegs();
+              break;
+            default:
+              Navigator.of(context).pushNamed(routePath);
+          }
         }
       },
       child: Container(

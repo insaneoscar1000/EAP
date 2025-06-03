@@ -421,56 +421,9 @@ class CreateProjectViewModel extends BaseViewModel {
   }
   
   // Validate the current step
+  // All fields are now optional for saving a project.
   bool validateCurrentStep() {
-    switch (_currentStep) {
-      case 1:
-        return _projectTitle.isNotEmpty && 
-               _projectCode.isNotEmpty && 
-               _departmentReferenceNumber.isNotEmpty && 
-               _propertyNameAddressFarmNo.isNotEmpty;
-      case 2:
-        return _province.isNotEmpty && 
-               _districtOrMetroMunicipality.isNotEmpty && 
-               _localMunicipality.isNotEmpty;
-      case 3:
-        return _applicantName.isNotEmpty && 
-               _applicantDetails.isNotEmpty && 
-               _landowner.isNotEmpty && 
-               _landownerDetails.isNotEmpty;
-      case 4:
-        return _applicationType.isNotEmpty && 
-               _projectDescription.isNotEmpty;
-      case 5:
-        return _relevantListingNotice.isNotEmpty && 
-               _currentPropertyZoning.isNotEmpty && 
-               _propertySize.isNotEmpty && 
-               _existingServicesOnSite.isNotEmpty && 
-               _plannedServicesWater.isNotEmpty && 
-               _plannedServicesElectricity.isNotEmpty && 
-               _plannedServicesSanitation.isNotEmpty;
-      case 6:
-        return _eiaProjectTeam.isNotEmpty && 
-               _specialistStudiesRequired.isNotEmpty && 
-               _specialistStudiesCompleted.isNotEmpty;
-      case 7:
-        return _publicReviewPeriod1StartDate != null && 
-               _publicReviewPeriod1EndDate != null && 
-               _publicReviewPeriod1Duration > 0 && 
-               _publicReviewPeriod2StartDate != null && 
-               _publicReviewPeriod2EndDate != null && 
-               _publicReviewPeriod2Duration > 0;
-      case 8:
-        return _relevantEnvironmentalAffairsOffice.isNotEmpty && 
-               _environmentalAffairsContacts.isNotEmpty && 
-               _dateOfPreapplicationMeeting != null && 
-               _dateOfSubmissionOfApplication != null && 
-               _dateOfSubmissionOfDraftDocuments != null && 
-               _dateOfSubmissionOfFinalDocuments != null;
-      case 9:
-        return _notes.isNotEmpty; // Notes are now required
-      default:
-        return true;
-    }
+    return true;
   }
   
   // Save the current step and continue to the next step

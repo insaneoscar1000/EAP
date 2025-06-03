@@ -6,6 +6,8 @@ import 'package:the_eap_app/src/ui/views/views.dart';
 import 'package:the_eap_app/src/ui/views/projects/iap_database_view/iap_database_view.dart';
 import 'package:the_eap_app/src/ui/views/projects/iap_database_view/add_iap_entry_view.dart';
 
+import 'package:the_eap_app/src/ui/landing_page.dart';
+
 class AppRouter {
   static Route<dynamic>? generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -20,10 +22,14 @@ class AppRouter {
         return MaterialPageRoute<SignUpView>(builder: (_) => SignUpView());
       case RoutePaths.tabs:
         return MaterialPageRoute<TabsView>(builder: (_) => TabsView());
+      case '/landing':
+        return MaterialPageRoute<LandingPage>(builder: (_) => LandingPage());
       case RoutePaths.account:
         return MaterialPageRoute<AccountView>(builder: (_) => AccountView());
       case RoutePaths.projects:
         return MaterialPageRoute<ProjectsView>(builder: (_) => ProjectsView());
+      case RoutePaths.archivedProjects:
+        return MaterialPageRoute<ArchivedProjectsView>(builder: (_) => ArchivedProjectsView());
       case RoutePaths.createProject:
         final projectId = settings.arguments as String?;
         return MaterialPageRoute<CreateProjectView>(builder: (_) => CreateProjectView(projectId: projectId));

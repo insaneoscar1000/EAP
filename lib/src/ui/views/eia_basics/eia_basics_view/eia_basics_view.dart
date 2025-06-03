@@ -12,9 +12,19 @@ class EIABasicsView extends StatelessWidget {
       builder:
           (BuildContext context, EIABasicsViewModel model, Widget? child) =>
               Scaffold(
-        appBar: DefaultAppBar(
-          title: 'EIA Basics',
-          showBackButton: false,
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).primaryColor,
+          foregroundColor: Colors.white,
+          leading: (ModalRoute.of(context)?.settings.arguments is Map &&
+                  (ModalRoute.of(context)?.settings.arguments
+                          as Map)['fromHome'] ==
+                      true)
+              ? IconButton(
+                  icon: Icon(Icons.arrow_back, color: Colors.white),
+                  onPressed: () => Navigator.of(context).pop(),
+                )
+              : null,
+          title: Text('EIA Basics', style: TextStyle(color: Colors.white)),
         ),
         backgroundColor: Colors.white,
         body: BackgroundContainer(

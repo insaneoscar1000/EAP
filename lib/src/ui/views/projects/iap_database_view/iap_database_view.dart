@@ -157,7 +157,7 @@ class IAPDatabaseView extends StatelessWidget {
         margin: EdgeInsets.only(bottom: 16),
         padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Colors.grey[200],
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
@@ -175,7 +175,7 @@ class IAPDatabaseView extends StatelessWidget {
               iap.name,
               style: TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.bold,
               ),
             ),
             SizedBox(height: 4),
@@ -183,7 +183,6 @@ class IAPDatabaseView extends StatelessWidget {
               iap.organization ?? 'No organization',
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.grey,
               ),
             ),
           ],

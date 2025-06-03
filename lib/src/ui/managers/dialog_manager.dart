@@ -30,7 +30,7 @@ class _DialogManagerState extends State<DialogManager> {
   /// Shows a dialog with the given request
   void _showDialog(DialogRequest request) {
     showDialog(
-      context: context,
+      context: locator<NavigationService>().navigationKey.currentContext!,
       builder: (context) => AlertDialog(
         title: Text(request.title),
         content: Text(request.description),
@@ -55,7 +55,7 @@ class _DialogManagerState extends State<DialogManager> {
   /// Shows a confirmation dialog with the given request
   void _showConfirmationDialog(DialogRequest request) {
     showDialog(
-      context: context,
+      context: locator<NavigationService>().navigationKey.currentContext!,
       builder: (context) => AlertDialog(
         title: Text(request.title),
         content: Text(request.description),

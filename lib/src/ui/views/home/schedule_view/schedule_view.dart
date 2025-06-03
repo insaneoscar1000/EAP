@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
-import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:the_eap_app/src/ui/widgets/widgets.dart';
 import 'package:the_eap_app/src/core/models/models.dart';
@@ -15,9 +14,21 @@ class ScheduleView extends StatelessWidget {
       onModelReady: (model) => model.fetchTasks(),
       builder: (context, model, child) {
         return Scaffold(
-          appBar: DefaultAppBar(
-            title: 'Schedule',
-            showBackButton: false,
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            centerTitle: true,
+            backgroundColor: Theme.of(context).primaryColor,
+            foregroundColor: Colors.white,
+            leading: (ModalRoute.of(context)?.settings.arguments is Map &&
+                    (ModalRoute.of(context)?.settings.arguments
+                            as Map)['fromHome'] ==
+                        true)
+                ? IconButton(
+                    icon: Icon(Icons.arrow_back, color: Colors.white),
+                    onPressed: () => Navigator.of(context).pop(),
+                  )
+                : null,
+            title: Text('Schedule', style: TextStyle(color: Colors.white)),
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () => model.navigateToCreateToDo(),
@@ -40,18 +51,13 @@ class ScheduleView extends StatelessWidget {
                             _buildMyToDoListButton(context, model),
                             SizedBox(height: 12),
                             _buildCategorySelector(context, model),
-                            SizedBox(height: 12),
-                            Text(
-                              'Tasks for ${DateFormat('EEEE, MMMM d').format(model.selectedDate)}',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).primaryColor,
-                              ),
-                            ),
+
                             SizedBox(height: 8),
                             // Task list
-                            model.allTasksForSelectedDate.isEmpty
+                            model.allTasksForSelectedDate
+                                    .where(
+                                        (task) => !(task.isCompleted ?? false))
+                                    .isEmpty
                                 ? Padding(
                                     padding: EdgeInsets.symmetric(vertical: 40),
                                     child: Center(
@@ -67,11 +73,17 @@ class ScheduleView extends StatelessWidget {
                                 : ListView.builder(
                                     shrinkWrap: true,
                                     physics: NeverScrollableScrollPhysics(),
-                                    itemCount:
-                                        model.allTasksForSelectedDate.length,
+                                    itemCount: model.allTasksForSelectedDate
+                                        .where((task) =>
+                                            !(task.isCompleted ?? false))
+                                        .length,
                                     itemBuilder: (context, index) {
-                                      final task =
-                                          model.allTasksForSelectedDate[index];
+                                      final tasks = model
+                                          .allTasksForSelectedDate
+                                          .where((task) =>
+                                              !(task.isCompleted ?? false))
+                                          .toList();
+                                      final task = tasks[index];
                                       return _buildTaskItem(
                                           context, model, task);
                                     },
@@ -96,8 +108,11 @@ class ScheduleView extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Padding(
-        padding: EdgeInsets.all(8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+        ),
         child: TableCalendar(
           firstDay: DateTime.utc(2020, 1, 1),
           lastDay: DateTime.utc(2030, 12, 31),
@@ -116,6 +131,16 @@ class ScheduleView extends StatelessWidget {
             formatButtonVisible: true,
             formatButtonShowsNext: false,
             titleCentered: true,
+            leftChevronIcon: Icon(
+              Icons.chevron_left,
+              color: Theme.of(context).primaryColor,
+              size: 32,
+            ),
+            rightChevronIcon: Icon(
+              Icons.chevron_right,
+              color: Theme.of(context).primaryColor,
+              size: 32,
+            ),
             formatButtonDecoration: BoxDecoration(
               color: Theme.of(context).primaryColor.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
@@ -183,37 +208,6 @@ class ScheduleView extends StatelessWidget {
                   null,
                   !model.showGeneralOnly,
                   () => model.toggleProjectTypeFilter(false),
-                ),
-              ],
-            ),
-          ),
-        ),
-
-        SizedBox(height: 10),
-
-        // Completion Status Filter (To Do or Complete)
-        Card(
-          elevation: 1,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildCategoryButton(
-                  context,
-                  'To do',
-                  null,
-                  !model.showCompletedOnly,
-                  () => model.toggleCompletionStatusFilter(false),
-                ),
-                _buildCategoryButton(
-                  context,
-                  'Complete',
-                  null,
-                  model.showCompletedOnly,
-                  () => model.toggleCompletionStatusFilter(true),
                 ),
               ],
             ),

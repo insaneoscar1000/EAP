@@ -35,6 +35,12 @@ class ProjectDetailsView extends StatelessWidget {
           ),
           actions: [
             IconButton(
+              icon: Icon(Icons.download,
+                  color: Theme.of(context).primaryColorLight),
+              onPressed: () => model.exportProject(),
+              tooltip: 'Export Project',
+            ),
+            IconButton(
               icon: Icon(
                 IconsaxPlusLinear.edit,
                 color: Theme.of(context).primaryColorLight,
@@ -53,7 +59,9 @@ class ProjectDetailsView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildHeader(context, model),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
+                  _buildIAPsButton(context, model),
+                  const SizedBox(height: 16),
                   _buildDetailsSection(context, model),
                   const SizedBox(height: 24),
                   _buildBottomButtons(context, model),
@@ -92,27 +100,14 @@ class ProjectDetailsView extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    IconsaxPlusLinear.document_text,
-                    color: Colors.white,
-                    size: 30,
-                  ),
-                ),
-                const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         project.overview.title,
-                        style: const TextStyle(
-                          fontSize: 24,
+                        style: TextStyle(
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
@@ -313,13 +308,13 @@ class ProjectDetailsView extends StatelessWidget {
                   'Not specified'),
           _buildDetailItem(
               context,
-              'Draft Documents Submission Date',
+              'Submission of Draft Documents Submission Date',
               model.getFormattedDate(project.submissionAndContacts
                       ?.dateOfSubmissionOfDraftDocuments) ??
                   'Not specified'),
           _buildDetailItem(
               context,
-              'Final Documents Submission Date',
+              'Submission of Final Documents Submission Date',
               model.getFormattedDate(project.submissionAndContacts
                       ?.dateOfSubmissionOfFinalDocuments) ??
                   'Not specified'),
@@ -357,6 +352,12 @@ class ProjectDetailsView extends StatelessWidget {
 
   Widget _buildDetailItem(BuildContext context, String label, String value,
       {bool multiline = false, String? subtitle}) {
+    final isEmptyOrDefault = value.trim().isEmpty ||
+        value == 'Not specified' ||
+        value == 'No notes added';
+    if (isEmptyOrDefault) {
+      return SizedBox.shrink();
+    }
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: Column(
@@ -430,6 +431,33 @@ class ProjectDetailsView extends StatelessWidget {
     );
   }
 
+  Widget _buildIAPsButton(BuildContext context, ProjectDetailsViewModel model) {
+    return Row(
+      children: [
+        Expanded(
+          child: ElevatedButton.icon(
+            onPressed: () => model.navigateToIAPs(),
+            icon: const Icon(IconsaxPlusLinear.people,
+                color: Colors.white, size: 20),
+            label: const Text(
+              "I&AP's",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).primaryColor,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildBottomButtons(
       BuildContext context, ProjectDetailsViewModel model) {
     return Container(
@@ -449,7 +477,7 @@ class ProjectDetailsView extends StatelessWidget {
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red[600],
+                    backgroundColor: Colors.red,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     elevation: 0,
@@ -459,51 +487,109 @@ class ProjectDetailsView extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: 16),
               Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: () => model.editProject(),
-                  icon: const Icon(IconsaxPlusLinear.edit,
-                      color: Colors.black, size: 20),
-                  label: const Text(
-                    'Edit',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey[100],
-                    foregroundColor: Colors.grey[800],
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      side: BorderSide(color: Colors.grey[300]!),
-                    ),
-                  ),
-                ),
+                child: model.project.projectStatus == 'Archived'
+                    ? ElevatedButton.icon(
+                        onPressed: () async {
+                          final confirm = await showDialog<bool>(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text('Unarchive Project'),
+                              content: const Text(
+                                  'Do you want to unarchive this project? It will be restored to the Completed state.'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () =>
+                                      Navigator.of(context).pop(false),
+                                  child: const Text('Cancel'),
+                                ),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                        Theme.of(context).primaryColor,
+                                    foregroundColor: Colors.white,
+                                  ),
+                                  onPressed: () =>
+                                      Navigator.of(context).pop(true),
+                                  child: const Text('Unarchive'),
+                                ),
+                              ],
+                            ),
+                          );
+                          if (confirm == true) {
+                            model.unarchiveProject(context);
+                          }
+                        },
+                        icon: const Icon(IconsaxPlusLinear.refresh,
+                            color: Colors.black, size: 20),
+                        label: const Text(
+                          'Unarchive',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w600),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green[100],
+                          foregroundColor: Colors.green[800],
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            side: BorderSide(color: Colors.green),
+                          ),
+                        ),
+                      )
+                    : ElevatedButton.icon(
+                        onPressed: () async {
+                          final confirm = await showDialog<bool>(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text('Archive Project'),
+                              content: const Text(
+                                  'Are you sure you want to archive this project? You can restore it later from the Archived Projects section.'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () =>
+                                      Navigator.of(context).pop(false),
+                                  child: Text('Cancel'),
+                                ),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                        Theme.of(context).primaryColor,
+                                    foregroundColor: Colors.white,
+                                  ),
+                                  onPressed: () =>
+                                      Navigator.of(context).pop(true),
+                                  child: const Text('Archive'),
+                                ),
+                              ],
+                            ),
+                          );
+                          if (confirm == true) {
+                            model.archiveProject(context);
+                          }
+                        },
+                        icon: const Icon(IconsaxPlusLinear.archive,
+                            color: Colors.black, size: 20),
+                        label: const Text(
+                          'Archive',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w600),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey[100],
+                          foregroundColor: Colors.grey[800],
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            side: BorderSide(color: Colors.grey[300]!),
+                          ),
+                        ),
+                      ),
               ),
             ],
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: () => model.navigateToIAPs(),
-              icon: const Icon(IconsaxPlusLinear.people,
-                  color: Colors.white, size: 20),
-              label: const Text(
-                'I&AP\'s',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).primaryColor,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
           ),
         ],
       ),

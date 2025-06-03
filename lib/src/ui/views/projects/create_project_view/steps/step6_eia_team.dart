@@ -96,14 +96,6 @@ class Step6EiaTeam extends StepBase {
                 color: Colors.black87,
               ),
             ),
-            Text(
-              ' *',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Colors.red,
-              ),
-            ),
           ],
         ),
         SizedBox(height: 8),

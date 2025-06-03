@@ -18,7 +18,7 @@ abstract class StepBase extends StatelessWidget {
     required String hintText,
     required Function(String) onChanged,
     int maxLines = 1,
-    bool isRequired = true,
+    bool isRequired = false,
     String initialValue = '',
   }) {
     return Column(
@@ -34,15 +34,7 @@ abstract class StepBase extends StatelessWidget {
                 color: Colors.black87,
               ),
             ),
-            if (isRequired)
-              Text(
-                ' *',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.red,
-                ),
-              ),
+            // Removed required field indicator
           ],
         ),
         SizedBox(height: 8),

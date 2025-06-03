@@ -22,6 +22,7 @@ export 'projects/projects_view/projects_view.dart';
 export 'projects/create_project_view/create_project_view.dart';
 export 'projects/project_details_view/project_details_view.dart';
 export 'projects/iap_database_view/iap_database_view.dart';
+export 'projects/archived_projects_view/archived_projects_view.dart';
 
 // network
 export 'network/network_view/network_view.dart';

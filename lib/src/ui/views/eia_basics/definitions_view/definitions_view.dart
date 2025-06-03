@@ -44,7 +44,7 @@ class DefinitionsView extends StatelessWidget {
                                     margin: EdgeInsets.only(bottom: 16),
                                     padding: EdgeInsets.all(16),
                                     decoration: BoxDecoration(
-                                      color: Colors.white,
+                                      color: Colors.grey[200],
                                       borderRadius: BorderRadius.circular(12),
                                       boxShadow: [
                                         BoxShadow(

@@ -8,6 +8,7 @@ class SearchInput extends StatefulWidget {
   final VoidCallback? onClear;
   final String initialValue;
   final bool showClearButton;
+  final Color? borderColor;
 
   const SearchInput({
     Key? key,
@@ -17,6 +18,7 @@ class SearchInput extends StatefulWidget {
     this.onClear,
     this.initialValue = '',
     this.showClearButton = false,
+    this.borderColor,
   }) : super(key: key);
 
   @override
@@ -29,14 +31,16 @@ class _SearchInputState extends State<SearchInput> {
   @override
   void initState() {
     super.initState();
-    _controller = widget.controller ?? TextEditingController(text: widget.initialValue);
+    _controller =
+        widget.controller ?? TextEditingController(text: widget.initialValue);
   }
 
   @override
   void didUpdateWidget(SearchInput oldWidget) {
     super.didUpdateWidget(oldWidget);
     // Update controller text if initialValue changes and we're not using an external controller
-    if (widget.controller == null && oldWidget.initialValue != widget.initialValue) {
+    if (widget.controller == null &&
+        oldWidget.initialValue != widget.initialValue) {
       _controller.text = widget.initialValue;
     }
   }
@@ -57,7 +61,7 @@ class _SearchInputState extends State<SearchInput> {
         color: Colors.grey[100],
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Theme.of(context).primaryColor,
+          color: widget.borderColor ?? Theme.of(context).primaryColor,
           width: 1.5,
         ),
         boxShadow: [
@@ -84,7 +88,9 @@ class _SearchInputState extends State<SearchInput> {
             color: Theme.of(context).primaryColor,
             size: 22,
           ),
-          suffixIcon: widget.showClearButton && (widget.controller?.text.isNotEmpty == true || _controller.text.isNotEmpty)
+          suffixIcon: widget.showClearButton &&
+                  (widget.controller?.text.isNotEmpty == true ||
+                      _controller.text.isNotEmpty)
               ? IconButton(
                   icon: Icon(
                     IconsaxPlusLinear.close_circle,

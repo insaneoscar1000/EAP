@@ -5,10 +5,32 @@ import 'package:the_eap_app/src/core/models/models.dart';
 import 'package:the_eap_app/src/core/view_models/home/my_to_do_list_view_model.dart';
 
 class MyToDoListView extends StatelessWidget {
-  const MyToDoListView({Key? key}) : super(key: key);
+  final List<Task>? tasks;
+  const MyToDoListView({Key? key, this.tasks}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    if (tasks != null) {
+      // Render a simple list of provided tasks (no filters, no FAB, no appbar)
+      if (tasks!.isEmpty) {
+        return Center(child: Text('No tasks found'));
+      }
+      return ListView.builder(
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
+        itemCount: tasks!.length,
+        itemBuilder: (context, index) {
+          final task = tasks![index];
+          return TaskItemWidget(
+            task: task,
+            onTap: () {},
+            onToggleCompletion: (isCompleted) {},
+            showProjectName: false,
+          );
+        },
+      );
+    }
+    // Default: full-featured To Do List
     return ViewModelBuilder<MyToDoListViewModel>.reactive(
       viewModelBuilder: () => MyToDoListViewModel(),
       onModelReady: (model) => model.initialize(),
@@ -72,7 +94,8 @@ class MyToDoListView extends StatelessWidget {
         // Project Type Filter (General or Projects)
         Card(
           elevation: 1,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
             child: Row(
@@ -94,13 +117,14 @@ class MyToDoListView extends StatelessWidget {
             ),
           ),
         ),
-        
+
         SizedBox(height: 10),
-        
+
         // Completion Status Filter (To Do or Complete)
         Card(
           elevation: 1,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
             child: Row(
@@ -114,7 +138,7 @@ class MyToDoListView extends StatelessWidget {
                 ),
                 _buildFilterButton(
                   context,
-                  'Complete',
+                  'Completed',
                   model.showCompletedOnly,
                   () => model.toggleCompletionStatusFilter(true),
                 ),
@@ -144,7 +168,8 @@ class MyToDoListView extends StatelessWidget {
             child: Text(
               label,
               style: TextStyle(
-                color: isSelected ? Colors.white : Theme.of(context).primaryColor,
+                color:
+                    isSelected ? Colors.white : Theme.of(context).primaryColor,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -188,6 +213,8 @@ class MyToDoListView extends StatelessWidget {
 
   Widget _buildTaskList(BuildContext context, MyToDoListViewModel model) {
     return ListView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
       itemCount: model.filteredTasks.length,
       itemBuilder: (context, index) {
         final task = model.filteredTasks[index];
@@ -201,10 +228,9 @@ class MyToDoListView extends StatelessWidget {
     return TaskItemWidget(
       task: task,
       onTap: () => model.navigateToEditToDo(task),
-      onToggleCompletion: (isCompleted) => model.toggleTaskCompletion(task.id, isCompleted),
+      onToggleCompletion: (isCompleted) =>
+          model.toggleTaskCompletion(task.id, isCompleted),
       showProjectName: true,
     );
   }
-  
-
 }

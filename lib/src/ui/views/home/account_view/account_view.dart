@@ -240,6 +240,7 @@ class AccountView extends StatelessWidget {
           child: _buildActionButton(
             onTap: logout,
             icon: IconsaxPlusLinear.logout,
+            label: 'Logout',
             color: Colors.grey[800]!,
           ),
         ),
@@ -248,6 +249,7 @@ class AccountView extends StatelessWidget {
           child: _buildActionButton(
             onTap: () => _showDeleteConfirmation(context, deleteProfile),
             icon: IconsaxPlusLinear.trash,
+            label: 'Delete Account',
             color: Colors.red,
           ),
         ),
@@ -258,6 +260,7 @@ class AccountView extends StatelessWidget {
   Widget _buildActionButton({
     required VoidCallback onTap,
     required IconData icon,
+    required String label,
     required Color color,
   }) {
     return GestureDetector(
@@ -268,10 +271,22 @@ class AccountView extends StatelessWidget {
           color: Colors.grey[50],
           borderRadius: BorderRadius.circular(12),
         ),
-        child: Icon(
-          icon,
-          size: 30,
-          color: color,
+        child: Column(
+          children: [
+            Icon(
+              icon,
+              size: 30,
+              color: color,
+            ),
+            SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                color: color,
+              ),
+            ),
+          ],
         ),
       ),
     );

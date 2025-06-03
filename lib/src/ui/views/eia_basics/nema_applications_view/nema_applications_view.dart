@@ -18,7 +18,7 @@ class NEMAApplicationsView extends StatelessWidget {
         ),
         backgroundColor: Colors.white,
         body: BackgroundContainer(
-          background: 'background-1',
+          background: 'background-3',
           child: SingleChildScrollView(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 24),

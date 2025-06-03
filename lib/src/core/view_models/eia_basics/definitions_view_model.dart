@@ -9,12 +9,18 @@ class DefinitionsViewModel extends StreamViewModel<List<Definition>> {
   List<Definition> _allDefinitions = [];
 
   List<Definition> get definitions {
-    if (_searchQuery.isEmpty) return data ?? [];
-    return _allDefinitions.where((definition) {
+    List<Definition> listToSort;
+    if (_searchQuery.isEmpty) {
+      listToSort = (data ?? []).toList();
+    } else {
       final query = _searchQuery.toLowerCase();
-      return definition.title.toLowerCase().contains(query) ||
-          definition.meaning.toLowerCase().contains(query);
-    }).toList();
+      listToSort = _allDefinitions.where((definition) {
+        return definition.title.toLowerCase().contains(query) ||
+            definition.meaning.toLowerCase().contains(query);
+      }).toList();
+    }
+    listToSort.sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+    return listToSort;
   }
 
   @override

@@ -1,4 +1,5 @@
 class RoutePaths {
+  static const String archivedProjects = '/projects/archived_projects';
   static const String splash = '/splash';
   static const String welcome = '/welcome';
   static const String login = '/login';

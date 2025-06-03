@@ -20,7 +20,8 @@ class SplashViewModel extends BaseViewModel {
     } else {
       Future<void>.delayed(const Duration(milliseconds: 2000)).then(
           (dynamic onValue) =>
-              _navigationService.navigateToReplacement(RoutePaths.tabs));
+              _navigationService.navigateToReplacement('/landing'));
+
     }
   }
 }

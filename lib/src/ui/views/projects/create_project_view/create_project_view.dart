@@ -139,19 +139,6 @@ class CreateProjectView extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Required fields message
-        if (!model.validateCurrentStep() && !model.isBusy)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8.0),
-            child: Text(
-              'All fields marked with * are required',
-              style: const TextStyle(
-                color: Colors.red,
-                fontWeight: FontWeight.w500,
-                fontSize: 14,
-              ),
-            ),
-          ),
         Container(
           width: double.infinity,
           padding: const EdgeInsets.all(24),

@@ -6,6 +6,9 @@ import 'package:the_eap_app/src/core/services/services.dart';
 import 'package:the_eap_app/src/locator.dart';
 
 class ProjectsViewModel extends BaseViewModel {
+  void navigateToArchivedProjects() {
+    _navigationService.navigateTo(RoutePaths.archivedProjects);
+  }
   final NavigationService _navigationService = locator<NavigationService>();
   final ProjectService _projectService = locator<ProjectService>();
   
@@ -23,7 +26,8 @@ class ProjectsViewModel extends BaseViewModel {
     // Set up a stream subscription to listen for projects
     _projectService.getProjects().listen((projectList) {
       _projects = projectList;
-      _filteredProjects = List.from(_projects);
+      // Only include non-archived projects by default
+      _filteredProjects = _projects.where((p) => p.projectStatus != 'Archived').toList();
       setBusy(false);
       notifyListeners();
     });
@@ -31,13 +35,14 @@ class ProjectsViewModel extends BaseViewModel {
   
   void onSearchQueryChanged(String query) {
     if (query.isEmpty) {
-      _filteredProjects = List.from(_projects);
+      _filteredProjects = _projects.where((p) => p.projectStatus != 'Archived').toList();
     } else {
       _filteredProjects = _projects
           .where((project) =>
-              project.overview.title.toLowerCase().contains(query.toLowerCase()) ||
+              project.projectStatus != 'Archived' &&
+              (project.overview.title.toLowerCase().contains(query.toLowerCase()) ||
               (project.applicantLandowner.applicantName != null && 
-               project.applicantLandowner.applicantName!.toLowerCase().contains(query.toLowerCase())))
+               project.applicantLandowner.applicantName!.toLowerCase().contains(query.toLowerCase()))))
           .toList();
     }
     notifyListeners();

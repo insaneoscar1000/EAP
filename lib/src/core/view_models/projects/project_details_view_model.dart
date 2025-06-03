@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:stacked/stacked.dart';
 import 'package:the_eap_app/src/core/constants/route_constants.dart';
 import 'package:the_eap_app/src/core/models/models.dart';
@@ -82,7 +85,8 @@ class ProjectDetailsViewModel extends BaseViewModel {
             ),
             TextButton(
               style: TextButton.styleFrom(
-                foregroundColor: Colors.red,
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
               ),
               child: Text('Delete'),
               onPressed: () {
@@ -138,12 +142,101 @@ class ProjectDetailsViewModel extends BaseViewModel {
     }
   }
 
-  void exportProject() {
-    // Export project functionality (to be implemented)
-    _dialogService.showDialog(
-      title: 'Coming Soon',
-      description: 'The export feature will be available in a future update.',
-    );
+  Future<void> exportProject() async {
+    try {
+      final buffer = StringBuffer();
+      buffer.writeln('Project Details Export');
+      buffer.writeln('======================');
+      buffer.writeln('Project Overview:');
+      buffer.writeln('  Title: ${_project.overview.title}');
+      buffer.writeln('  Code: ${_project.overview.code}');
+      buffer.writeln(
+          '  Department Reference: ${_project.overview.departmentReferenceNumber}');
+      buffer.writeln(
+          '  Property: ${_project.overview.propertyNameAddressFarmNo}');
+      buffer.writeln('');
+      buffer.writeln('Location:');
+      buffer.writeln('  Province: ${_project.location.province ?? ''}');
+      buffer.writeln(
+          '  District/Metro Municipality: ${_project.location.districtOrMetroMunicipality ?? ''}');
+      buffer.writeln(
+          '  Local Municipality: ${_project.location.localMunicipality ?? ''}');
+      buffer.writeln('');
+      buffer.writeln('Applicant:');
+      buffer.writeln(
+          '  Name: ${_project.applicantLandowner.applicantName ?? ''}');
+      buffer.writeln(
+          '  Details: ${_project.applicantLandowner.applicantDetails ?? ''}');
+      buffer.writeln('Landowner:');
+      buffer.writeln('  Name: ${_project.applicantLandowner.landowner ?? ''}');
+      buffer.writeln(
+          '  Details: ${_project.applicantLandowner.landownerDetails ?? ''}');
+      buffer.writeln('');
+      buffer.writeln('Project Description:');
+      buffer.writeln(
+          '  Application Type: ${_project.projectDescription?.applicationType ?? ''}');
+      buffer.writeln(
+          '  Description: ${_project.projectDescription?.projectDescription ?? ''}');
+      buffer.writeln('');
+      buffer.writeln('Environmental Details:');
+      buffer.writeln(
+          '  Relevant Listing Notice: ${_project.environmentalDetails?.relevantListingNotice ?? ''}');
+      buffer.writeln(
+          '  Current Property Zoning: ${_project.environmentalDetails?.currentPropertyZoning ?? ''}');
+      buffer.writeln(
+          '  Property Size: ${_project.environmentalDetails?.propertySize ?? ''}');
+      buffer.writeln(
+          '  Existing Services On Site: ${_project.environmentalDetails?.existingServicesOnSite ?? ''}');
+      buffer.writeln(
+          '  Planned Services (Water): ${_project.environmentalDetails?.plannedServicesWater ?? ''}');
+      buffer.writeln(
+          '  Planned Services (Electricity): ${_project.environmentalDetails?.plannedServicesElectricity ?? ''}');
+      buffer.writeln(
+          '  Planned Services (Sanitation): ${_project.environmentalDetails?.plannedServicesSanitation ?? ''}');
+      buffer.writeln('');
+      buffer.writeln('EIA Team & Studies:');
+      buffer.writeln(
+          '  EIA Project Team: ${_project.eiaTeamAndStudies?.eiaProjectTeam?.join(', ') ?? ''}');
+      buffer.writeln(
+          '  Specialist Studies Required: ${_project.eiaTeamAndStudies?.specialistStudiesRequired?.join(', ') ?? ''}');
+      buffer.writeln(
+          '  Specialist Studies Completed: ${_project.eiaTeamAndStudies?.specialistStudiesCompleted?.join(', ') ?? ''}');
+      buffer.writeln('');
+      buffer.writeln('Public Review Periods:');
+      buffer.writeln(
+          '  First Review Period: ${getReviewPeriodText(_project.publicReviewPeriods?.publicReviewPeriod1StartDate, _project.publicReviewPeriods?.publicReviewPeriod1EndDate, _project.publicReviewPeriods?.publicReviewPeriod1Duration) ?? ''}');
+      buffer.writeln(
+          '  Second Review Period: ${getReviewPeriodText(_project.publicReviewPeriods?.publicReviewPeriod2StartDate, _project.publicReviewPeriods?.publicReviewPeriod2EndDate, _project.publicReviewPeriods?.publicReviewPeriod2Duration) ?? ''}');
+      buffer.writeln('');
+      buffer.writeln('Submission & Contacts:');
+      buffer.writeln(
+          '  Relevant Environmental Affairs Office: ${_project.submissionAndContacts?.relevantEnvironmentalAffairsOffice ?? ''}');
+      buffer.writeln(
+          '  Environmental Affairs Contacts: ${_project.submissionAndContacts?.environmentalAffairsContacts?.join(', ') ?? ''}');
+      buffer.writeln(
+          '  Pre-application Meeting Date: ${_project.submissionAndContacts?.dateOfPreapplicationMeeting?.toString() ?? ''}');
+      buffer.writeln(
+          '  Submission of Application Date: ${_project.submissionAndContacts?.dateOfSubmissionOfApplication?.toString() ?? ''}');
+      buffer.writeln(
+          '  Submission of Draft Documents Date: ${_project.submissionAndContacts?.dateOfSubmissionOfDraftDocuments?.toString() ?? ''}');
+      buffer.writeln(
+          '  Submission of Final Documents Date: ${_project.submissionAndContacts?.dateOfSubmissionOfFinalDocuments?.toString() ?? ''}');
+      buffer.writeln('');
+      buffer.writeln('Notes:');
+      buffer.writeln('  ${_project.projectNotes?.notes ?? ''}');
+      buffer.writeln('');
+      final directory = await getTemporaryDirectory();
+      final file = File('${directory.path}/project_export.txt');
+      await file.writeAsString(buffer.toString());
+      await Share.shareXFiles([XFile(file.path)],
+          text: 'Project Details Export');
+    } catch (e) {
+      _dialogService.showDialog(
+        title: 'Export Failed',
+        description:
+            'An error occurred while exporting the project: ${e.toString()}',
+      );
+    }
   }
 
   String? getSpecialistStudiesRequiredText() {
@@ -195,5 +288,50 @@ class ProjectDetailsViewModel extends BaseViewModel {
 
     return _project.submissionAndContacts!.environmentalAffairsContacts!
         .join('\n');
+  }
+
+  Future<void> archiveProject(BuildContext context) async {
+    setBusy(true);
+    try {
+      // Update project status to 'Archived'
+      final updatedProject = _project.copyWith(projectStatus: 'Archived');
+      await _projectService.updateProject(updatedProject);
+      _project = updatedProject;
+      setBusy(false);
+      _dialogService.showDialog(
+        title: 'Project Archived',
+        description:
+            'The project has been archived successfully. You can find it in the Archived Projects section.',
+      );
+      notifyListeners();
+    } catch (e) {
+      setBusy(false);
+      _dialogService.showDialog(
+        title: 'Archive Failed',
+        description: 'Failed to archive project: ${e.toString()}',
+      );
+    }
+  }
+
+  Future<void> unarchiveProject(BuildContext context) async {
+    setBusy(true);
+    try {
+      // Update project status to 'Complete'
+      final updatedProject = _project.copyWith(projectStatus: 'Complete');
+      await _projectService.updateProject(updatedProject);
+      _project = updatedProject;
+      setBusy(false);
+      _dialogService.showDialog(
+        title: 'Project Restored',
+        description: 'The project has been moved back to the Completed state.',
+      );
+      notifyListeners();
+    } catch (e) {
+      setBusy(false);
+      _dialogService.showDialog(
+        title: 'Unarchive Failed',
+        description: 'Failed to unarchive project: ${e.toString()}',
+      );
+    }
   }
 }

@@ -78,6 +78,7 @@ class _AddIAPFormState extends State<AddIAPForm> {
                 _buildTextField(
                   controller: _organizationController,
                   label: 'Organization',
+                  isRequired: true,
                 ),
                 _buildTextField(
                   controller: _emailController,

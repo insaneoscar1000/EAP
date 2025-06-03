@@ -46,20 +46,35 @@ class EventDetailsView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (model.event.flyerUrl.isNotEmpty)
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(24, 24, 24, 0),
-                        child: Container(
-                          height: 200,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            image: DecorationImage(
-                              image: NetworkImage(model.event.flyerUrl),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                      ),
+  Padding(
+    padding: EdgeInsets.fromLTRB(24, 24, 24, 0),
+    child: Container(
+      height: 200,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        image: DecorationImage(
+          image: NetworkImage(model.event.flyerUrl),
+          fit: BoxFit.cover,
+        ),
+      ),
+    ),
+  )
+else
+  Padding(
+    padding: EdgeInsets.fromLTRB(24, 24, 24, 0),
+    child: Container(
+      height: 200,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        image: DecorationImage(
+          image: AssetImage('assets/images/logo.png'),
+          fit: BoxFit.cover,
+        ),
+      ),
+    ),
+  ),
                     Padding(
                       padding: EdgeInsets.all(24),
                       child: Column(

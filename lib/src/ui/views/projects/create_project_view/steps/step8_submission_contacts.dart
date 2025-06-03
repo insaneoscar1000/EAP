@@ -4,7 +4,8 @@ import 'package:the_eap_app/src/core/view_models/projects/create_project_view_mo
 import 'step_base.dart';
 
 class Step8SubmissionContacts extends StepBase {
-  const Step8SubmissionContacts({Key? key, required CreateProjectViewModel model})
+  const Step8SubmissionContacts(
+      {Key? key, required CreateProjectViewModel model})
       : super(key: key, model: model);
 
   @override
@@ -21,33 +22,36 @@ class Step8SubmissionContacts extends StepBase {
           ),
         ),
         SizedBox(height: 24),
-        
+
         // Relevant Environmental Affairs Office
         buildFormField(
           label: 'Relevant Environmental Affairs Office',
           hintText: 'Start typing...',
-          onChanged: (value) => model.relevantEnvironmentalAffairsOffice = value,
+          onChanged: (value) =>
+              model.relevantEnvironmentalAffairsOffice = value,
           initialValue: model.relevantEnvironmentalAffairsOffice,
         ),
         SizedBox(height: 16),
-        
+
         // Environmental Affairs Contacts
         _buildContactsSection(
           title: 'Environmental Affairs Contacts',
           items: model.environmentalAffairsContacts,
           onAdd: (value) {
-            List<String> updatedList = List.from(model.environmentalAffairsContacts);
+            List<String> updatedList =
+                List.from(model.environmentalAffairsContacts);
             updatedList.add(value);
             model.environmentalAffairsContacts = updatedList;
           },
           onRemove: (index) {
-            List<String> updatedList = List.from(model.environmentalAffairsContacts);
+            List<String> updatedList =
+                List.from(model.environmentalAffairsContacts);
             updatedList.removeAt(index);
             model.environmentalAffairsContacts = updatedList;
           },
         ),
         SizedBox(height: 24),
-        
+
         // Date Fields
         _buildDateField(
           context,
@@ -56,7 +60,7 @@ class Step8SubmissionContacts extends StepBase {
           onChanged: (date) => model.dateOfPreapplicationMeeting = date,
         ),
         SizedBox(height: 16),
-        
+
         _buildDateField(
           context,
           label: 'Submission of Application Date',
@@ -64,18 +68,18 @@ class Step8SubmissionContacts extends StepBase {
           onChanged: (date) => model.dateOfSubmissionOfApplication = date,
         ),
         SizedBox(height: 16),
-        
+
         _buildDateField(
           context,
-          label: 'Draft Documents Date',
+          label: 'Submission of Draft Documents Date',
           value: model.dateOfSubmissionOfDraftDocuments,
           onChanged: (date) => model.dateOfSubmissionOfDraftDocuments = date,
         ),
         SizedBox(height: 16),
-        
+
         _buildDateField(
           context,
-          label: 'Final Documents Date',
+          label: 'Submission of Final Documents Date',
           value: model.dateOfSubmissionOfFinalDocuments,
           onChanged: (date) => model.dateOfSubmissionOfFinalDocuments = date,
         ),
@@ -83,7 +87,7 @@ class Step8SubmissionContacts extends StepBase {
       ],
     );
   }
-  
+
   Widget _buildDateField(
     BuildContext context, {
     required String label,
@@ -91,7 +95,7 @@ class Step8SubmissionContacts extends StepBase {
     required Function(DateTime?) onChanged,
   }) {
     final dateFormat = DateFormat('dd/MM/yyyy');
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -103,14 +107,6 @@ class Step8SubmissionContacts extends StepBase {
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
                 color: Colors.black87,
-              ),
-            ),
-            Text(
-              ' *',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Colors.red,
               ),
             ),
           ],
@@ -155,7 +151,7 @@ class Step8SubmissionContacts extends StepBase {
       ],
     );
   }
-  
+
   Widget _buildContactsSection({
     required String title,
     required List<String> items,
@@ -163,7 +159,7 @@ class Step8SubmissionContacts extends StepBase {
     required Function(int) onRemove,
   }) {
     final TextEditingController controller = TextEditingController();
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -175,14 +171,6 @@ class Step8SubmissionContacts extends StepBase {
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
                 color: Colors.black87,
-              ),
-            ),
-            Text(
-              ' *',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Colors.red,
               ),
             ),
           ],

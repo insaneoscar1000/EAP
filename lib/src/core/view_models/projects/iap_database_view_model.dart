@@ -261,26 +261,6 @@ class IAPDatabaseViewModel extends StreamViewModel<List<IAP>> {
       return 'I&AP Organization is required';
     }
 
-    if (_email.isEmpty) {
-      return 'I&AP Email Address is required';
-    }
-
-    if (_phone.isEmpty) {
-      return 'I&AP Contact Number is required';
-    }
-
-    if (_correspondenceDate == null) {
-      return 'Correspondence Date is required';
-    }
-
-    if (_issueRaised.isEmpty) {
-      return 'Correspondence & Issue Raised is required';
-    }
-
-    if (_eapResponse.isEmpty) {
-      return 'EAP\'s Response is required';
-    }
-
     return null;
   }
 
@@ -298,6 +278,7 @@ class IAPDatabaseViewModel extends StreamViewModel<List<IAP>> {
       // Check if correspondence date is set
       if (_correspondenceDate == null) {
         print('Error: Correspondence date is null');
+        setBusy(false);
         return false;
       }
 
@@ -323,7 +304,8 @@ class IAPDatabaseViewModel extends StreamViewModel<List<IAP>> {
         await _iapService.createIAP(iap);
       }
 
-      // Reset form
+      // No need to manually refresh; StreamViewModel will update automatically
+      // Just reset the form state
       _editingIAP = null;
       _name = '';
       _organization = '';
@@ -337,6 +319,7 @@ class IAPDatabaseViewModel extends StreamViewModel<List<IAP>> {
       _eapResponse = '';
 
       setBusy(false);
+      notifyListeners();
       return true;
     } catch (e) {
       print('Error saving IAP: ${e.toString()}');

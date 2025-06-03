@@ -12,6 +12,7 @@ export 'event.dart';
 export 'task.dart';
 export 'project.dart';
 export 'iap.dart';
+export 'process_step.dart';
 
 // shared
 export 'shared/meta.dart';

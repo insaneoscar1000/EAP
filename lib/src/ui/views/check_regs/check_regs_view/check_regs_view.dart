@@ -32,7 +32,7 @@ class CheckRegsView extends StatelessWidget {
                 MenuItem(
                   title: 'NWA Water Uses',
                   subtitle: 'Do I need a WULA?',
-                  borderColor: Color(0xFFE17055),
+                  borderColor: Color(0xff60788E),
                   onTap: () {
                     Navigator.pushNamed(context, RoutePaths.waterUses);
                   },

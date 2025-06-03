@@ -5,6 +5,7 @@ import 'package:stacked/stacked.dart';
 import 'package:the_eap_app/src/core/constants/route_constants.dart';
 import 'package:the_eap_app/src/core/view_models/view_models.dart';
 import 'package:the_eap_app/src/ui/shared/widgets/widgets.dart';
+import 'package:the_eap_app/src/ui/views/network/events_view/event_advert_modal.dart';
 
 class EventsView extends StatelessWidget {
   @override
@@ -28,8 +29,22 @@ class EventsView extends StatelessWidget {
                   children: [
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, RoutePaths.createEvent);
+                        onPressed: () async {
+                          final result = await showDialog<bool>(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (context) => EventAdvertModal(
+                              onConfirm: () {
+                                Navigator.of(context).pop(true);
+                              },
+                              onCancel: () {
+                                Navigator.of(context).pop(false);
+                              },
+                            ),
+                          );
+                          if (result == true) {
+                            Navigator.pushNamed(context, RoutePaths.createEvent);
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Theme.of(context).primaryColor,

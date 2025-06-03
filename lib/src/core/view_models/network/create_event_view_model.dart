@@ -34,6 +34,9 @@ class CreateEventViewModel extends BaseViewModel {
   final contactNameController = TextEditingController();
   final emailController = TextEditingController();
   final websiteUrlController = TextEditingController();
+  final locationController = TextEditingController();
+  final roleController = TextEditingController();
+  final contactNumberController = TextEditingController();
 
   Future<void> pickImage() async {
     try {
@@ -245,6 +248,9 @@ class CreateEventViewModel extends BaseViewModel {
     contactNameController.dispose();
     emailController.dispose();
     websiteUrlController.dispose();
+    locationController.dispose();
+    roleController.dispose();
+    contactNumberController.dispose();
     super.dispose();
   }
 }

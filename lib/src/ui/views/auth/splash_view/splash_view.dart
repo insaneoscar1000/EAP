@@ -23,17 +23,6 @@ class SplashView extends StatelessWidget {
                         'assets/images/logo.png',
                         height: 150,
                       ),
-                      SizedBox(height: 24),
-                      Text(
-                        'The EAP App',
-                        style: TextStyle(
-                          fontSize: 44,
-                          fontFamily: 'Urbanist',
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).primaryColor,
-                          letterSpacing: 2,
-                        ),
-                      ),
                     ],
                   ),
                 ),

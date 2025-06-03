@@ -5,18 +5,27 @@ import 'package:the_eap_app/src/core/models/models.dart';
 import 'package:the_eap_app/src/core/services/services.dart';
 import 'package:the_eap_app/src/locator.dart';
 
+import 'package:url_launcher/url_launcher_string.dart';
+
 class LawHubsViewModel extends StreamViewModel<List<LawHub>> {
   final _lawHubService = locator<LawHubService>();
   String _searchQuery = '';
   List<LawHub> _allLawHubs = [];
 
   List<LawHub> get lawHubs {
-    if (_searchQuery.isEmpty) return data ?? [];
-    return _allLawHubs.where((lawHub) {
+    List<LawHub> listToSort;
+    if (_searchQuery.isEmpty) {
+      listToSort = (data ?? []).toList();
+    } else {
       final query = _searchQuery.toLowerCase();
-      return lawHub.title.toLowerCase().contains(query) ||
-          lawHub.description.toLowerCase().contains(query);
-    }).toList();
+      listToSort = _allLawHubs.where((lawHub) {
+        return lawHub.title.toLowerCase().contains(query) ||
+            lawHub.description.toLowerCase().contains(query);
+      }).toList();
+    }
+    listToSort
+        .sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+    return listToSort;
   }
 
   @override
@@ -40,19 +49,11 @@ class LawHubsViewModel extends StreamViewModel<List<LawHub>> {
   }
 
   Future<void> downloadLawHubFile(String fileUrl, String title) async {
-    final fileName = title.replaceAll(' ', '_').toLowerCase() + '.pdf';
-
-    final filePath = await _lawHubService.downloadFile(fileUrl, fileName);
-
-    if (filePath != null) {
-      showSimpleNotification(
-        Text('$fileName downloaded successfully'),
-        background: Colors.green,
-        duration: const Duration(seconds: 3),
-      );
+    if (await canLaunchUrlString(fileUrl)) {
+      await launchUrlString(fileUrl);
     } else {
       showSimpleNotification(
-        const Text('Failed to download file'),
+        const Text('Could not open file.'),
         background: Colors.red,
         duration: const Duration(seconds: 3),
       );

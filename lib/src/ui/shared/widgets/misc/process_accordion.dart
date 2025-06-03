@@ -22,7 +22,7 @@ class _ProcessAccordionState extends State<ProcessAccordion> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(bottom: 16),
+      margin: EdgeInsets.only(bottom: 26),
       child: Material(
         color: widget.backgroundColor,
         borderRadius: BorderRadius.circular(12),

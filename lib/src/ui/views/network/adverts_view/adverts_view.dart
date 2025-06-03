@@ -12,7 +12,7 @@ class AdvertsView extends StatelessWidget {
       viewModelBuilder: () => AdvertsViewModel(),
       builder: (context, model, child) => Scaffold(
         appBar: DefaultAppBar(
-          title: 'Adverts',
+          title: 'Service Providers',
         ),
         backgroundColor: Colors.white,
         body: BackgroundContainer(

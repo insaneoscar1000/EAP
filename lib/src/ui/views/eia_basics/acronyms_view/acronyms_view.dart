@@ -15,7 +15,7 @@ class AcronymsView extends StatelessWidget {
         ),
         backgroundColor: Colors.white,
         body: BackgroundContainer(
-          background: 'background-1',
+          background: 'background-2',
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 24),
             child: Column(
@@ -44,7 +44,7 @@ class AcronymsView extends StatelessWidget {
                                   margin: EdgeInsets.only(bottom: 16),
                                   padding: EdgeInsets.all(16),
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
+                                    color: Colors.grey[200],
                                     borderRadius: BorderRadius.circular(12),
                                     boxShadow: [
                                       BoxShadow(

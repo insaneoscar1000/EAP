@@ -44,7 +44,7 @@ class _CreateToDoViewState extends State<CreateToDoView> {
 
       // Set task name
       taskNameController.text = task.name;
-      
+
       // Set description
       if (task.description != null && task.description!.isNotEmpty) {
         descriptionController.text = task.description!;
@@ -144,7 +144,7 @@ class _CreateToDoViewState extends State<CreateToDoView> {
         // Debug: Print project names to console
         print('Available projects: ${model.projectNames.join(', ')}');
         print('Projects count: ${model.projects.length}');
-        
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -167,7 +167,9 @@ class _CreateToDoViewState extends State<CreateToDoView> {
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
                   isExpanded: true,
-                  value: model.projectNames.contains(selectedProject) ? selectedProject : 'General',
+                  value: model.projectNames.contains(selectedProject)
+                      ? selectedProject
+                      : 'General',
                   icon: Icon(Icons.keyboard_arrow_down),
                   iconSize: 24,
                   elevation: 16,
@@ -200,13 +202,25 @@ class _CreateToDoViewState extends State<CreateToDoView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Event/Task Name',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: Theme.of(context).primaryColor,
-          ),
+        Row(
+          children: [
+            Text(
+              'Event/Task Name',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Theme.of(context).primaryColor,
+              ),
+            ),
+            Text(
+              ' *',
+              style: TextStyle(
+                color: Colors.red,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
         SizedBox(height: 8),
         Container(
@@ -248,7 +262,7 @@ class _CreateToDoViewState extends State<CreateToDoView> {
       ],
     );
   }
-  
+
   Widget _buildDescriptionField(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -293,7 +307,7 @@ class _CreateToDoViewState extends State<CreateToDoView> {
             Expanded(
               child: _buildDateField(
                 context,
-                'Start Date',
+                'Start Date *',
                 startDateController,
                 () => _selectDate(context, startDateController),
               ),
@@ -302,7 +316,7 @@ class _CreateToDoViewState extends State<CreateToDoView> {
             Expanded(
               child: _buildTimeField(
                 context,
-                'Start Time',
+                'Start Time *',
                 startTimeController,
                 () => _selectTime(context, startTimeController),
               ),
@@ -338,8 +352,7 @@ class _CreateToDoViewState extends State<CreateToDoView> {
 
   Widget _buildDateField(BuildContext context, String label,
       TextEditingController controller, VoidCallback onTap) {
-    bool isError = (controller == startDateController && _startDateError) ||
-        (controller == endDateController && _endDateError);
+    bool isError = (controller == startDateController && _startDateError);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -485,8 +498,6 @@ class _CreateToDoViewState extends State<CreateToDoView> {
         // Clear error state if field is filled
         if (controller == startDateController) {
           _startDateError = false;
-        } else if (controller == endDateController) {
-          _endDateError = false;
         }
       });
     }
@@ -514,9 +525,17 @@ class _CreateToDoViewState extends State<CreateToDoView> {
       setState(() {
         controller.text = picked.format(context);
 
-        // Clear error state if field is filled
+        // If user picked start time, auto-set end time 1 hour later if end time is empty
         if (controller == startTimeController) {
           _startTimeError = false;
+          if (endTimeController.text.isEmpty) {
+            // Calculate 1 hour later
+            final end = TimeOfDay(
+              hour: (picked.hour + 1) % 24,
+              minute: picked.minute,
+            );
+            endTimeController.text = end.format(context);
+          }
         } else if (controller == endTimeController) {
           _endTimeError = false;
         }
@@ -545,7 +564,8 @@ class _CreateToDoViewState extends State<CreateToDoView> {
                     context: context,
                     builder: (context) => AlertDialog(
                       title: Text('Delete Task'),
-                      content: Text('Are you sure you want to delete this task?'),
+                      content:
+                          Text('Are you sure you want to delete this task?'),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(context),
@@ -557,7 +577,8 @@ class _CreateToDoViewState extends State<CreateToDoView> {
                             model.deleteTask(widget.task!.id);
                             model.navigateBack(); // Go back to schedule view
                           },
-                          child: Text('Delete', style: TextStyle(color: Colors.red)),
+                          child: Text('Delete',
+                              style: TextStyle(color: Colors.red)),
                         ),
                       ],
                     ),
@@ -631,7 +652,7 @@ class _CreateToDoViewState extends State<CreateToDoView> {
   void _validateAndSubmit(BuildContext context, ScheduleViewModel model) {
     // Validate all fields
     bool isValid = true;
-    
+
     setState(() {
       // Check task name
       if (taskNameController.text.trim().isEmpty) {
@@ -657,21 +678,12 @@ class _CreateToDoViewState extends State<CreateToDoView> {
         _startTimeError = false;
       }
 
-      // For new tasks, require end date and time
-      if (widget.task == null) {
-        if (endDateController.text.isEmpty) {
-          _endDateError = true;
-          isValid = false;
-        } else {
-          _endDateError = false;
-        }
-
-        if (endTimeController.text.isEmpty) {
-          _endTimeError = true;
-          isValid = false;
-        } else {
-          _endTimeError = false;
-        }
+      // Check end time - required if end date is set
+      if (endTimeController.text.isEmpty && endDateController.text.isNotEmpty) {
+        _endTimeError = true;
+        isValid = false;
+      } else {
+        _endTimeError = false;
       }
     });
 
@@ -695,6 +707,12 @@ class _CreateToDoViewState extends State<CreateToDoView> {
           );
           return;
         }
+      } else {
+        endDate = DateTime(
+          int.parse(startDateController.text.split('/')[2]), // year
+          int.parse(startDateController.text.split('/')[1]), // month
+          int.parse(startDateController.text.split('/')[0]), // day
+        );
       }
 
       if (widget.task != null) {
@@ -719,7 +737,7 @@ class _CreateToDoViewState extends State<CreateToDoView> {
           endTime: endTimeController.text,
         );
       }
-      
+
       model.navigateBack();
     }
   }

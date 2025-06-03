@@ -123,8 +123,9 @@ class _CreateEventViewState extends State<CreateEventView> {
                                 ),
                                 SizedBox(height: 16),
                                 _buildTextField(
-                                  'Event Name',
+                                  'Title*',
                                   model.nameController,
+                                  required: true,
                                 ),
                                 SizedBox(height: 16),
                                 _buildTextField(
@@ -261,20 +262,41 @@ class _CreateEventViewState extends State<CreateEventView> {
                                 ),
                                 SizedBox(height: 16),
                                 _buildTextField(
+                                  'Location*',
+                                  model.locationController,
+                                  required: true,
+                                ),
+                                SizedBox(height: 16),
+                                _buildTextField(
+                                  'Role*',
+                                  model.roleController,
+                                  required: true,
+                                ),
+                                SizedBox(height: 16),
+                                _buildTextField(
+                                  'Contact Number*',
+                                  model.contactNumberController,
+                                  keyboardType: TextInputType.phone,
+                                  required: true,
+                                ),
+                                SizedBox(height: 16),
+                                _buildTextField(
                                   'Website URL',
                                   model.websiteUrlController,
                                   keyboardType: TextInputType.url,
                                 ),
                                 SizedBox(height: 16),
                                 _buildTextField(
-                                  'Contact Name',
+                                  'Contact Person*',
                                   model.contactNameController,
+                                  required: true,
                                 ),
                                 SizedBox(height: 16),
                                 _buildTextField(
-                                  'Email Address',
+                                  'Email Address*',
                                   model.emailController,
                                   keyboardType: TextInputType.emailAddress,
+                                  required: true,
                                 ),
                                 SizedBox(height: 24),
                                 ElevatedButton(
@@ -397,6 +419,7 @@ class _CreateEventViewState extends State<CreateEventView> {
     TextEditingController controller, {
     TextInputType? keyboardType,
     int maxLines = 1,
+    bool required = false,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -415,8 +438,8 @@ class _CreateEventViewState extends State<CreateEventView> {
           keyboardType: keyboardType,
           maxLines: maxLines,
           validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Please enter $label';
+            if (required && (value == null || value.isEmpty)) {
+              return 'Please enter ${label.replaceAll('*', '').trim()}';
             }
             return null;
           },
