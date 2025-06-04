@@ -74,7 +74,7 @@ class EAAmendmentView extends StatelessWidget {
                     content:
                         'EAP completes the relevant application form (depending on province)'),
                 ProcessAccordion(
-                    title: 'Compilation of Pt. 2 Amendment Report',
+                    title: 'Compilation Part 2 Amendment Report',
                     backgroundColor: Color(0xFF7E8C76),
                     content:
                         'EAP compiles an Amendment Report \n(as per Section 32 of GNR326 Regulations,\n7 April 2017)'),

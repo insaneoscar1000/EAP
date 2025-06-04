@@ -27,7 +27,7 @@ class ScopingEIRView extends StatelessWidget {
                 ProcessAccordion(
                     title: 'EAP Appointment',
                     content:
-                        'The applicant licant appoints a registered EAP (Contract signed & upfront payment made if required).'),
+                        'The applicant appoints a registered EAP (Contract signed & upfront payment made if required).'),
                 ProcessAccordion(
                     title: 'Contact Environmental Affairs',
                     backgroundColor: Color(0xFF7E8C76),
@@ -52,7 +52,7 @@ class ScopingEIRView extends StatelessWidget {
                     title: 'Public Participation Process (PPP)',
                     backgroundColor: Color(0xFFD9A48E),
                     content:
-                        "Advertise Scoping & EIR Process and availability of the Draft Scoping Report for review (dates & how to access documents). Release the Draft BAR for public review (30 days). Send copy of Draft Scoping Report to Environmental Affairs. *Remember - don't include 15 Dec to 5 Jan in timeframes. "),
+                        "Advertise Scoping & EIR Process and availability of the Draft Scoping Report for review (dates & how to access documents). Release the Draft Scoping Report for public review (30 days). Send copy of Draft Scoping Report to Environmental Affairs. *Remember - don't include 15 Dec to 5 Jan in timeframes. "),
                 ProcessAccordion(
                     title: 'Application Form Submission',
                     backgroundColor: Color(0xFF7E8C76),
@@ -81,12 +81,12 @@ class ScopingEIRView extends StatelessWidget {
                     title: 'Draft Environmental Impact Report',
                     backgroundColor: Color(0xFF0F6358),
                     content:
-                        'Prepare the Environmental Impact Assessment Report. Include all Specialist Reports, the EMPr etc.'),
+                        'Once the CA has accepted the Scoping Report, prepare the Environmental Impact Report. Include all Specialist Reports, the EMPr etc.'),
                 ProcessAccordion(
                     title: 'Public Participation Process (PPP)',
                     backgroundColor: Color(0xFFD9A48E),
                     content:
-                        "Advertise availability of the Draft EIR for review (dates & how to access documents). Release the Draft EIR for public review (30 days). *Remember - don't include 15 Dec to 5 Jan in timeframes. "),
+                        "Advertise availability of the Draft EIR for review (dates & how to access documents). Release the Draft EIR for public review (30 days). *Remember - don't include 15 Dec to 5 Jan in timeframes. "),
                 ProcessAccordion(
                     title: 'Submit Environmental Impact Report',
                     backgroundColor: Color(0xFF7E8C76),

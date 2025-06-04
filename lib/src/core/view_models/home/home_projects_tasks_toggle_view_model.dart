@@ -81,8 +81,8 @@ class HomeProjectsTasksToggleViewModel extends BaseViewModel {
     _navigationService.navigateTo(RoutePaths.createToDo);
   }
 
-  void navigateToSchedule() {
-    _navigationService.navigateTo(RoutePaths.schedule);
+  void navigateToTasks() {
+    _navigationService.navigateTo(RoutePaths.myToDoList);
   }
 
   @override

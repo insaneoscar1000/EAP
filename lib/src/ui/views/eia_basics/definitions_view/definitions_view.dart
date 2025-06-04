@@ -15,7 +15,7 @@ class DefinitionsView extends StatelessWidget {
         ),
         backgroundColor: Colors.white,
         body: BackgroundContainer(
-          background: 'background-3',
+          background: 'background-2',
           child: SafeArea(
             child: Padding(
               padding: EdgeInsets.all(16),
@@ -44,7 +44,7 @@ class DefinitionsView extends StatelessWidget {
                                     margin: EdgeInsets.only(bottom: 16),
                                     padding: EdgeInsets.all(16),
                                     decoration: BoxDecoration(
-                                      color: Colors.grey[200],
+                                      color: Colors.grey[100],
                                       borderRadius: BorderRadius.circular(12),
                                       boxShadow: [
                                         BoxShadow(

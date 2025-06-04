@@ -3,7 +3,7 @@ class NFATree {
   final String botanicalName;
   final String commonName;
   final String otherCommonName;
-  final int nationalTreeNumber;
+  final dynamic nationalTreeNumber; // Can be int or String
   final String linkUrl;
 
   NFATree({
@@ -16,12 +16,14 @@ class NFATree {
   });
 
   factory NFATree.fromMap(String id, Map<String, dynamic> data) {
+    var ntn = data['nationalTreeNumber'];
+    // Accept int or String, but keep as-is
     return NFATree(
       id: id,
       botanicalName: data['botanicalName'] ?? '',
       commonName: data['commonName'] ?? '',
       otherCommonName: data['otherCommonName'] ?? '',
-      nationalTreeNumber: data['nationalTreeNumber'] ?? 0,
+      nationalTreeNumber: ntn,
       linkUrl: data['linkUrl'] ?? '',
     );
   }
@@ -31,7 +33,10 @@ class NFATree {
       'botanicalName': botanicalName,
       'commonName': commonName,
       'otherCommonName': otherCommonName,
-      'nationalTreeNumber': nationalTreeNumber,
+      // Store as int if possible, else string
+      'nationalTreeNumber': (nationalTreeNumber is int)
+          ? nationalTreeNumber
+          : int.tryParse(nationalTreeNumber.toString()) ?? nationalTreeNumber,
       'linkUrl': linkUrl,
     };
   }

@@ -14,6 +14,7 @@ class ProjectsView extends StatelessWidget {
       onModelReady: (model) => model.initialize(),
       builder: (context, model, child) => Scaffold(
         appBar: AppBar(
+          centerTitle: true,
           backgroundColor: Theme.of(context).primaryColor,
           foregroundColor: Colors.white,
           leading: (ModalRoute.of(context)?.settings.arguments is Map &&
@@ -170,58 +171,49 @@ class ProjectsView extends StatelessWidget {
     }
 
     return Card(
-      elevation: 2,
-      shadowColor: Colors.black.withOpacity(0.1),
+      elevation: 0,
+      color: Colors.transparent,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      margin: EdgeInsets.zero,
       child: InkWell(
         onTap: () {
-          // Navigate to project details view when card is tapped
           final model = ProjectsViewModel.of(context);
           model.navigateToProjectDetails(project);
         },
         borderRadius: BorderRadius.circular(16),
         child: Container(
           decoration: BoxDecoration(
+            color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                cardColors[colorIndex],
-                cardColors[colorIndex].withOpacity(0.7),
-              ],
+            border: Border.all(
+              color: cardColors[colorIndex],
+              width: 2,
             ),
           ),
           child: Padding(
-            padding: EdgeInsets.all(16),
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Row(
-                //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //   children: [
-                //     _buildProjectStatus(context, project),
-                //     Text(
-                //       dateText,
-                //       style: TextStyle(
-                //         fontSize: 12,
-                //         color: Colors.grey[700],
-                //       ),
-                //     ),
-                //   ],
-                // ),
-                SizedBox(height: 12),
+                Text(
+                  dateText,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                SizedBox(height: 8),
                 Text(
                   project.overview.title,
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: Colors.black87,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                SizedBox(height: 8),
+                SizedBox(height: 4),
                 Text(
                   project.applicantLandowner.applicantName ?? 'No applicant',
                   style: TextStyle(
@@ -229,7 +221,7 @@ class ProjectsView extends StatelessWidget {
                     color: Colors.grey[700],
                   ),
                 ),
-                SizedBox(height: 12),
+                SizedBox(height: 10),
                 if (!project.isComplete)
                   _buildProgressIndicator(context, project),
               ],

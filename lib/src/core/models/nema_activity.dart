@@ -1,7 +1,7 @@
 class NEMAActivity {
   final String id;
   final String legislation;
-  final int activityNumber;
+  final dynamic activityNumber; // Can be int or String
   final String authorizationProcess;
   final String selectedListActivity;
   final String exclusions;
@@ -16,10 +16,12 @@ class NEMAActivity {
   });
 
   factory NEMAActivity.fromMap(String id, Map<String, dynamic> data) {
+    var actNum = data['activityNumber'];
+    // Accept int or String, but keep as-is
     return NEMAActivity(
       id: id,
       legislation: data['legislation'] ?? '',
-      activityNumber: data['activityNumber'] ?? 0,
+      activityNumber: actNum,
       authorizationProcess: data['authorizationProcess'] ?? '',
       selectedListActivity: data['selectedListActivity'] ?? '',
       exclusions: data['exclusions'] ?? '',
@@ -29,7 +31,10 @@ class NEMAActivity {
   Map<String, dynamic> toMap() {
     return {
       'legislation': legislation,
-      'activityNumber': activityNumber,
+      // Store as int if possible, else string
+      'activityNumber': (activityNumber is int)
+          ? activityNumber
+          : int.tryParse(activityNumber.toString()) ?? activityNumber,
       'authorizationProcess': authorizationProcess,
       'selectedListActivity': selectedListActivity,
       'exclusions': exclusions,

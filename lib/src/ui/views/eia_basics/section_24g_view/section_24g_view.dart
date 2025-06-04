@@ -46,7 +46,7 @@ class Section24GView extends StatelessWidget {
                     title: 'Public Participation',
                     backgroundColor: Color(0xFFC97C5D),
                     content:
-                        'Newspaper advert published (notifying public of Section 24 G process, the review period and EAP contact Info)\nSite notices placed on site (if not already)\nNotification letters & BIDs sent out\nOn-going liaison with I&APs (Comments received & responses given by EAP recorded)\nMeeting held if necessary (register taken & minutes compiled for BAR)'),
+                        'Newspaper advert published (notify public of Section 24 G Application, review period & EAP contact info). \nSite notices placed on site (if not already)\nNotification letters & BIDs sent out\nOn-going liaison with I&APs (Comments received & responses given by EAP recorded)\nMeeting held if necessary (register taken & minutes compiled for Section 24 G Report)'),
                 ProcessAccordion(
                     title: 'Application Form Completion',
                     backgroundColor: Color(0xFF7E8C76),

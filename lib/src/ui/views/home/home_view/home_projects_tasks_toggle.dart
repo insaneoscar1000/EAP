@@ -59,7 +59,7 @@ class HomeProjectsTasksToggle extends StatelessWidget {
                       SizedBox(width: 10),
                       Expanded(
                         child: OutlinedButton.icon(
-                          onPressed: model.navigateToSchedule,
+                          onPressed: model.navigateToTasks,
                           icon: Icon(IconsaxPlusLinear.task_square,
                               color: Theme.of(context).primaryColor),
                           label: Text('Go to all tasks'),

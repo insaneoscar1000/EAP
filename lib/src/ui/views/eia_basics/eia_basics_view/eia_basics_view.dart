@@ -13,6 +13,7 @@ class EIABasicsView extends StatelessWidget {
           (BuildContext context, EIABasicsViewModel model, Widget? child) =>
               Scaffold(
         appBar: AppBar(
+          centerTitle: true,
           backgroundColor: Theme.of(context).primaryColor,
           foregroundColor: Colors.white,
           leading: (ModalRoute.of(context)?.settings.arguments is Map &&
