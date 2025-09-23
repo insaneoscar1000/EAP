@@ -28,13 +28,15 @@ class MyToDoListViewModel extends BaseViewModel {
   List<Task> get filteredTasks {
     // First filter the tasks
     final filtered = _allTasks
-        .where((task) => 
+        .where((task) =>
             // Filter by project type (General or Projects)
-            (_showGeneralOnly ? task.projectName == 'General' : task.projectName != 'General') &&
+            (_showGeneralOnly
+                ? task.projectName == 'General'
+                : task.projectName != 'General') &&
             // Filter by completion status
             (task.isCompleted == _showCompletedOnly))
         .toList();
-    
+
     // Then sort based on completion status
     if (_showCompletedOnly) {
       // For completed tasks: sort from most recent to oldest
@@ -43,7 +45,7 @@ class MyToDoListViewModel extends BaseViewModel {
       // For to-do tasks: sort from closest date to furthest
       filtered.sort((a, b) => a.date.compareTo(b.date));
     }
-    
+
     return filtered;
   }
 
@@ -68,7 +70,7 @@ class MyToDoListViewModel extends BaseViewModel {
 
   Future<void> fetchAllTasks() async {
     setBusy(true);
-    
+
     final firebaseUser = await _authService.getCurrentUser();
     if (firebaseUser != null) {
       final user = await _userService.getUser(firebaseUser.uid);
@@ -76,11 +78,10 @@ class MyToDoListViewModel extends BaseViewModel {
         try {
           // Cancel any existing subscription
           _taskSubscription?.cancel();
-          
+
           // Set up a stream to listen for task changes
-          _taskSubscription = _taskService
-              .getAllTasksForUser(user.id!)
-              .listen((tasks) {
+          _taskSubscription =
+              _taskService.getAllTasksForUser(user.id!).listen((tasks) {
             _allTasks = tasks;
             notifyListeners();
             setBusy(false);
@@ -108,15 +109,15 @@ class MyToDoListViewModel extends BaseViewModel {
   void navigateBack() {
     _navigationService.pop();
   }
-  
+
   void navigateToCreateToDo() {
     _navigationService.navigateTo(RoutePaths.createToDo);
   }
-  
+
   void navigateToEditToDo(Task task) {
     _navigationService.navigateTo(RoutePaths.editToDo, arguments: task);
   }
-  
+
   @override
   void dispose() {
     // Clean up the subscription when the view model is disposed

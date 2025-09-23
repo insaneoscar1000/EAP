@@ -57,11 +57,13 @@ class AdvertContact {
   final String id;
   final String name;
   final String emailAddress;
+  final String phoneNumber;
 
   AdvertContact({
     required this.id,
     required this.name,
     required this.emailAddress,
+    this.phoneNumber = '',
   });
 
   factory AdvertContact.fromMap(Map<String, dynamic> map) {
@@ -69,6 +71,7 @@ class AdvertContact {
       id: map['id'] ?? '',
       name: map['name'] ?? '',
       emailAddress: map['emailAddress'] ?? '',
+      phoneNumber: map['phoneNumber'] ?? '',
     );
   }
 
@@ -77,6 +80,7 @@ class AdvertContact {
       'id': id,
       'name': name,
       'emailAddress': emailAddress,
+      'phoneNumber': phoneNumber,
     };
   }
 }

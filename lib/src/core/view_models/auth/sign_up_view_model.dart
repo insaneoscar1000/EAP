@@ -41,7 +41,7 @@ class SignUpViewModel extends BaseViewModel {
       ));
       if (createUserResult) {
         await _storageService.setString(StorageConstants.userId, user.uid);
-        _navigationService.navigateToReplacement(RoutePaths.tabs);
+        _navigationService.navigateToReplacement(RoutePaths.home);
       } else {
         showToast('Failed to create account. Please try again.');
       }

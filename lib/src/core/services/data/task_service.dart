@@ -2,6 +2,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:the_eap_app/src/core/models/models.dart';
 
 class TaskService {
+  /// Stream all tasks for a given projectId (and current user).
+  Stream<List<Task>> getTasksForProject(String projectId, String userId) {
+    return _tasksCollection
+        .where('projectId', isEqualTo: projectId)
+        .where('userId', isEqualTo: userId)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs
+          .map((doc) => Task.fromMap(doc.data() as Map<String, dynamic>, doc.id))
+          .toList();
+    });
+  }
+
   final CollectionReference _tasksCollection =
       FirebaseFirestore.instance.collection('tasks');
 

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:stacked/stacked.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -17,12 +18,12 @@ class ScheduleViewModel extends BaseViewModel {
   final ProjectService _projectService = locator<ProjectService>();
 
   // List of projects for dropdown
-  List<Project> _projects = [];
+  List<Project> _projects = <Project>[];
   List<Project> get projects => _projects;
 
   // Project names for dropdown (including 'General')
   List<String> get projectNames {
-    final names = ['General'];
+    final List<String> names = <String>['General'];
 
     // Debug the projects list
     if (_projects.isNotEmpty) {
@@ -34,8 +35,9 @@ class ScheduleViewModel extends BaseViewModel {
 
     // Add all project titles to the list
     names.addAll(_projects
-        .where((p) => p.overview.title.isNotEmpty)
-        .map((p) => p.overview.title));
+        .where((Project p) =>
+            p.projectStatus != 'Archived' && p.overview.title.isNotEmpty)
+        .map((Project p) => p.overview.title));
 
     return names;
   }
@@ -57,7 +59,7 @@ class ScheduleViewModel extends BaseViewModel {
   bool _showCompletedOnly = false;
   bool get showCompletedOnly => _showCompletedOnly;
 
-  List<Task> _allTasks = [];
+  List<Task> _allTasks = <Task>[];
 
   // Filter tasks based on selected date and category
   // Helper method to check if two dates are the same day
@@ -68,18 +70,18 @@ class ScheduleViewModel extends BaseViewModel {
     return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 
-  // Get all tasks for the selected date, filtered by project type and completion status
+  // Get all tasks for the selected date, filtered only by completion status
   List<Task> get allTasksForSelectedDate {
     // First filter the tasks
-    final filtered = _allTasks.where((task) {
+    final List<Task> filtered = _allTasks.where((Task task) {
       // Check if the selected date falls within the task's date range
       bool isInDateRange = false;
 
       // Get start date
-      final startDate = task.date.toDate();
+      final DateTime startDate = task.date.toDate();
 
       // Get end date (if available)
-      final endDate = task.endDate?.toDate();
+      final DateTime? endDate = task.endDate?.toDate();
 
       if (endDate == null) {
         // If there's no end date, just check if it's the same day as the start date
@@ -95,36 +97,32 @@ class ScheduleViewModel extends BaseViewModel {
       }
 
       return isInDateRange &&
-          // Filter by project type (General or Projects)
-          (_showGeneralOnly
-              ? task.projectName == 'General'
-              : task.projectName != 'General') &&
-          // Filter by completion status
+          // Filter only by completion status
           (task.isCompleted == _showCompletedOnly);
     }).toList();
 
     // Then sort based on completion status
     if (_showCompletedOnly) {
       // For completed tasks: sort from most recent to oldest
-      filtered.sort((a, b) => b.date.compareTo(a.date));
+      filtered.sort((Task a, Task b) => b.date.compareTo(a.date));
     } else {
       // For to-do tasks: sort from closest date to furthest
-      filtered.sort((a, b) => a.date.compareTo(b.date));
+      filtered.sort((Task a, Task b) => a.date.compareTo(b.date));
     }
 
     return filtered;
   }
 
   List<Task> get tasks {
-    final filtered = _allTasks.where((task) {
+    final List<Task> filtered = _allTasks.where((Task task) {
       // Check if the selected date falls within the task's date range
       bool isInDateRange = false;
 
       // Get start date
-      final startDate = task.date.toDate();
+      final DateTime startDate = task.date.toDate();
 
       // Get end date (if available)
-      final endDate = task.endDate?.toDate();
+      final DateTime? endDate = task.endDate?.toDate();
 
       if (endDate == null) {
         // If there's no end date, just check if it's the same day as the start date
@@ -145,21 +143,21 @@ class ScheduleViewModel extends BaseViewModel {
     }).toList();
 
     // Sort to-do tasks from closest date to furthest
-    filtered.sort((a, b) => a.date.compareTo(b.date));
+    filtered.sort((Task a, Task b) => a.date.compareTo(b.date));
 
     return filtered;
   }
 
   List<Task> get completedTasks {
-    final filtered = _allTasks.where((task) {
+    final List<Task> filtered = _allTasks.where((Task task) {
       // Check if the selected date falls within the task's date range
       bool isInDateRange = false;
 
       // Get start date
-      final startDate = task.date.toDate();
+      final DateTime startDate = task.date.toDate();
 
       // Get end date (if available)
-      final endDate = task.endDate?.toDate();
+      final DateTime? endDate = task.endDate?.toDate();
 
       if (endDate == null) {
         // If there's no end date, just check if it's the same day as the start date
@@ -180,7 +178,7 @@ class ScheduleViewModel extends BaseViewModel {
     }).toList();
 
     // Sort completed tasks from most recent to oldest
-    filtered.sort((a, b) => b.date.compareTo(a.date));
+    filtered.sort((Task a, Task b) => b.date.compareTo(a.date));
 
     return filtered;
   }
@@ -242,13 +240,14 @@ class ScheduleViewModel extends BaseViewModel {
       // Cancel any existing subscription to avoid memory leaks
       await _taskSubscription?.cancel();
 
-      final firebaseUser = await _authService.getCurrentUser();
+      final User? firebaseUser = await _authService.getCurrentUser();
       if (firebaseUser != null) {
-        final user = await _userService.getUser(firebaseUser.uid);
+        final UserRecord? user = await _userService.getUser(firebaseUser.uid);
         if (user != null && user.id != null) {
           // Fetch all tasks for the user instead of just for the selected date
-          _taskSubscription =
-              _taskService.getAllTasksForUser(user.id!).listen((taskList) {
+          _taskSubscription = _taskService
+              .getAllTasksForUser(user.id!)
+              .listen((List<Task> taskList) {
             _allTasks = taskList;
             notifyListeners();
             setBusy(false);
@@ -271,15 +270,18 @@ class ScheduleViewModel extends BaseViewModel {
       await _projectSubscription?.cancel();
 
       _projectSubscription =
-          _projectService.getProjects().listen((projectList) {
+          _projectService.getProjects().listen((List<Project> projectList) {
         print('Projects received: ${projectList.length}');
         if (projectList.isNotEmpty) {
-          projectList.forEach((project) {
+          for (Project project in projectList) {
             print('Project: ${project.id} - ${project.overview.title}');
-          });
+          }
         }
 
-        _projects = projectList;
+        // Exclude archived projects from selection lists
+        _projects = projectList
+            .where((Project p) => p.projectStatus != 'Archived')
+            .toList();
         notifyListeners();
       });
     } catch (e) {
@@ -289,17 +291,23 @@ class ScheduleViewModel extends BaseViewModel {
   }
 
   Future<void> addTask(String name, String? projectName, String? description,
-      {String? startTime, DateTime? endDate, String? endTime}) async {
-    final firebaseUser = await _authService.getCurrentUser();
+      {String? projectId,
+      DateTime? startDate,
+      String? startTime,
+      DateTime? endDate,
+      String? endTime}) async {
+    final User? firebaseUser = await _authService.getCurrentUser();
     if (firebaseUser != null) {
-      final user = await _userService.getUser(firebaseUser.uid);
+      final UserRecord? user = await _userService.getUser(firebaseUser.uid);
       if (user != null && user.id != null) {
         try {
-          await _taskService.createTask({
+          final String? effectiveProjectId = projectId ?? user.id;
+          await _taskService.createTask(<String, dynamic>{
             'name': name,
+            'projectId': effectiveProjectId,
             'projectName': projectName ?? _selectedCategory,
             'description': description,
-            'date': Timestamp.fromDate(_selectedDate),
+            'date': Timestamp.fromDate(startDate ?? _selectedDate),
             'startTime': startTime,
             'endDate': endDate != null ? Timestamp.fromDate(endDate) : null,
             'endTime': endTime,
@@ -315,16 +323,29 @@ class ScheduleViewModel extends BaseViewModel {
 
   Future<void> updateTask(
       String taskId, String name, String? projectName, String? description,
-      {String? startTime, DateTime? endDate, String? endTime}) async {
+      {String? projectId,
+      DateTime? startDate,
+      String? startTime,
+      DateTime? endDate,
+      String? endTime}) async {
     try {
       // Get the existing task to preserve its completion status
-      final existingTask = _allTasks.firstWhere((task) => task.id == taskId);
+      final Task existingTask =
+          _allTasks.firstWhere((Task task) => task.id == taskId);
 
-      await _taskService.updateTask(taskId, {
+      final String? effectiveProjectId = projectId ??
+          existingTask.projectId ??
+          (await _userService
+                  .getUser((await _authService.getCurrentUser())!.uid))
+              ?.id;
+      await _taskService.updateTask(taskId, <String, dynamic>{
         'name': name,
+        'projectId': effectiveProjectId,
         'projectName': projectName ?? existingTask.projectName,
         'description': description,
-        'date': existingTask.date, // Preserve the original date
+        'date': startDate != null
+            ? Timestamp.fromDate(startDate)
+            : existingTask.date,
         'startTime': startTime,
         'endDate': endDate != null
             ? Timestamp.fromDate(endDate)

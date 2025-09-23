@@ -59,19 +59,27 @@ class DefinitionsView extends StatelessWidget {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text(
+                                        SelectableText(
                                           definition.title,
                                           style: TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w500,
                                           ),
+                                          toolbarOptions: ToolbarOptions(
+                                            copy: true, 
+                                            selectAll: true
+                                          ),
                                         ),
                                         SizedBox(height: 4),
-                                        Text(
+                                        SelectableText(
                                           definition.meaning,
                                           style: TextStyle(
                                             fontSize: 14,
                                             color: Colors.grey,
+                                          ),
+                                          toolbarOptions: ToolbarOptions(
+                                            copy: true, 
+                                            selectAll: true
                                           ),
                                         ),
                                       ],

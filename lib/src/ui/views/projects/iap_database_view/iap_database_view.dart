@@ -5,22 +5,25 @@ import 'package:the_eap_app/src/core/view_models/projects/iap_database_view_mode
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:the_eap_app/src/ui/shared/widgets/widgets.dart';
 import 'package:the_eap_app/src/ui/views/projects/iap_database_view/iap_details_view.dart';
+import 'package:the_eap_app/src/ui/views/projects/iap_database_view/add_iap_entry_view.dart';
 
 class IAPDatabaseView extends StatelessWidget {
   final String projectId;
 
-  const IAPDatabaseView({Key? key, required this.projectId}) : super(key: key);
+  const IAPDatabaseView({super.key, required this.projectId});
 
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<IAPDatabaseViewModel>.reactive(
-      onViewModelReady: (model) {
+      onViewModelReady: (IAPDatabaseViewModel model) {
         print('IAPDatabaseView.onViewModelReady with projectId: $projectId');
         model.setProjectId(projectId);
         // We don't need to call refreshData here as setProjectId already initializes the stream
       },
       viewModelBuilder: () => IAPDatabaseViewModel(),
-      builder: (context, model, child) => Scaffold(
+      builder:
+          (BuildContext context, IAPDatabaseViewModel model, Widget? child) =>
+              Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
           title: const Text(
@@ -36,6 +39,14 @@ class IAPDatabaseView extends StatelessWidget {
                 size: 34, color: Theme.of(context).primaryColorLight),
             onPressed: () => model.navigateBack(),
           ),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.download,
+                  color: Theme.of(context).primaryColorLight),
+              onPressed: () => model.exportIAPDatabase(),
+              tooltip: 'Export I&AP Database',
+            ),
+          ],
           backgroundColor: Theme.of(context).primaryColor,
         ),
         body: BackgroundContainer(
@@ -44,8 +55,17 @@ class IAPDatabaseView extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 SizedBox(height: 16),
+                Text(
+                  model.projectName ?? '',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ),
+                SizedBox(height: 8),
                 _buildAddButton(context, model),
                 SizedBox(height: 16),
                 Expanded(
@@ -69,10 +89,24 @@ class IAPDatabaseView extends StatelessWidget {
   }
 
   Widget _buildAddButton(BuildContext context, IAPDatabaseViewModel model) {
-    return Container(
+    return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: () => model.navigateToAddIAP(),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (BuildContext context) => AddIAPEntryView(
+                projectId: projectId,
+                projectName: model.projectName,
+                onSave: () async {
+                  // Refresh data when the save callback is triggered
+                  await model.refreshData();
+                },
+              ),
+            ),
+          );
+        },
         style: ElevatedButton.styleFrom(
           backgroundColor: Theme.of(context).primaryColor,
           foregroundColor: Colors.white,
@@ -84,7 +118,7 @@ class IAPDatabaseView extends StatelessWidget {
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+          children: <Widget>[
             Icon(
               IconsaxPlusLinear.message_add_1,
               color: Colors.white,
@@ -108,7 +142,7 @@ class IAPDatabaseView extends StatelessWidget {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+          children: <Widget>[
             Icon(
               IconsaxPlusLinear.search_normal,
               size: 48,
@@ -131,8 +165,8 @@ class IAPDatabaseView extends StatelessWidget {
     return ListView.builder(
       padding: EdgeInsets.all(16),
       itemCount: model.filteredIAPs.length,
-      itemBuilder: (context, index) {
-        final iap = model.filteredIAPs[index];
+      itemBuilder: (BuildContext context, int index) {
+        final IAP iap = model.filteredIAPs[index];
         return _buildIAPCard(context, model, iap);
       },
     );
@@ -145,10 +179,14 @@ class IAPDatabaseView extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => IAPDetailsView(
+            builder: (BuildContext context) => IAPDetailsView(
               initialIAP: iap,
               projectId: projectId,
               projectName: model.projectName,
+              onSave: () async {
+                // Refresh data when the save callback is triggered
+                await model.refreshData();
+              },
             ),
           ),
         );
@@ -159,7 +197,7 @@ class IAPDatabaseView extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.grey[200],
           borderRadius: BorderRadius.circular(12),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Colors.grey.withOpacity(0.1),
               spreadRadius: 1,
@@ -168,22 +206,33 @@ class IAPDatabaseView extends StatelessWidget {
             ),
           ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              iap.name,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    iap.name,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    iap.organization ?? 'No organization',
+                    style: TextStyle(
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
               ),
             ),
-            SizedBox(height: 4),
-            Text(
-              iap.organization ?? 'No organization',
-              style: TextStyle(
-                fontSize: 14,
-              ),
+            Icon(
+              Icons.info,
+              color: Theme.of(context).primaryColor,
+              size: 20,
             ),
           ],
         ),

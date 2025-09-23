@@ -20,9 +20,13 @@ class ScopingEIRView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: 24),
-                Text(
+                SelectableText(
                     'Consult Appendix 2 of GNR326 EIA Regulations (7 April 2017).',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                    toolbarOptions: ToolbarOptions(
+                      copy: true, 
+                      selectAll: true
+                    )),
                 SizedBox(height: 10),
                 ProcessAccordion(
                     title: 'EAP Appointment',
@@ -33,9 +37,13 @@ class ScopingEIRView extends StatelessWidget {
                     backgroundColor: Color(0xFF7E8C76),
                     content:
                         'Contact local Environmental Affairs (pre-application chat).  '),
-                Text(
+                SelectableText(
                   'Scoping Phase',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  toolbarOptions: ToolbarOptions(
+                    copy: true, 
+                    selectAll: true
+                  ),
                 ),
                 SizedBox(height: 10),
                 ProcessAccordion(

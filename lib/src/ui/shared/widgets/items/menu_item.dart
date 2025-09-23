@@ -36,40 +36,57 @@ class MenuItem extends StatelessWidget {
             splashColor: Theme.of(context).primaryColor.withOpacity(0.1),
             highlightColor: Theme.of(context).primaryColor.withOpacity(0.1),
           ),
-          child: ListTile(
+          child: InkWell(
             onTap: enabled ? onTap : null,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            leading: icon != null
-                ? Icon(
-                    icon,
-                    size: 24,
-                    color: enabled ? Colors.black87 : Colors.black45,
-                  )
-                : null,
-            trailing: Icon(
-              Icons.chevron_right,
-              size: 20,
-              color: enabled ? Colors.black54 : Colors.black38,
-            ),
-            title: Text(
-              title,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: enabled ? Colors.black87 : Colors.black45,
+            borderRadius: BorderRadius.circular(16),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  if (icon != null) ...[
+                    Icon(
+                      icon,
+                      size: 24,
+                      color: enabled ? Colors.black87 : Colors.black45,
+                    ),
+                    const SizedBox(width: 12),
+                  ],
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          title,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: enabled ? Colors.black87 : Colors.black45,
+                          ),
+                        ),
+                        if (subtitle != null) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            subtitle!,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: enabled ? Colors.black54 : Colors.black38,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Icon(
+                    Icons.chevron_right,
+                    size: 20,
+                    color: enabled ? Colors.black54 : Colors.black38,
+                  ),
+                ],
               ),
             ),
-            subtitle: subtitle != null
-                ? Text(
-                    subtitle!,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: enabled ? Colors.black54 : Colors.black38,
-                    ),
-                  )
-                : null,
           ),
         ),
       ),

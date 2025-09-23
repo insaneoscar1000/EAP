@@ -58,4 +58,13 @@ class UserService {
       throw Exception('Failed to delete user data: $e');
     }
   }
+
+  Future<int> getUserCount() async {
+    try {
+      final snapshot = await _firestore.collection(ServiceConstants.users).count().get();
+      return snapshot.count ?? 0;
+    } catch (e) {
+      return 0;
+    }
+  }
 }

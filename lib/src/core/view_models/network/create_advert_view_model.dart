@@ -33,6 +33,7 @@ class CreateAdvertViewModel extends BaseViewModel {
   final servicesController = TextEditingController();
   final contactNameController = TextEditingController();
   final emailController = TextEditingController();
+  final phoneController = TextEditingController();
   final websiteUrlController = TextEditingController();
   String? photoUrl;
 
@@ -142,6 +143,7 @@ class CreateAdvertViewModel extends BaseViewModel {
           'id': userId!,
           'name': contactNameController.text,
           'emailAddress': emailController.text,
+          'phoneNumber': phoneController.text,
         },
         'photoUrl': '',
         'linkUrl': websiteUrlController.text,
@@ -213,6 +215,8 @@ class CreateAdvertViewModel extends BaseViewModel {
     servicesController.dispose();
     contactNameController.dispose();
     emailController.dispose();
+    phoneController.dispose();
+    websiteUrlController.dispose();
     super.dispose();
   }
 }

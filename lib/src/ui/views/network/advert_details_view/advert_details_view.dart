@@ -30,21 +30,31 @@ class AdvertDetailsView extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (model.advert.photoUrl.isNotEmpty)
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(24, 24, 24, 0),
-                        child: Container(
-                          height: 200,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            image: DecorationImage(
-                              image: NetworkImage(model.advert.photoUrl),
-                              fit: BoxFit.cover,
-                            ),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(24, 24, 24, 0),
+                      child: Container(
+                        height: 200,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Theme.of(context).secondaryHeaderColor,
+                            width: 1,
                           ),
                         ),
+                        child: model.advert.photoUrl.isNotEmpty
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Image.network(
+                                  model.advert.photoUrl,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      _buildAppLogo(context),
+                                ),
+                              )
+                            : _buildAppLogo(context),
                       ),
+                    ),
                     Padding(
                       padding: EdgeInsets.all(24),
                       child: Column(
@@ -81,6 +91,14 @@ class AdvertDetailsView extends StatelessWidget {
                             IconsaxPlusLinear.message,
                             isEmail: true,
                           ),
+                          if (model.advert.contact.phoneNumber.isNotEmpty)
+                            _buildInfoSection(
+                              context,
+                              'Phone',
+                              model.advert.contact.phoneNumber,
+                              IconsaxPlusLinear.call,
+                              isPhone: true,
+                            ),
                           _buildInfoSection(
                             context,
                             'Services',
@@ -193,6 +211,40 @@ class AdvertDetailsView extends StatelessWidget {
                   ),
                 ),
               ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAppLogo(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: Icon(
+                IconsaxPlusLinear.building,
+                color: Theme.of(context).primaryColor,
+                size: 40,
+              ),
+            ),
+          ),
+          SizedBox(height: 12),
+          Text(
+            'EAP Professional',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Theme.of(context).primaryColor,
             ),
           ),
         ],

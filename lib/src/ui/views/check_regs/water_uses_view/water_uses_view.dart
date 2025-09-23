@@ -18,7 +18,7 @@ class WaterUsesView extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 SizedBox(height: 24),
                 MenuItem(
                   title: 'Check REGs For NWA Water Use',
@@ -28,68 +28,80 @@ class WaterUsesView extends StatelessWidget {
                   },
                 ),
                 SizedBox(height: 32),
-                Text(
+                SelectableText(
                   'NWA Section 21 Water Uses',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w600,
                     color: Colors.black87,
                   ),
+                  toolbarOptions: ToolbarOptions(copy: true, selectAll: true),
                 ),
                 SizedBox(height: 24),
-                Text(
+                SelectableText(
                   'a) taking water from a water resource',
                   style: TextStyle(fontSize: 16, height: 1.5),
+                  toolbarOptions: ToolbarOptions(copy: true, selectAll: true),
                 ),
                 SizedBox(height: 16),
-                Text(
+                SelectableText(
                   'b) storing water',
                   style: TextStyle(fontSize: 16, height: 1.5),
+                  toolbarOptions: ToolbarOptions(copy: true, selectAll: true),
                 ),
                 SizedBox(height: 16),
-                Text(
+                SelectableText(
                   'c) impeding or diverting the flow of water in a watercourse',
                   style: TextStyle(fontSize: 16, height: 1.5),
+                  toolbarOptions: ToolbarOptions(copy: true, selectAll: true),
                 ),
                 SizedBox(height: 16),
-                Text(
+                SelectableText(
                   'd) engaging in a stream flow reduction activity contemplated in section 36 (The following are stream flow reduction activities…)',
                   style: TextStyle(fontSize: 16, height: 1.5),
+                  toolbarOptions: ToolbarOptions(copy: true, selectAll: true),
                 ),
                 SizedBox(height: 16),
-                Text(
+                SelectableText(
                   'e) engaging in a controlled activity identified as such in section 37( 1 ) or declared under section 38(1)\n\n- irrigation of any land with waste or water containing waste generated through \n- any industrial activity or by a waterwork;\n- an activity aimed at the modification of atmospheric precipitation;\n- power generation activity which alters the flow regime of a water resource;\n- intentional recharging of an aquifer with any waste or water containing waste',
                   style: TextStyle(fontSize: 16, height: 1.5),
+                  toolbarOptions: ToolbarOptions(copy: true, selectAll: true),
                 ),
                 SizedBox(height: 16),
-                Text(
+                SelectableText(
                   'f) discharging waste or water containing waste into a water resource through a pipe, canal. sewer. sea outfall or other conduit:',
                   style: TextStyle(fontSize: 16, height: 1.5),
+                  toolbarOptions: ToolbarOptions(copy: true, selectAll: true),
                 ),
                 SizedBox(height: 16),
-                Text(
+                SelectableText(
                   'g) disposing of waste in a manner which may detrimentally impact on a water resource;',
                   style: TextStyle(fontSize: 16, height: 1.5),
+                  toolbarOptions: ToolbarOptions(copy: true, selectAll: true),
                 ),
                 SizedBox(height: 16),
-                Text(
+                SelectableText(
                   'h) disposing in any manner of water which contains waste from, or which has been heated in any industrial or power generation process;',
                   style: TextStyle(fontSize: 16, height: 1.5),
+                  toolbarOptions: ToolbarOptions(copy: true, selectAll: true),
                 ),
                 SizedBox(height: 16),
-                Text(
+                SelectableText(
                   'i) altering the bed, banks, course or characteristics of a watercourse:',
                   style: TextStyle(fontSize: 16, height: 1.5),
+                  toolbarOptions: ToolbarOptions(copy: true, selectAll: true),
                 ),
                 SizedBox(height: 16),
-                Text(
-                  'j) removing, discharging or disposing of’ water found underground if it is necessary for the efficient continuation of an activity for the safety of people: and',
+                SelectableText(
+                  'j) removing, discharging or disposing of water found underground if it is necessary for the efficient continuation of an activity for the safety of people: and',
                   style: TextStyle(fontSize: 16, height: 1.5),
+                  toolbarOptions: ToolbarOptions(copy: true, selectAll: true),
                 ),
                 SizedBox(height: 16),
-                Text(
+                SelectableText(
                   'k) using water for recreational purposes',
                   style: TextStyle(fontSize: 16, height: 1.5),
+                  toolbarOptions: ToolbarOptions(copy: true, selectAll: true),
                 ),
               ],
             ),

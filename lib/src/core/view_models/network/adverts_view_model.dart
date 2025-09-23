@@ -1,16 +1,32 @@
 import 'package:stacked/stacked.dart';
 import 'package:the_eap_app/src/core/models/models.dart';
 import 'package:the_eap_app/src/core/services/services.dart';
+import 'package:the_eap_app/src/core/services/data/user_service.dart';
 import 'package:the_eap_app/src/locator.dart';
 
 class AdvertsViewModel extends StreamViewModel<List<Advert>> {
   final _advertService = locator<AdvertService>();
+  final _userService = locator<UserService>();
   String _searchQuery = '';
+  int _userCount = 0;
+  
+  int get userCount => _userCount;
 
   String get searchQuery => _searchQuery;
 
   @override
   Stream<List<Advert>> get stream => _advertService.adverts;
+  
+  @override
+  Future<void> initialise() async {
+    super.initialise();
+    await _fetchUserCount();
+  }
+  
+  Future<void> _fetchUserCount() async {
+    _userCount = await _userService.getUserCount();
+    notifyListeners();
+  }
 
   List<Advert> get adverts {
     final allAdverts = data ?? [];

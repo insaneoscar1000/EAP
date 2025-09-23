@@ -21,14 +21,17 @@ class BasicAssessmentView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: 24),
-                Text(
-                    'Consult Appendix 1 of GNR326 EIA Regulations (7 April 2017) '),
+                SelectableText(
+                  'Consult Appendix 1 of GNR326 EIA Regulations (7 April 2017) ',
+                  toolbarOptions: ToolbarOptions(copy: true, selectAll: true),
+                ),
                 SizedBox(height: 10),
-                Text(
+                SelectableText(
                   'The period from 15 December to 5 January to be excluded from all time periods given in this summary.',
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).primaryColor),
+                  toolbarOptions: ToolbarOptions(copy: true, selectAll: true),
                 ),
                 SizedBox(height: 10),
                 // Step 1: EAP Appointment
@@ -45,16 +48,18 @@ class BasicAssessmentView extends StatelessWidget {
                       '•EAP gathers info (project description, design drawings, plans, maps etc.). \n•National web-based Environmental Screening Tool Report completed. \n•Specialists appointed. \n•Relevant Environmental Affairs office contacted & informed of new application. Pre-application meeting date & time secured (online, in office or on site). \n•Pre-application meeting form completed (if required) & submitted to the case officer ahead of meeting. \n•‘KEY’ stakeholders contacted (Local Municipality, other Departments)',
                   backgroundColor: Color(0xFFD9A48E),
                 ),
-                Text(
-                  'Minutes must be submitted to Environmental Affairs within 5 days of the meeting for signing. ',
+                SelectableText(
+                  'Minutes must be submitted to Environmental Affairs within 5 days of the meeting for signing. ',
                   style: TextStyle(color: Theme.of(context).primaryColor),
+                  toolbarOptions: ToolbarOptions(copy: true, selectAll: true),
                 ),
                 SizedBox(height: 10),
-                Text(
+                SelectableText(
                   'Pre-application meeting & Site visit are sometimes done together.',
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).primaryColor),
+                  toolbarOptions: ToolbarOptions(copy: true, selectAll: true),
                 ),
                 SizedBox(height: 10),
                 ProcessAccordion(

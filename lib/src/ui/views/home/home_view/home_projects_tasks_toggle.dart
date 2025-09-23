@@ -1,27 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 import 'package:the_eap_app/src/core/models/project.dart';
+import 'package:the_eap_app/src/core/models/task.dart';
 import 'package:the_eap_app/src/core/view_models/home/home_projects_tasks_toggle_view_model.dart';
 import 'package:the_eap_app/src/ui/views/home/schedule_view/my_to_do_list_view.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 
 class HomeProjectsTasksToggle extends StatelessWidget {
-  const HomeProjectsTasksToggle({Key? key}) : super(key: key);
+  const HomeProjectsTasksToggle({super.key});
 
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<HomeProjectsTasksToggleViewModel>.reactive(
       viewModelBuilder: () => HomeProjectsTasksToggleViewModel(),
-      onModelReady: (model) => model.initialize(),
-      builder: (context, model, child) {
+      onModelReady: (HomeProjectsTasksToggleViewModel model) =>
+          model.initialize(),
+      builder: (BuildContext context, HomeProjectsTasksToggleViewModel model,
+          Widget? child) {
         return Column(
-          children: [
+          children: <Widget>[
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+              children: <Widget>[
                 _buildToggleButton(
                   context,
-                  'To do',
+                  'To do list',
                   model.selectedTab == HomeProjectsTasksTab.tasks,
                   () => model.selectTab(HomeProjectsTasksTab.tasks),
                 ),
@@ -36,111 +39,18 @@ class HomeProjectsTasksToggle extends StatelessWidget {
             ),
             SizedBox(height: 16),
             if (model.selectedTab == HomeProjectsTasksTab.tasks)
-              Column(
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed: model.navigateToCreateToDo,
-                          icon: Icon(IconsaxPlusLinear.add_square,
-                              color: Colors.white),
-                          label: Text('Add a task'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Theme.of(context).primaryColor,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            padding: EdgeInsets.symmetric(vertical: 14),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 10),
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: model.navigateToTasks,
-                          icon: Icon(IconsaxPlusLinear.task_square,
-                              color: Theme.of(context).primaryColor),
-                          label: Text('Go to all tasks'),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: Theme.of(context).primaryColor,
-                            side: BorderSide(
-                                color: Theme.of(context).primaryColor),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            padding: EdgeInsets.symmetric(vertical: 14),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 12),
-                  SizedBox(
-                    height: 320, // Adjust as needed
-                    child: MyToDoListView(
-                      tasks: model.tasks
-                          .where((task) =>
-                              (task.projectName ?? 'General') == 'General' &&
-                              (task.isCompleted == false ||
-                                  task.isCompleted == null))
-                          .toList(),
-                    ),
-                  ),
-                ],
+              Flexible(
+                child: MyToDoListView(
+                  tasks: model.tasks
+                      .where((Task task) =>
+                          (task.projectName ?? 'General') == 'General' &&
+                          (task.isCompleted == false))
+                      .toList(),
+                ),
               )
             else if (model.selectedTab == HomeProjectsTasksTab.projects)
-              Column(
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed: model.navigateToCreateProject,
-                          icon: Icon(
-                            IconsaxPlusLinear.briefcase,
-                            color: Colors.white,
-                          ),
-                          label: Text('Add a project'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Theme.of(context).primaryColor,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            padding: EdgeInsets.symmetric(vertical: 14),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 10),
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: () {
-                            Navigator.of(context).pushNamed('/projects');
-                          },
-                          icon: Icon(IconsaxPlusLinear.briefcase,
-                              color: Theme.of(context).primaryColor),
-                          label: Text('Go to all projects'),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: Theme.of(context).primaryColor,
-                            side: BorderSide(
-                                color: Theme.of(context).primaryColor),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            padding: EdgeInsets.symmetric(vertical: 14),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 12),
-                  SizedBox(
-                    height: 320, // Adjust as needed
-                    child: ProjectsListCompact(),
-                  ),
-                ],
+              Flexible(
+                child: ProjectsListCompact(),
               ),
           ],
         );
@@ -184,15 +94,18 @@ class ProjectsListCompact
     if (model.isBusy) {
       return Center(child: CircularProgressIndicator());
     }
-    if (model.projects.isEmpty) {
+    final List<Project> visibleProjects = model.projects
+        .where((Project p) => p.projectStatus != 'Archived')
+        .toList();
+    if (visibleProjects.isEmpty) {
       return Center(child: Text('No projects found'));
     }
     return ListView.builder(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-      itemCount: model.projects.length,
-      itemBuilder: (context, index) {
-        final project = model.projects[index];
+      physics: AlwaysScrollableScrollPhysics(),
+      itemCount: visibleProjects.length,
+      itemBuilder: (BuildContext context, int index) {
+        final Project project = visibleProjects[index];
         return _ProjectCardCompact(project: project, model: model);
       },
     );
@@ -206,19 +119,23 @@ class _ProjectCardCompact extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-      elevation: 1,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
       child: InkWell(
         onTap: () {
           model.navigateToProjectDetails(project);
         },
+        borderRadius: BorderRadius.circular(8),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(12.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            children: <Widget>[
               Text(
                 project.overview.title,
                 style: TextStyle(

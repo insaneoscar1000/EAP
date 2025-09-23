@@ -98,37 +98,47 @@ class NFATreesView extends StatelessWidget {
                                           ),
                                         ],
                                       ),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Text(
-                                            tree.commonName,
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w600,
-                                              fontStyle: FontStyle.italic,
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  tree.commonName,
+                                                  style: TextStyle(
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                                SizedBox(height: 8),
+                                                Text(
+                                                  tree.botanicalName,
+                                                  style: TextStyle(
+                                                    fontSize: 16,
+                                                    color: Colors.black87,
+                                                    fontStyle: FontStyle.italic,
+                                                  ),
+                                                ),
+                                                if (tree.otherCommonName.isNotEmpty) ...[
+                                                  SizedBox(height: 4),
+                                                  Text(
+                                                    '${tree.otherCommonName}',
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      color: Colors.grey[700],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ],
                                             ),
                                           ),
-                                          SizedBox(height: 8),
-                                          Text(
-                                            tree.botanicalName,
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.black87,
-                                            ),
+                                          Icon(
+                                            IconsaxPlusLinear.arrow_right,
+                                            size: 24,
+                                            color: Color(0xffE3BD36),
                                           ),
-                                          if (tree
-                                              .otherCommonName.isNotEmpty) ...[
-                                            SizedBox(height: 4),
-                                            Text(
-                                              '${tree.otherCommonName}',
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                color: Colors.grey[700],
-                                              ),
-                                            ),
-                                          ],
                                         ],
                                       ),
                                     ),

@@ -122,13 +122,15 @@ class _CreateAdvertViewState extends State<CreateAdvertView> {
                                 ),
                                 SizedBox(height: 24),
                                 _buildTextField(
-                                  'Advert Title',
+                                  'Advert Title *',
                                   model.titleController,
+                                  required: true,
                                 ),
                                 SizedBox(height: 16),
                                 _buildTextField(
-                                  'Contact Person',
+                                  'Contact Person *',
                                   model.contactNameController,
+                                  required: true,
                                 ),
                                 SizedBox(height: 16),
                                 _buildTextField(
@@ -137,13 +139,15 @@ class _CreateAdvertViewState extends State<CreateAdvertView> {
                                 ),
                                 SizedBox(height: 16),
                                 _buildTextField(
-                                  'Location',
+                                  'Location *',
                                   model.locationController,
+                                  required: true,
                                 ),
                                 SizedBox(height: 16),
                                 _buildTextField(
-                                  'Role (EAP Specialist, ECO)',
+                                  'Role (EAP Specialist, ECO) *',
                                   model.roleController,
+                                  required: true,
                                 ),
                                 SizedBox(height: 16),
                                 _buildTextField(
@@ -153,9 +157,16 @@ class _CreateAdvertViewState extends State<CreateAdvertView> {
                                 ),
                                 SizedBox(height: 16),
                                 _buildTextField(
-                                  'Contact Email',
+                                  'Contact Email *',
                                   model.emailController,
                                   keyboardType: TextInputType.emailAddress,
+                                  required: true,
+                                ),
+                                SizedBox(height: 16),
+                                _buildTextField(
+                                  'Contact Phone',
+                                  model.phoneController,
+                                  keyboardType: TextInputType.phone,
                                 ),
                                 SizedBox(height: 16),
                                 _buildTextField(
@@ -168,17 +179,7 @@ class _CreateAdvertViewState extends State<CreateAdvertView> {
                                   onPressed: model.isBusy
                                       ? null
                                       : () async {
-                                          if (model.selectedImage == null) {
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(
-                                              SnackBar(
-                                                content: Text(
-                                                    'Please select an image'),
-                                                backgroundColor: Colors.red,
-                                              ),
-                                            );
-                                            return;
-                                          }
+                                          // Image is optional, no need to validate
 
                                           if (_formKey.currentState!
                                               .validate()) {
@@ -270,6 +271,7 @@ class _CreateAdvertViewState extends State<CreateAdvertView> {
     TextEditingController controller, {
     int maxLines = 1,
     TextInputType? keyboardType,
+    bool required = false,
   }) {
     return TextInputField(
       controller: controller,
@@ -277,10 +279,12 @@ class _CreateAdvertViewState extends State<CreateAdvertView> {
       maxLines: maxLines,
       keyboardType: keyboardType,
       validator: (value) {
-        if (value == null || value.isEmpty) {
+        if (required && (value == null || value.isEmpty)) {
           return 'Please enter $label';
         }
         if (keyboardType == TextInputType.emailAddress &&
+            value != null &&
+            value.isNotEmpty &&
             !value.contains('@')) {
           return 'Please enter a valid email address';
         }

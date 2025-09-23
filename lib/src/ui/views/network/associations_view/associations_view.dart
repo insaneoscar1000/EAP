@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:stacked/stacked.dart';
+import 'package:the_eap_app/src/core/models/association.dart';
 import 'package:the_eap_app/src/core/view_models/view_models.dart';
 import 'package:the_eap_app/src/ui/shared/widgets/widgets.dart';
 
@@ -24,7 +25,7 @@ class AssociationsView extends StatelessWidget {
               padding: EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   Card(
                     color: Colors.grey[200],
                     elevation: 0,
@@ -35,7 +36,7 @@ class AssociationsView extends StatelessWidget {
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+                        children: <Widget>[
                           Text(
                             'Voluntary Associations recognised by SACNASP in terms of the Natural Scientific Professions Act (No 27 of 2003).',
                             style: TextStyle(
@@ -61,7 +62,7 @@ class AssociationsView extends StatelessWidget {
                             ? Center(
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
+                                  children: <Widget>[
                                     Icon(
                                       IconsaxPlusLinear.search_normal,
                                       size: 48,
@@ -81,10 +82,12 @@ class AssociationsView extends StatelessWidget {
                               )
                             : ListView.separated(
                                 itemCount: model.associations.length,
-                                separatorBuilder: (context, index) =>
-                                    SizedBox(height: 16),
-                                itemBuilder: (context, index) {
-                                  final association = model.associations[index];
+                                separatorBuilder:
+                                    (BuildContext context, int index) =>
+                                        SizedBox(height: 16),
+                                itemBuilder: (BuildContext context, int index) {
+                                  final Association association =
+                                      model.associations[index];
                                   return InkWell(
                                     onTap: () => model
                                         .launchAssociationUrl(association.url),
@@ -93,7 +96,7 @@ class AssociationsView extends StatelessWidget {
                                       decoration: BoxDecoration(
                                         color: Colors.grey[200],
                                         borderRadius: BorderRadius.circular(12),
-                                        boxShadow: [
+                                        boxShadow: <BoxShadow>[
                                           BoxShadow(
                                             color: Colors.grey.withOpacity(0.1),
                                             spreadRadius: 1,
@@ -102,26 +105,38 @@ class AssociationsView extends StatelessWidget {
                                           ),
                                         ],
                                       ),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            association.title
-                                                .replaceAll('\n', ' '),
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
+                                      child: Row(
+                                        children: <Widget>[
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: <Widget>[
+                                                Text(
+                                                  association.title
+                                                      .replaceAll('\n', ' '),
+                                                  style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                                SizedBox(height: 4),
+                                                Text(
+                                                  association.description
+                                                      .replaceAll('\n', ' '),
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: Colors.grey,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ),
-                                          SizedBox(height: 4),
-                                          Text(
-                                            association.description
-                                                .replaceAll('\n', ' '),
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              color: Colors.grey,
-                                            ),
+                                          Icon(
+                                            Icons.info,
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            size: 20,
                                           ),
                                         ],
                                       ),

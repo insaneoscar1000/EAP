@@ -84,13 +84,14 @@ class NEMAActivityDetailsView extends StatelessWidget {
             color: Colors.grey[50],
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Text(
+          child: SelectableText(
             content,
             style: TextStyle(
               fontSize: 16,
               color: Colors.black87,
               height: 1.5,
             ),
+            toolbarOptions: ToolbarOptions(copy: true, selectAll: true),
           ),
         ),
       ],

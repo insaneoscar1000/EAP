@@ -10,7 +10,7 @@ class IAP {
   final String? contactNumber2;
   final String? address;
   final String? comments;
-  final Timestamp? correspondenceDate;
+  final String? correspondenceDate;
   final String? issueRaised;
   final String? eapResponse;
   final Timestamp createdAt;
@@ -43,7 +43,7 @@ class IAP {
       contactNumber2: data['contactNumber2'],
       address: data['address'],
       comments: data['comments'],
-      correspondenceDate: data['correspondenceDate'] is Timestamp ? data['correspondenceDate'] : null,
+      correspondenceDate: data['correspondenceDate'] as String?,
       issueRaised: data['issueRaised'],
       eapResponse: data['eapResponse'],
       createdAt: data['createdAt'] ?? Timestamp.now(),
@@ -77,7 +77,7 @@ class IAP {
     String? contactNumber2,
     String? address,
     String? comments,
-    Timestamp? correspondenceDate,
+    String? correspondenceDate,
     String? issueRaised,
     String? eapResponse,
     Timestamp? createdAt,

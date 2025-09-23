@@ -8,6 +8,21 @@ class MyToDoListView extends StatelessWidget {
   final List<Task>? tasks;
   const MyToDoListView({Key? key, this.tasks}) : super(key: key);
 
+  // Helper method to navigate to edit task screen
+  void _navigateToEditToDo(BuildContext context, Task task) {
+    // Get the MyToDoListViewModel from the nearest provider
+    final model = MyToDoListViewModel();
+    model.navigateToEditToDo(task);
+  }
+
+  // Helper method to toggle task completion
+  void _toggleTaskCompletion(
+      BuildContext context, String taskId, bool isCompleted) {
+    // Get the MyToDoListViewModel from the nearest provider
+    final model = MyToDoListViewModel();
+    model.toggleTaskCompletion(taskId, isCompleted);
+  }
+
   @override
   Widget build(BuildContext context) {
     if (tasks != null) {
@@ -17,14 +32,15 @@ class MyToDoListView extends StatelessWidget {
       }
       return ListView.builder(
         shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
+        physics: AlwaysScrollableScrollPhysics(),
         itemCount: tasks!.length,
         itemBuilder: (context, index) {
           final task = tasks![index];
           return TaskItemWidget(
             task: task,
-            onTap: () {},
-            onToggleCompletion: (isCompleted) {},
+            onTap: () => _navigateToEditToDo(context, task),
+            onToggleCompletion: (isCompleted) =>
+                _toggleTaskCompletion(context, task.id, isCompleted),
             showProjectName: false,
           );
         },
@@ -33,10 +49,11 @@ class MyToDoListView extends StatelessWidget {
     // Default: full-featured To Do List
     return ViewModelBuilder<MyToDoListViewModel>.reactive(
       viewModelBuilder: () => MyToDoListViewModel(),
-      onModelReady: (model) => model.initialize(),
+      onViewModelReady: (model) => model.initialize(),
       builder: (context, model, child) {
         return Scaffold(
           appBar: AppBar(
+            centerTitle: true,
             title: Text(
               'My To Do List',
               style: TextStyle(
@@ -214,7 +231,6 @@ class MyToDoListView extends StatelessWidget {
   Widget _buildTaskList(BuildContext context, MyToDoListViewModel model) {
     return ListView.builder(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
       itemCount: model.filteredTasks.length,
       itemBuilder: (context, index) {
         final task = model.filteredTasks[index];

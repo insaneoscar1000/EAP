@@ -185,63 +185,8 @@ class ScheduleView extends StatelessWidget {
   Widget _buildCategorySelector(BuildContext context, ScheduleViewModel model) {
     return Column(
       children: [
-        // Project Type Filter (General or Projects)
-        Card(
-          elevation: 1,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildCategoryButton(
-                  context,
-                  'General',
-                  null,
-                  model.showGeneralOnly,
-                  () => model.toggleProjectTypeFilter(true),
-                ),
-                _buildCategoryButton(
-                  context,
-                  'Projects',
-                  null,
-                  !model.showGeneralOnly,
-                  () => model.toggleProjectTypeFilter(false),
-                ),
-              ],
-            ),
-          ),
-        ),
+        // Removed Project Type Filter (General or Projects)
       ],
-    );
-  }
-
-  Widget _buildCategoryButton(BuildContext context, String label,
-      String? category, bool isSelected, VoidCallback onTap) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-          margin: EdgeInsets.symmetric(horizontal: 4),
-          decoration: BoxDecoration(
-            color: isSelected
-                ? Theme.of(context).primaryColor
-                : Theme.of(context).primaryColor.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            label,
-            style: TextStyle(
-              color: isSelected ? Colors.white : Theme.of(context).primaryColor,
-              fontWeight: FontWeight.bold,
-              fontSize: 13,
-            ),
-          ),
-        ),
-      ),
     );
   }
 

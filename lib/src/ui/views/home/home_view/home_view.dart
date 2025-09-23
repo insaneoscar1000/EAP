@@ -16,70 +16,96 @@ class HomeView extends StatelessWidget {
         return Scaffold(
             appBar: DefaultAppBar(title: 'Home', showBackButton: false),
             body: BackgroundContainer(
-              background: 'background-2',
-              child: SafeArea(
-                child: Padding(
-                  padding: EdgeInsets.all(20.0),
-                  child: SingleChildScrollView(
+                background: 'background-2',
+                child: SafeArea(
+                  child: Padding(
+                    padding: EdgeInsets.all(20.0),
                     child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        StreamBuilder(
-                          stream: Stream.periodic(Duration(seconds: 1)),
-                          builder: (BuildContext context, snapshot) {
-                          DateTime now = DateTime.now();
-                          String dateStr =
-                              DateFormat("EEEE, d'th' MMMM y").format(now);
-                          String timeStr = DateFormat('HH:mm').format(now);
-                          return Text(
-                            '$dateStr | $timeStr',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                          );
-                        },
-                      ),
-                      SizedBox(height: 30),
-                      GridView.count(
-                        shrinkWrap: true,
-                        crossAxisCount: 3,
-                        mainAxisSpacing: 20,
-                        crossAxisSpacing: 20,
-                        children: [
-                          _buildMenuItem(
-                              context,
-                              model,
-                              'Account',
-                              IconsaxPlusLinear.profile_circle,
-                              RoutePaths.account),
-                          _buildMenuItem(context, model, 'Projects',
-                              IconsaxPlusLinear.briefcase, RoutePaths.projects),
-                          _buildMenuItem(context, model, 'Schedule',
-                              IconsaxPlusLinear.calendar, RoutePaths.schedule),
-                          _buildMenuItem(context, model, 'Network',
-                              IconsaxPlusLinear.people, RoutePaths.network),
-                          _buildMenuItem(
-                              context,
-                              model,
-                              'EIA Basics',
-                              IconsaxPlusLinear.attach_square,
-                              RoutePaths.eiaBasics),
-                          _buildMenuItem(context, model, "Check REG's",
-                              IconsaxPlusLinear.book_1, RoutePaths.checkRegs),
-                        ],
-                      ),
-                      SizedBox(height: 24),
-                      HomeProjectsTasksToggle(),
-                    ],
+                      children: <Widget>[
+                        // Top fixed content in a SingleChildScrollView
+                        SingleChildScrollView(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              StreamBuilder(
+                                stream: Stream.periodic(Duration(seconds: 1)),
+                                builder: (BuildContext context,
+                                    AsyncSnapshot snapshot) {
+                                  DateTime now = DateTime.now();
+                                  String dateStr =
+                                      DateFormat("EE, d'th' MMMM").format(now);
+                                  String timeStr =
+                                      DateFormat('HH:mm').format(now);
+                                  return Text(
+                                    '$dateStr | $timeStr',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold,
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                  );
+                                },
+                              ),
+                              SizedBox(height: 30),
+                              GridView.count(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                crossAxisCount: 3,
+                                mainAxisSpacing: 20,
+                                crossAxisSpacing: 20,
+                                children: <Widget>[
+                                  _buildMenuItem(
+                                      context,
+                                      model,
+                                      'Account',
+                                      IconsaxPlusLinear.profile_circle,
+                                      RoutePaths.account),
+                                  _buildMenuItem(
+                                      context,
+                                      model,
+                                      'Projects',
+                                      IconsaxPlusLinear.briefcase,
+                                      RoutePaths.projects),
+                                  _buildMenuItem(
+                                      context,
+                                      model,
+                                      'Schedule',
+                                      IconsaxPlusLinear.calendar,
+                                      RoutePaths.schedule),
+                                  _buildMenuItem(
+                                      context,
+                                      model,
+                                      'Network',
+                                      IconsaxPlusLinear.people,
+                                      RoutePaths.network),
+                                  _buildMenuItem(
+                                      context,
+                                      model,
+                                      'EIA Basics',
+                                      IconsaxPlusLinear.attach_square,
+                                      RoutePaths.eiaBasics),
+                                  _buildMenuItem(
+                                      context,
+                                      model,
+                                      "Check REG's",
+                                      IconsaxPlusLinear.book_1,
+                                      RoutePaths.checkRegs),
+                                ],
+                              ),
+                              SizedBox(height: 24),
+                            ],
+                          ),
+                        ),
+                        // Scrollable task list that takes remaining space
+                        Expanded(
+                          child: HomeProjectsTasksToggle(),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ),
-            )));
-
+                )));
       },
     );
   }
@@ -92,7 +118,7 @@ class HomeView extends StatelessWidget {
             routePath == RoutePaths.schedule ||
             routePath == RoutePaths.eiaBasics) {
           Navigator.pushNamed(context, routePath,
-              arguments: {'fromHome': true});
+              arguments: <String, bool>{'fromHome': true});
         } else {
           switch (routePath) {
             case RoutePaths.network:
@@ -116,7 +142,7 @@ class HomeView extends StatelessWidget {
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+          children: <Widget>[
             Icon(
               icon,
               size: 40,

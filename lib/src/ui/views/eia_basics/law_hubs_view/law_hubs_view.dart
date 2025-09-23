@@ -11,7 +11,7 @@ class LawHubsView extends StatelessWidget {
       viewModelBuilder: () => LawHubsViewModel(),
       builder: (context, model, child) => Scaffold(
         appBar: DefaultAppBar(
-          title: 'Law Hubs',
+          title: 'Law Hub',
         ),
         backgroundColor: Colors.white,
         body: BackgroundContainer(

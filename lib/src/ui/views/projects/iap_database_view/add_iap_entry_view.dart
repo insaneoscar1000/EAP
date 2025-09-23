@@ -3,19 +3,20 @@ import 'package:stacked/stacked.dart';
 import 'package:the_eap_app/src/core/models/models.dart';
 import 'package:the_eap_app/src/core/view_models/projects/iap_database_view_model.dart';
 import 'package:the_eap_app/src/ui/shared/widgets/widgets.dart';
-import 'package:intl/intl.dart';
 
 class AddIAPEntryView extends StatefulWidget {
   final String projectId;
   final String projectName;
   final IAP? iap;
+  final VoidCallback? onSave;
 
   const AddIAPEntryView({
-    Key? key,
+    super.key,
     required this.projectId,
     required this.projectName,
     this.iap,
-  }) : super(key: key);
+    this.onSave,
+  });
 
   @override
   _AddIAPEntryViewState createState() => _AddIAPEntryViewState();
@@ -25,17 +26,19 @@ class _AddIAPEntryViewState extends State<AddIAPEntryView> {
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<IAPDatabaseViewModel>.reactive(
-      onViewModelReady: (model) {
+      onViewModelReady: (IAPDatabaseViewModel model) {
         model.setProjectId(widget.projectId);
         if (widget.iap != null) {
           model.setEditingIAP(widget.iap!);
         } else {
-          // Set default correspondence date for new entries
-          model.setCorrespondenceDate(DateTime.now());
+          // Set default correspondence date for new entries as empty string
+          model.setCorrespondenceDate('');
         }
       },
       viewModelBuilder: () => IAPDatabaseViewModel(),
-      builder: (context, model, child) => Scaffold(
+      builder:
+          (BuildContext context, IAPDatabaseViewModel model, Widget? child) =>
+              Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
           title: Text(
@@ -60,7 +63,7 @@ class _AddIAPEntryViewState extends State<AddIAPEntryView> {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   const SizedBox(height: 16),
                   _buildProjectName(context, widget.projectName),
                   const SizedBox(height: 16),
@@ -103,9 +106,9 @@ class _AddIAPEntryViewState extends State<AddIAPEntryView> {
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         Row(
-          children: [
+          children: <Widget>[
             Text(
               label,
               style: TextStyle(
@@ -170,41 +173,22 @@ class _AddIAPEntryViewState extends State<AddIAPEntryView> {
   }
 
   Widget _buildProjectName(BuildContext context, String projectName) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Project Name',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: Colors.black87,
-          ),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Text(
+        projectName,
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: Theme.of(context).primaryColor,
         ),
-        SizedBox(height: 8),
-        Container(
-          width: double.infinity,
-          padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-          decoration: BoxDecoration(
-            color: Colors.grey[200],
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.grey[300]!),
-          ),
-          child: Text(
-            projectName,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 
   Widget _buildIAPNameField(BuildContext context, IAPDatabaseViewModel model) {
     return _buildFormField(
-      label: 'I&AP Name',
+      label: 'Name',
       hintText: 'Start typing...',
       initialValue: model.editingIAP?.name,
       onChanged: model.setName,
@@ -215,7 +199,7 @@ class _AddIAPEntryViewState extends State<AddIAPEntryView> {
   Widget _buildIAPOrganizationField(
       BuildContext context, IAPDatabaseViewModel model) {
     return _buildFormField(
-      label: 'I&AP Organization',
+      label: 'Organization',
       hintText: 'Start typing...',
       initialValue: model.editingIAP?.organization,
       onChanged: model.setOrganization,
@@ -225,7 +209,7 @@ class _AddIAPEntryViewState extends State<AddIAPEntryView> {
 
   Widget _buildIAPEmailField(BuildContext context, IAPDatabaseViewModel model) {
     return _buildFormField(
-      label: 'I&AP Email Address',
+      label: 'Email Address',
       hintText: 'Start typing...',
       initialValue: model.editingIAP?.email,
       onChanged: model.setEmail,
@@ -235,7 +219,7 @@ class _AddIAPEntryViewState extends State<AddIAPEntryView> {
 
   Widget _buildIAPPhoneField(BuildContext context, IAPDatabaseViewModel model) {
     return _buildFormField(
-      label: 'I&AP Contact Number',
+      label: 'Contact Number',
       hintText: 'Start typing...',
       initialValue: model.editingIAP?.phone,
       onChanged: model.setPhone,
@@ -246,7 +230,7 @@ class _AddIAPEntryViewState extends State<AddIAPEntryView> {
   Widget _buildIAPContactNumber2Field(
       BuildContext context, IAPDatabaseViewModel model) {
     return _buildFormField(
-      label: 'I&AP Contact Number 2',
+      label: 'Contact Number 2',
       hintText: 'Start typing...',
       initialValue: model.editingIAP?.contactNumber2,
       onChanged: model.setContactNumber2,
@@ -256,83 +240,24 @@ class _AddIAPEntryViewState extends State<AddIAPEntryView> {
 
   Widget _buildCorrespondenceDateField(
       BuildContext context, IAPDatabaseViewModel model) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Text(
-              'Correspondence & Date Sent',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Colors.black87,
-              ),
-            ),
-            Text(
-              ' *',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Colors.red,
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 8),
-        InkWell(
-          onTap: () async {
-            final DateTime? picked = await showDatePicker(
-              context: context,
-              initialDate: model.correspondenceDate ?? DateTime.now(),
-              firstDate: DateTime(2000),
-              lastDate: DateTime(2100),
-            );
-            if (picked != null) {
-              model.setCorrespondenceDate(picked);
-              model.notifyListeners(); // Ensure UI updates
-            }
-          },
-          child: Container(
-            width: double.infinity,
-            padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.grey[300]!),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  model.correspondenceDate != null
-                      ? DateFormat('dd/MM/yyyy')
-                          .format(model.correspondenceDate!)
-                      : 'Select a date',
-                  style: TextStyle(
-                    color: model.correspondenceDate != null
-                        ? Colors.black
-                        : Colors.grey[400],
-                    fontSize: 16,
-                  ),
-                ),
-                Icon(Icons.calendar_today, color: Colors.grey),
-              ],
-            ),
-          ),
-        ),
-      ],
+    return _buildFormField(
+      label: 'Correspondence & Date Sent',
+      hintText: 'e.g., 12/05/2025 or May 12, 2025',
+      initialValue: model.correspondenceDate,
+      onChanged: model.setCorrespondenceDate,
+      isRequired: false,
     );
   }
 
   Widget _buildIssueRaisedField(
       BuildContext context, IAPDatabaseViewModel model) {
     return _buildFormField(
-      label: 'Correspondence & Issue Raised',
+      label: 'Issue Raised',
       hintText: 'Start typing...',
       initialValue: model.editingIAP?.issueRaised,
       onChanged: model.setIssueRaised,
       maxLines: 3,
+      isRequired: false,
     );
   }
 
@@ -344,13 +269,14 @@ class _AddIAPEntryViewState extends State<AddIAPEntryView> {
       initialValue: model.editingIAP?.eapResponse,
       onChanged: model.setEAPResponse,
       maxLines: 3,
+      isRequired: false,
     );
   }
 
   Widget _buildAddEntryButton(
       BuildContext context, IAPDatabaseViewModel model) {
     return Column(
-      children: [
+      children: <Widget>[
         // Show validation error if any
         if (model.getValidationError() != null)
           Padding(
@@ -372,7 +298,7 @@ class _AddIAPEntryViewState extends State<AddIAPEntryView> {
               ),
             ),
           ),
-        Container(
+        SizedBox(
           width: double.infinity,
           child: ElevatedButton(
             onPressed: () async {
@@ -392,10 +318,10 @@ class _AddIAPEntryViewState extends State<AddIAPEntryView> {
                       padding: const EdgeInsets.all(20.0),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
-                        children: [
+                        children: <Widget>[
                           CircularProgressIndicator(),
                           SizedBox(width: 20),
-                          Text("Saving I&AP entry..."),
+                          Text('Saving I&AP entry...'),
                         ],
                       ),
                     ),
@@ -419,9 +345,14 @@ class _AddIAPEntryViewState extends State<AddIAPEntryView> {
                     backgroundColor: Colors.green,
                   ),
                 );
-                // The StreamViewModel will update the main list automatically
-                // Just pop this view/dialog
+
+                // Just pop without a result
                 Navigator.of(context).pop();
+
+                // Call the onSave callback if provided
+                if (widget.onSave != null) {
+                  widget.onSave!();
+                }
               } else {
                 // Show error dialog if save failed
                 ScaffoldMessenger.of(context).showSnackBar(

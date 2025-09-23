@@ -20,9 +20,13 @@ class EAAmendmentView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: 24),
-                Text(
+                SelectableText(
                     'The period from 15 December to 5 January to be excluded from all time periods given in this summary.',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                    toolbarOptions: ToolbarOptions(
+                      copy: true, 
+                      selectAll: true
+                    )),
                 SizedBox(height: 10),
                 ProcessAccordion(
                     title: 'Part 1 or Part 2 Amendment',
@@ -32,9 +36,13 @@ class EAAmendmentView extends StatelessWidget {
                     title: 'EAP Appointment',
                     content:
                         'The applicant appoints a registered EAP (Contract signed & upfront payment made if required).'),
-                Text(
+                SelectableText(
                   'If Part 1:',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  toolbarOptions: ToolbarOptions(
+                    copy: true, 
+                    selectAll: true
+                  ),
                 ),
                 SizedBox(height: 10),
                 ProcessAccordion(

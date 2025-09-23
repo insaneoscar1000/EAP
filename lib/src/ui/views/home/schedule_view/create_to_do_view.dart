@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 import 'package:intl/intl.dart';
+import 'package:the_eap_app/src/core/models/project.dart';
 import 'package:the_eap_app/src/core/models/task.dart';
 import 'package:the_eap_app/src/core/view_models/home/schedule_view_model.dart';
 import 'package:the_eap_app/src/ui/shared/widgets/widgets.dart';
 
 class CreateToDoView extends StatefulWidget {
   final Task? task; // Task to edit, null if creating a new task
+  final String? projectId;
+  final String? projectName;
 
-  const CreateToDoView({Key? key, this.task}) : super(key: key);
+  const CreateToDoView(
+      {super.key, this.task, this.projectId, this.projectName});
 
   @override
   _CreateToDoViewState createState() => _CreateToDoViewState();
@@ -26,12 +30,13 @@ class _CreateToDoViewState extends State<CreateToDoView> {
 
   // For dropdown
   String selectedProject = 'General';
+  String? selectedProjectId; // Track selected projectId
 
   // Track field validation
   bool _taskNameError = false;
   bool _startDateError = false;
   bool _startTimeError = false;
-  bool _endDateError = false;
+  final bool _endDateError = false;
   bool _endTimeError = false;
 
   @override
@@ -40,7 +45,7 @@ class _CreateToDoViewState extends State<CreateToDoView> {
 
     // If we're editing a task, prepopulate the fields
     if (widget.task != null) {
-      final task = widget.task!;
+      final Task task = widget.task!;
 
       // Set task name
       taskNameController.text = task.name;
@@ -52,6 +57,7 @@ class _CreateToDoViewState extends State<CreateToDoView> {
 
       // Set project
       selectedProject = task.projectName ?? 'General';
+      selectedProjectId = task.projectId;
 
       // Set start date
       startDateController.text =
@@ -79,11 +85,11 @@ class _CreateToDoViewState extends State<CreateToDoView> {
   Widget build(BuildContext context) {
     return ViewModelBuilder<ScheduleViewModel>.reactive(
       viewModelBuilder: () => ScheduleViewModel(),
-      onModelReady: (model) {
+      onModelReady: (ScheduleViewModel model) {
         model.fetchTasks();
         model.fetchProjects();
       },
-      builder: (context, model, child) {
+      builder: (BuildContext context, ScheduleViewModel model, Widget? child) {
         // Determine if we're editing or creating
         final bool isEditing = widget.task != null;
         return Scaffold(
@@ -113,7 +119,7 @@ class _CreateToDoViewState extends State<CreateToDoView> {
                 child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       _buildProjectDropdown(context),
                       SizedBox(height: 20),
                       _buildTaskNameField(context),
@@ -135,19 +141,50 @@ class _CreateToDoViewState extends State<CreateToDoView> {
   }
 
   Widget _buildProjectDropdown(BuildContext context) {
+    // Hide dropdown if in project context
+    if (widget.projectId != null && widget.projectName != null) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            'Project Name',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+          SizedBox(height: 8),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+            decoration: BoxDecoration(
+              color: Colors.grey[100],
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.grey.shade300),
+            ),
+            child: Text(
+              widget.projectName!,
+              style: TextStyle(fontSize: 16, color: Colors.black87),
+            ),
+          ),
+        ],
+      );
+    }
+    // Otherwise show dropdown
     return ViewModelBuilder<ScheduleViewModel>.reactive(
       viewModelBuilder: () => ScheduleViewModel(),
       disposeViewModel: false,
       initialiseSpecialViewModelsOnce: true,
-      onModelReady: (model) => model.fetchProjects(),
-      builder: (context, model, child) {
+      onModelReady: (ScheduleViewModel model) => model.fetchProjects(),
+      builder: (BuildContext context, ScheduleViewModel model, Widget? child) {
         // Debug: Print project names to console
         print('Available projects: ${model.projectNames.join(', ')}');
         print('Projects count: ${model.projects.length}');
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             Text(
               'Project Name (${model.projects.length} projects available)',
               style: TextStyle(
@@ -178,6 +215,15 @@ class _CreateToDoViewState extends State<CreateToDoView> {
                     if (newValue != null) {
                       setState(() {
                         selectedProject = newValue;
+                        // Find projectId if not 'General'
+                        if (newValue != 'General') {
+                          final Project proj = model.projects.firstWhere(
+                              (Project p) => p.overview.title == newValue,
+                              orElse: () => model.projects.first);
+                          selectedProjectId = proj.id;
+                        } else {
+                          selectedProjectId = null;
+                        }
                       });
                     }
                   },
@@ -201,9 +247,9 @@ class _CreateToDoViewState extends State<CreateToDoView> {
   Widget _buildTaskNameField(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         Row(
-          children: [
+          children: <Widget>[
             Text(
               'Event/Task Name',
               style: TextStyle(
@@ -242,7 +288,7 @@ class _CreateToDoViewState extends State<CreateToDoView> {
                   ? Icon(Icons.error_outline, color: Colors.red)
                   : null,
             ),
-            onChanged: (value) {
+            onChanged: (String value) {
               if (value.trim().isNotEmpty && _taskNameError) {
                 setState(() {
                   _taskNameError = false;
@@ -266,7 +312,7 @@ class _CreateToDoViewState extends State<CreateToDoView> {
   Widget _buildDescriptionField(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         Text(
           'Description',
           style: TextStyle(
@@ -300,10 +346,10 @@ class _CreateToDoViewState extends State<CreateToDoView> {
 
   Widget _buildDateTimeFields(BuildContext context) {
     return Column(
-      children: [
+      children: <Widget>[
         // First row - Start Date and Start Time
         Row(
-          children: [
+          children: <Widget>[
             Expanded(
               child: _buildDateField(
                 context,
@@ -326,7 +372,7 @@ class _CreateToDoViewState extends State<CreateToDoView> {
         SizedBox(height: 20),
         // Second row - End Date and End Time
         Row(
-          children: [
+          children: <Widget>[
             Expanded(
               child: _buildDateField(
                 context,
@@ -356,7 +402,7 @@ class _CreateToDoViewState extends State<CreateToDoView> {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         Text(
           label,
           style: TextStyle(
@@ -378,7 +424,7 @@ class _CreateToDoViewState extends State<CreateToDoView> {
             ),
             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             child: Row(
-              children: [
+              children: <Widget>[
                 Icon(Icons.calendar_today,
                     size: 20, color: isError ? Colors.red : Colors.grey),
                 SizedBox(width: 8),
@@ -417,7 +463,7 @@ class _CreateToDoViewState extends State<CreateToDoView> {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         Text(
           label,
           style: TextStyle(
@@ -439,7 +485,7 @@ class _CreateToDoViewState extends State<CreateToDoView> {
             ),
             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             child: Row(
-              children: [
+              children: <Widget>[
                 Icon(Icons.access_time,
                     size: 20, color: isError ? Colors.red : Colors.grey),
                 SizedBox(width: 8),
@@ -530,7 +576,7 @@ class _CreateToDoViewState extends State<CreateToDoView> {
           _startTimeError = false;
           if (endTimeController.text.isEmpty) {
             // Calculate 1 hour later
-            final end = TimeOfDay(
+            final TimeOfDay end = TimeOfDay(
               hour: (picked.hour + 1) % 24,
               minute: picked.minute,
             );
@@ -550,7 +596,7 @@ class _CreateToDoViewState extends State<CreateToDoView> {
     if (isEditing) {
       // For editing, show both delete and update buttons side by side
       return Row(
-        children: [
+        children: <Widget>[
           // Delete button
           Expanded(
             child: SizedBox(
@@ -562,11 +608,11 @@ class _CreateToDoViewState extends State<CreateToDoView> {
                   // Show confirmation dialog
                   showDialog(
                     context: context,
-                    builder: (context) => AlertDialog(
+                    builder: (BuildContext context) => AlertDialog(
                       title: Text('Delete Task'),
                       content:
                           Text('Are you sure you want to delete this task?'),
-                      actions: [
+                      actions: <Widget>[
                         TextButton(
                           onPressed: () => Navigator.pop(context),
                           child: Text('Cancel'),
@@ -688,31 +734,52 @@ class _CreateToDoViewState extends State<CreateToDoView> {
     });
 
     if (isValid) {
-      // Parse date strings to DateTime objects
+      // Parse start date string to DateTime object
+      DateTime? startDate;
+      try {
+        final List<String> startDateParts = startDateController.text.split('/');
+        if (startDateParts.length == 3) {
+          startDate = DateTime(
+            int.parse(startDateParts[2]), // year
+            int.parse(startDateParts[1]), // month
+            int.parse(startDateParts[0]), // day
+          );
+        } else {
+          // Handle invalid date format
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Invalid start date format')),
+          );
+          return;
+        }
+      } catch (e) {
+        // Handle date parsing error
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Invalid start date format')),
+        );
+        return;
+      }
+
+      // Parse end date string to DateTime object
       DateTime? endDate;
       if (endDateController.text.isNotEmpty) {
         try {
-          final parts = endDateController.text.split('/');
-          if (parts.length == 3) {
+          final List<String> endDateParts = endDateController.text.split('/');
+          if (endDateParts.length == 3) {
             endDate = DateTime(
-              int.parse(parts[2]), // year
-              int.parse(parts[1]), // month
-              int.parse(parts[0]), // day
+              int.parse(endDateParts[2]), // year
+              int.parse(endDateParts[1]), // month
+              int.parse(endDateParts[0]), // day
             );
           }
         } catch (e) {
           // Handle date parsing error
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Invalid date format')),
+            SnackBar(content: Text('Invalid end date format')),
           );
           return;
         }
       } else {
-        endDate = DateTime(
-          int.parse(startDateController.text.split('/')[2]), // year
-          int.parse(startDateController.text.split('/')[1]), // month
-          int.parse(startDateController.text.split('/')[0]), // day
-        );
+        endDate = null;
       }
 
       if (widget.task != null) {
@@ -722,6 +789,8 @@ class _CreateToDoViewState extends State<CreateToDoView> {
           taskNameController.text.trim(),
           selectedProject,
           descriptionController.text.trim(),
+          projectId: selectedProjectId,
+          startDate: startDate,
           startTime: startTimeController.text,
           endDate: endDate,
           endTime: endTimeController.text,
@@ -732,6 +801,8 @@ class _CreateToDoViewState extends State<CreateToDoView> {
           taskNameController.text.trim(),
           selectedProject,
           descriptionController.text.trim(),
+          projectId: selectedProjectId,
+          startDate: startDate,
           startTime: startTimeController.text,
           endDate: endDate,
           endTime: endTimeController.text,

@@ -1,4 +1,8 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:stacked/stacked.dart';
 import 'package:the_eap_app/src/core/constants/route_constants.dart';
 import 'package:the_eap_app/src/core/models/models.dart';
@@ -25,7 +29,7 @@ class IAPDatabaseViewModel extends StreamViewModel<List<IAP>> {
   // Editing functionality
   IAP? _editingIAP;
   IAP? get editingIAP => _editingIAP;
-  DateTime? get correspondenceDate => _correspondenceDate;
+  String get correspondenceDate => _correspondenceDate;
 
   // Form fields
   String _name = '';
@@ -35,7 +39,7 @@ class IAPDatabaseViewModel extends StreamViewModel<List<IAP>> {
   String _contactNumber2 = '';
   String _address = '';
   String _comments = '';
-  DateTime? _correspondenceDate;
+  String _correspondenceDate = '';
   String _issueRaised = '';
   String _eapResponse = '';
 
@@ -77,11 +81,7 @@ class IAPDatabaseViewModel extends StreamViewModel<List<IAP>> {
     _contactNumber2 = iap.contactNumber2 ?? '';
     _address = iap.address ?? '';
     _comments = iap.comments ?? '';
-    _correspondenceDate = iap.correspondenceDate != null
-        ? (iap.correspondenceDate is Timestamp
-            ? (iap.correspondenceDate as Timestamp).toDate()
-            : null)
-        : null;
+    _correspondenceDate = iap.correspondenceDate ?? '';
     _issueRaised = iap.issueRaised ?? '';
     _eapResponse = iap.eapResponse ?? '';
     notifyListeners();
@@ -123,7 +123,7 @@ class IAPDatabaseViewModel extends StreamViewModel<List<IAP>> {
     notifyListeners();
   }
 
-  void setCorrespondenceDate(DateTime? value) {
+  void setCorrespondenceDate(String value) {
     _correspondenceDate = value;
     notifyListeners();
   }
@@ -237,17 +237,9 @@ class IAPDatabaseViewModel extends StreamViewModel<List<IAP>> {
       return false;
     }
 
-    if (_correspondenceDate == null) {
-      return false;
-    }
-
-    if (_issueRaised.isEmpty) {
-      return false;
-    }
-
-    if (_eapResponse.isEmpty) {
-      return false;
-    }
+    // Correspondence date is no longer required
+    // Issue raised is no longer required
+    // EAP response is no longer required
 
     return true;
   }
@@ -275,13 +267,6 @@ class IAPDatabaseViewModel extends StreamViewModel<List<IAP>> {
     try {
       setBusy(true);
 
-      // Check if correspondence date is set
-      if (_correspondenceDate == null) {
-        print('Error: Correspondence date is null');
-        setBusy(false);
-        return false;
-      }
-
       final iap = IAP(
         id: _editingIAP?.id,
         projectId: _projectId,
@@ -292,7 +277,7 @@ class IAPDatabaseViewModel extends StreamViewModel<List<IAP>> {
         contactNumber2: _contactNumber2.isNotEmpty ? _contactNumber2 : null,
         address: _address.isNotEmpty ? _address : null,
         comments: _comments.isNotEmpty ? _comments : null,
-        correspondenceDate: Timestamp.fromDate(_correspondenceDate!),
+        correspondenceDate: _correspondenceDate,
         issueRaised: _issueRaised,
         eapResponse: _eapResponse,
         createdAt: _editingIAP?.createdAt ?? Timestamp.now(),
@@ -314,7 +299,7 @@ class IAPDatabaseViewModel extends StreamViewModel<List<IAP>> {
       _contactNumber2 = '';
       _address = '';
       _comments = '';
-      _correspondenceDate = null;
+      _correspondenceDate = '';
       _issueRaised = '';
       _eapResponse = '';
 
@@ -354,5 +339,61 @@ class IAPDatabaseViewModel extends StreamViewModel<List<IAP>> {
 
   void navigateBack() {
     _navigationService.pop();
+  }
+
+  Future<void> exportIAPDatabase() async {
+    try {
+      setBusy(true);
+      
+      // Create a text buffer for the export content
+      final buffer = StringBuffer();
+      
+      // Add project information header
+      buffer.writeln('I&AP DATABASE EXPORT');
+      buffer.writeln('Project: $_projectName');
+      buffer.writeln('Date: ${DateFormat('dd MMMM yyyy').format(DateTime.now())}');
+      buffer.writeln('Total I&APs: ${_filteredIAPs.length}');
+      buffer.writeln('\n');
+      
+      // Add each I&AP's information
+      for (int i = 0; i < _filteredIAPs.length; i++) {
+        final iap = _filteredIAPs[i];
+        
+        buffer.writeln('I&AP #${i + 1}');
+        buffer.writeln('Name: ${iap.name}');
+        buffer.writeln('Organization: ${iap.organization ?? 'N/A'}');
+        buffer.writeln('Email: ${iap.email ?? 'N/A'}');
+        buffer.writeln('Phone: ${iap.phone ?? 'N/A'}');
+        if (iap.contactNumber2 != null && iap.contactNumber2!.isNotEmpty) {
+          buffer.writeln('Alternative Contact: ${iap.contactNumber2}');
+        }
+        if (iap.address != null && iap.address!.isNotEmpty) {
+          buffer.writeln('Address: ${iap.address}');
+        }
+        buffer.writeln('Correspondence Date: ${iap.correspondenceDate ?? 'N/A'}');
+        buffer.writeln('Issue Raised: ${iap.issueRaised ?? 'N/A'}');
+        buffer.writeln('EAP Response: ${iap.eapResponse ?? 'N/A'}');
+        if (iap.comments != null && iap.comments!.isNotEmpty) {
+          buffer.writeln('Comments: ${iap.comments}');
+        }
+        buffer.writeln('\n');
+      }
+      
+      // Create a temporary file and write the content
+      final directory = await getTemporaryDirectory();
+      final file = File('${directory.path}/iap_database_export.txt');
+      await file.writeAsString(buffer.toString());
+      
+      // Share the file
+      await Share.shareXFiles([XFile(file.path)], text: 'I&AP Database Export');
+      
+      setBusy(false);
+    } catch (e) {
+      setBusy(false);
+      _dialogService.showDialog(
+        title: 'Export Failed',
+        description: 'An error occurred while exporting the I&AP database: ${e.toString()}',
+      );
+    }
   }
 }

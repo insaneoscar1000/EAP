@@ -37,9 +37,30 @@ class AssociationsViewModel extends BaseViewModel {
   }
 
   Future<void> launchAssociationUrl(String url) async {
-    final Uri uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    try {
+      // Make sure the URL has a scheme
+      String processedUrl = url;
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        processedUrl = 'https://$url';
+      }
+      
+      print('Attempting to launch URL: $processedUrl');
+      
+      // Create a properly formatted Uri
+      final Uri uri = Uri.parse(processedUrl);
+      
+      // Now that we've added the proper queries in AndroidManifest.xml,
+      // this should work correctly on Android 11+
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(
+          uri,
+          mode: LaunchMode.externalApplication,
+        );
+      } else {
+        print('Could not launch $processedUrl');
+      }
+    } catch (e) {
+      print('Error launching URL: $e');
     }
   }
 }

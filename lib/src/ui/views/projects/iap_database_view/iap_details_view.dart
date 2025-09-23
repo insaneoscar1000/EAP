@@ -3,19 +3,20 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:the_eap_app/src/core/models/models.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:the_eap_app/src/ui/shared/widgets/widgets.dart';
-import 'package:intl/intl.dart';
 import 'package:the_eap_app/src/ui/views/projects/iap_database_view/add_iap_entry_view.dart';
 
 class IAPDetailsView extends StatelessWidget {
   final IAP initialIAP;
   final String projectId;
   final String projectName;
+  final VoidCallback? onSave;
 
   const IAPDetailsView({
     Key? key,
     required this.initialIAP,
     required this.projectId,
     required this.projectName,
+    this.onSave,
   }) : super(key: key);
 
   @override
@@ -74,11 +75,11 @@ class IAPDetailsView extends StatelessWidget {
                             iap.address!,
                             IconsaxPlusLinear.location,
                           ),
-                        if (iap.correspondenceDate != null)
+                        if (iap.correspondenceDate != null && iap.correspondenceDate!.isNotEmpty)
                           _buildInfoSection(
                             context,
                             'Correspondence Date',
-                            DateFormat('dd MMMM yyyy').format(iap.correspondenceDate!.toDate()),
+                            iap.correspondenceDate!,
                             IconsaxPlusLinear.calendar,
                           ),
                         if (iap.issueRaised != null && iap.issueRaised!.isNotEmpty)
@@ -152,6 +153,12 @@ class IAPDetailsView extends StatelessWidget {
                                   projectId: projectId,
                                   projectName: projectName,
                                   iap: iap,
+                                  onSave: () {
+                                    // Call the parent's onSave callback if provided
+                                    if (onSave != null) {
+                                      onSave!();
+                                    }
+                                  },
                                 ),
                               ),
                             );

@@ -11,8 +11,9 @@ class ProjectsView extends StatelessWidget {
   Widget build(BuildContext context) {
     return ViewModelBuilder<ProjectsViewModel>.reactive(
       viewModelBuilder: () => ProjectsViewModel(),
-      onModelReady: (model) => model.initialize(),
-      builder: (context, model, child) => Scaffold(
+      onModelReady: (ProjectsViewModel model) => model.initialize(),
+      builder: (BuildContext context, ProjectsViewModel model, Widget? child) =>
+          Scaffold(
         appBar: AppBar(
           centerTitle: true,
           backgroundColor: Theme.of(context).primaryColor,
@@ -35,74 +36,72 @@ class ProjectsView extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 SizedBox(height: 16),
-                Container(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: model.navigateToCreateProject,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).primaryColor,
-                      foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          IconsaxPlusLinear.add_circle,
-                          color: Colors.white,
-                        ),
-                        SizedBox(width: 10),
-                        Text(
-                          'New',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: model.navigateToCreateProject,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context).primaryColor,
+                          foregroundColor: Colors.white,
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
+                          elevation: 0,
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(height: 10),
-                Container(
-                  width: double.infinity,
-                  child: OutlinedButton(
-                    onPressed: model.navigateToArchivedProjects,
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Theme.of(context).primaryColor,
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      side: BorderSide(color: Theme.of(context).primaryColor),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(
+                              IconsaxPlusLinear.add_circle,
+                              color: Colors.white,
+                            ),
+                            SizedBox(width: 10),
+                            Text(
+                              'New',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(IconsaxPlusLinear.archive,
-                            color: Theme.of(context).primaryColor),
-                        SizedBox(width: 10),
-                        Text(
-                          'Archived',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: model.navigateToArchivedProjects,
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Theme.of(context).primaryColor,
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          side:
+                              BorderSide(color: Theme.of(context).primaryColor),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                      ],
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(IconsaxPlusLinear.archive,
+                                color: Theme.of(context).primaryColor),
+                            SizedBox(width: 10),
+                            Text(
+                              'Archived',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                SizedBox(height: 16),
-                SearchInput(
-                  hintText: 'Search projects...',
-                  onChanged: model.onSearchQueryChanged,
+                  ],
                 ),
                 SizedBox(height: 16),
                 _buildProjectsList(context, model),
@@ -122,7 +121,7 @@ class ProjectsView extends StatelessWidget {
               ? Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
+                    children: <Widget>[
                       Icon(
                         IconsaxPlusLinear.document_text,
                         size: 48,
@@ -142,9 +141,10 @@ class ProjectsView extends StatelessWidget {
                 )
               : ListView.separated(
                   itemCount: model.projects.length,
-                  separatorBuilder: (context, index) => SizedBox(height: 16),
-                  itemBuilder: (context, index) {
-                    final project = model.projects[index];
+                  separatorBuilder: (BuildContext context, int index) =>
+                      SizedBox(height: 16),
+                  itemBuilder: (BuildContext context, int index) {
+                    final Project project = model.projects[index];
                     return _buildProjectCard(context, project);
                   },
                 ),
@@ -153,7 +153,7 @@ class ProjectsView extends StatelessWidget {
 
   Widget _buildProjectCard(BuildContext context, Project project) {
     // Different colors for different projects (just for visual variety)
-    final List<Color> cardColors = [
+    final List<Color> cardColors = <Color>[
       Color(0xFFFFF3E0), // Light Orange
       Color(0xFFE3F2FD), // Light Blue
       Color(0xFFE8F5E9), // Light Green
@@ -161,14 +161,7 @@ class ProjectsView extends StatelessWidget {
     ];
 
     // Use the project id hash to determine the color
-    final colorIndex = project.id.hashCode % cardColors.length;
-
-    // Format the date if available
-    String dateText = 'No date';
-    if (project.createdAt != null) {
-      final date = project.createdAt!.toDate();
-      dateText = DateFormat('dd MMMM yyyy').format(date);
-    }
+    final int colorIndex = project.id.hashCode % cardColors.length;
 
     return Card(
       elevation: 0,
@@ -177,7 +170,7 @@ class ProjectsView extends StatelessWidget {
       margin: EdgeInsets.zero,
       child: InkWell(
         onTap: () {
-          final model = ProjectsViewModel.of(context);
+          final ProjectsViewModel model = ProjectsViewModel.of(context);
           model.navigateToProjectDetails(project);
         },
         borderRadius: BorderRadius.circular(16),
@@ -194,15 +187,7 @@ class ProjectsView extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  dateText,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
-                ),
-                SizedBox(height: 8),
+              children: <Widget>[
                 Text(
                   project.overview.title,
                   style: TextStyle(
@@ -247,7 +232,7 @@ class ProjectsView extends StatelessWidget {
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        children: [
+        children: <Widget>[
           Icon(
             project.isComplete
                 ? IconsaxPlusLinear.tick_circle
@@ -271,14 +256,14 @@ class ProjectsView extends StatelessWidget {
   }
 
   Widget _buildProgressIndicator(BuildContext context, Project project) {
-    final progress = project.currentStep / 9;
+    final double progress = project.currentStep / 9;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
+          children: <Widget>[
             Text(
               'Progress',
               style: TextStyle(

@@ -5,9 +5,6 @@ export 'auth/login_view/login_view.dart';
 export 'auth/forgot_password_view/forgot_password_view.dart';
 export 'auth/sign_up_view/sign_up_view.dart';
 
-// tabs
-export 'tabs/tabs_view/tabs_view.dart';
-
 // home
 export 'home/home_view/home_view.dart';
 export 'home/account_view/account_view.dart';

@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 
-class EventAdvertModal extends StatelessWidget {
+class ListingAdvertModal extends StatelessWidget {
   final VoidCallback onConfirm;
   final VoidCallback onCancel;
+  final int userCount;
 
-  const EventAdvertModal({
+  const ListingAdvertModal({
     Key? key,
     required this.onConfirm,
     required this.onCancel,
+    required this.userCount,
   }) : super(key: key);
 
   @override
@@ -38,7 +40,7 @@ class EventAdvertModal extends StatelessWidget {
               ),
               child: Center(
                 child: Text(
-                  'R999/month',
+                  'R99/month',
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w700,
@@ -49,7 +51,7 @@ class EventAdvertModal extends StatelessWidget {
             ),
             SizedBox(height: 24),
             Text(
-              'New Event or short course',
+              'Be seen by the $userCount EAP App Users!',
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.w700,
@@ -59,7 +61,7 @@ class EventAdvertModal extends StatelessWidget {
             ),
             SizedBox(height: 12),
             Text(
-              'Make a payment to include an advert image for your event or course. This will be seen by all EAP App users. Your advert will be automatically removed when the date has passed.',
+              'Make a payment to add your details to the database. Your listing will be seen by all EAP App users for the month you have paid for. Cancel at any time.',
               style: TextStyle(
                 fontSize: 16,
                 color: Color(0xFF6A6A6A),

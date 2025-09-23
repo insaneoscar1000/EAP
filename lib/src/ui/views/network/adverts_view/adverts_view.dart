@@ -4,6 +4,7 @@ import 'package:stacked/stacked.dart';
 import 'package:the_eap_app/src/core/constants/route_constants.dart';
 import 'package:the_eap_app/src/core/view_models/view_models.dart';
 import 'package:the_eap_app/src/ui/shared/widgets/widgets.dart';
+import 'package:the_eap_app/src/ui/views/network/adverts_view/listing_advert_modal.dart';
 
 class AdvertsView extends StatelessWidget {
   @override
@@ -24,8 +25,23 @@ class AdvertsView extends StatelessWidget {
               children: [
                 SizedBox(height: 16),
                 ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, RoutePaths.createAdvert);
+                  onPressed: () async {
+                    final result = await showDialog<bool>(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (context) => ListingAdvertModal(
+                        onConfirm: () {
+                          Navigator.of(context).pop(true);
+                        },
+                        onCancel: () {
+                          Navigator.of(context).pop(false);
+                        },
+                        userCount: model.userCount,
+                      ),
+                    );
+                    if (result == true) {
+                      Navigator.pushNamed(context, RoutePaths.createAdvert);
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).primaryColor,

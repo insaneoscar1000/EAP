@@ -1,38 +1,20 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../core/constants/constants.dart';
 
 class LandingPage extends StatefulWidget {
-  const LandingPage({Key? key}) : super(key: key);
+  const LandingPage({super.key});
 
   @override
   State<LandingPage> createState() => _LandingPageState();
 }
 
 class _LandingPageState extends State<LandingPage> {
-  late Future<String?> _firstNameFuture;
-
   @override
   void initState() {
     super.initState();
-    _firstNameFuture = _getFirstName();
     Future.delayed(const Duration(seconds: 5), () {
-      Navigator.of(context).pushReplacementNamed('/tabs');
+      Navigator.of(context).pushReplacementNamed('/home');
     });
-  }
-
-  Future<String?> _getFirstName() async {
-    final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getString('userId');
-    if (userId == null || userId.isEmpty) return null;
-    final doc =
-        await FirebaseFirestore.instance.collection('users').doc(userId).get();
-    final data = doc.data();
-    if (data == null) return null;
-    final details = data['details'];
-    if (details == null || details['firstName'] == null) return null;
-    return details['firstName'] as String?;
   }
 
   @override
@@ -40,7 +22,7 @@ class _LandingPageState extends State<LandingPage> {
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
-        children: [
+        children: <Widget>[
           Image.asset(
             'assets/images/forest.jpg',
             fit: BoxFit.cover,
@@ -51,46 +33,38 @@ class _LandingPageState extends State<LandingPage> {
             color: Colors.black.withOpacity(0.25),
           ),
           Center(
-            child: FutureBuilder<String?>(
-              future: _firstNameFuture,
-              builder: (context, snapshot) {
-                String name = snapshot.data != null && snapshot.data!.isNotEmpty
-                    ? 'Hello, ${snapshot.data!}!'
-                    : 'Hello!';
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      name,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        shadows: [
-                          Shadow(
-                            blurRadius: 8,
-                            color: Colors.black87,
-                            offset: Offset(2, 2),
-                          ),
-                        ],
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text(
+                  'Welcome to the EAP App!',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    shadows: <Shadow>[
+                      Shadow(
+                        blurRadius: 8,
+                        color: Colors.black87,
+                        offset: Offset(2, 2),
                       ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      "Let's do this!",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.w400,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 40),
-                    _DailyQuoteCard(),
-                  ],
-                );
-              },
+                    ],
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  "Let's do this!",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 40),
+                _DailyQuoteCard(),
+              ],
             ),
           ),
         ],
@@ -102,6 +76,10 @@ class _LandingPageState extends State<LandingPage> {
 class _DailyQuoteCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final Map<String, String> quote = QuoteConstants.getRandomQuote();
+    final String quoteText = quote['text'] ?? '';
+    final String quoteAuthor = quote['author'] ?? '';
+
     return Container(
         width: MediaQuery.of(context).size.width * 0.85,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
@@ -112,7 +90,7 @@ class _DailyQuoteCard extends StatelessWidget {
             color: Colors.white.withOpacity(0.08),
             width: 1.5,
           ),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Colors.black.withOpacity(0.08),
               blurRadius: 12,
@@ -122,10 +100,10 @@ class _DailyQuoteCard extends StatelessWidget {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              '“Success is most often achieved by those who don’t know that failure is an option”',
-              style: TextStyle(
+          children: <Widget>[
+            Text(
+              '"$quoteText"',
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 17,
                 fontWeight: FontWeight.w400,
@@ -133,11 +111,11 @@ class _DailyQuoteCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 18),
-            const Align(
+            Align(
               alignment: Alignment.centerRight,
               child: Text(
-                '- Marie Curie',
-                style: TextStyle(
+                '- $quoteAuthor',
+                style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w400,
                   fontSize: 15,

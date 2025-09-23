@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Task {
   final String id;
   final String name;
+  final String? projectId;    // Project ID for project-specific tasks
   final String? projectName;  // 'General' or custom project name
   final String? description;
   final Timestamp date;        // Start date
@@ -15,6 +16,7 @@ class Task {
   Task({
     required this.id,
     required this.name,
+    this.projectId,
     this.projectName,
     this.description,
     required this.date,
@@ -29,6 +31,7 @@ class Task {
     return Task(
       id: id,
       name: map['name'] ?? '',
+      projectId: map['projectId'],
       projectName: map['projectName'] ?? map['category'] ?? 'General', // Support for legacy data
       description: map['description'],
       date: map['date'] ?? Timestamp.now(),
@@ -43,6 +46,7 @@ class Task {
   Map<String, dynamic> toMap() {
     return {
       'name': name,
+      'projectId': projectId,
       'projectName': projectName,
       'description': description,
       'date': date,
@@ -57,6 +61,7 @@ class Task {
   Task copyWith({
     String? id,
     String? name,
+    String? projectId,
     String? projectName,
     String? description,
     Timestamp? date,
@@ -69,6 +74,7 @@ class Task {
     return Task(
       id: id ?? this.id,
       name: name ?? this.name,
+      projectId: projectId ?? this.projectId,
       projectName: projectName ?? this.projectName,
       description: description ?? this.description,
       date: date ?? this.date,

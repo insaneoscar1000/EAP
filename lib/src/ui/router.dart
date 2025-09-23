@@ -3,7 +3,6 @@ import 'package:the_eap_app/src/core/arguments/arguments.dart';
 import 'package:the_eap_app/src/core/constants/constants.dart';
 import 'package:the_eap_app/src/core/models/models.dart';
 import 'package:the_eap_app/src/ui/views/views.dart';
-import 'package:the_eap_app/src/ui/views/projects/iap_database_view/iap_database_view.dart';
 import 'package:the_eap_app/src/ui/views/projects/iap_database_view/add_iap_entry_view.dart';
 
 import 'package:the_eap_app/src/ui/landing_page.dart';
@@ -20,8 +19,8 @@ class AppRouter {
             builder: (_) => ForgotPasswordView());
       case RoutePaths.signUp:
         return MaterialPageRoute<SignUpView>(builder: (_) => SignUpView());
-      case RoutePaths.tabs:
-        return MaterialPageRoute<TabsView>(builder: (_) => TabsView());
+      case RoutePaths.home:
+        return MaterialPageRoute<HomeView>(builder: (_) => HomeView());
       case '/landing':
         return MaterialPageRoute<LandingPage>(builder: (_) => LandingPage());
       case RoutePaths.account:
@@ -29,16 +28,20 @@ class AppRouter {
       case RoutePaths.projects:
         return MaterialPageRoute<ProjectsView>(builder: (_) => ProjectsView());
       case RoutePaths.archivedProjects:
-        return MaterialPageRoute<ArchivedProjectsView>(builder: (_) => ArchivedProjectsView());
+        return MaterialPageRoute<ArchivedProjectsView>(
+            builder: (_) => ArchivedProjectsView());
       case RoutePaths.createProject:
         final projectId = settings.arguments as String?;
-        return MaterialPageRoute<CreateProjectView>(builder: (_) => CreateProjectView(projectId: projectId));
+        return MaterialPageRoute<CreateProjectView>(
+            builder: (_) => CreateProjectView(projectId: projectId));
       case RoutePaths.projectDetails:
         final project = settings.arguments as Project;
-        return MaterialPageRoute<ProjectDetailsView>(builder: (_) => ProjectDetailsView(project: project));
+        return MaterialPageRoute<ProjectDetailsView>(
+            builder: (_) => ProjectDetailsView(project: project));
       case RoutePaths.iapDatabase:
         final projectId = settings.arguments as String;
-        return MaterialPageRoute<IAPDatabaseView>(builder: (_) => IAPDatabaseView(projectId: projectId));
+        return MaterialPageRoute<IAPDatabaseView>(
+            builder: (_) => IAPDatabaseView(projectId: projectId));
       case RoutePaths.addIapEntry:
         final args = settings.arguments as Map<String, dynamic>;
         return MaterialPageRoute<AddIAPEntryView>(
@@ -59,12 +62,15 @@ class AppRouter {
       case RoutePaths.schedule:
         return MaterialPageRoute<ScheduleView>(builder: (_) => ScheduleView());
       case RoutePaths.createToDo:
-        return MaterialPageRoute<CreateToDoView>(builder: (_) => CreateToDoView());
+        return MaterialPageRoute<CreateToDoView>(
+            builder: (_) => CreateToDoView());
       case RoutePaths.editToDo:
         final task = settings.arguments as Task;
-        return MaterialPageRoute<CreateToDoView>(builder: (_) => CreateToDoView(task: task));
+        return MaterialPageRoute<CreateToDoView>(
+            builder: (_) => CreateToDoView(task: task));
       case RoutePaths.myToDoList:
-        return MaterialPageRoute<MyToDoListView>(builder: (_) => MyToDoListView());
+        return MaterialPageRoute<MyToDoListView>(
+            builder: (_) => MyToDoListView());
       case RoutePaths.support:
         return MaterialPageRoute<SupportView>(builder: (_) => SupportView());
       case RoutePaths.network:
@@ -76,10 +82,12 @@ class AppRouter {
       case RoutePaths.networkEvents:
         return MaterialPageRoute<EventsView>(builder: (_) => EventsView());
       case RoutePaths.myEventListings:
-        return MaterialPageRoute<MyEventListingsView>(builder: (_) => MyEventListingsView());
+        return MaterialPageRoute<MyEventListingsView>(
+            builder: (_) => MyEventListingsView());
       case RoutePaths.editEvent:
         final event = settings.arguments as Event;
-        return MaterialPageRoute<EditEventView>(builder: (_) => EditEventView(event: event));
+        return MaterialPageRoute<EditEventView>(
+            builder: (_) => EditEventView(event: event));
       case RoutePaths.addContact:
         return MaterialPageRoute<AddContactView>(
             builder: (_) => AddContactView());

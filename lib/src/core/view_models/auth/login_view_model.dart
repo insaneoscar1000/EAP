@@ -27,7 +27,7 @@ class LoginViewModel extends BaseViewModel {
       }
 
       _storageService.setString(StorageConstants.userId, userId);
-      _navigationService.navigateToReplacement(RoutePaths.tabs);
+      _navigationService.navigateToReplacement(RoutePaths.home);
     } else {
       showToast('Invalid email or password. Please try again.');
     }

@@ -4,18 +4,22 @@ import 'package:stacked/stacked.dart';
 import 'package:the_eap_app/src/core/models/models.dart';
 import 'package:the_eap_app/src/ui/shared/widgets/widgets.dart';
 import 'package:the_eap_app/src/core/view_models/projects/project_details_view_model.dart';
+import 'package:the_eap_app/src/ui/views/projects/project_to_do_list_view.dart';
 
 class ProjectDetailsView extends StatelessWidget {
   final Project project;
 
-  const ProjectDetailsView({Key? key, required this.project}) : super(key: key);
+  const ProjectDetailsView({super.key, required this.project});
 
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<ProjectDetailsViewModel>.reactive(
       viewModelBuilder: () => ProjectDetailsViewModel(),
-      onModelReady: (model) => model.initialize(project),
-      builder: (context, model, child) => Scaffold(
+      onModelReady: (ProjectDetailsViewModel model) =>
+          model.initialize(project),
+      builder: (BuildContext context, ProjectDetailsViewModel model,
+              Widget? child) =>
+          Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).primaryColor,
           elevation: 0,
@@ -33,7 +37,7 @@ class ProjectDetailsView extends StatelessWidget {
                 size: 34, color: Theme.of(context).primaryColorLight),
             onPressed: () => Navigator.of(context).pop(),
           ),
-          actions: [
+          actions: <Widget>[
             IconButton(
               icon: Icon(Icons.download,
                   color: Theme.of(context).primaryColorLight),
@@ -57,7 +61,7 @@ class ProjectDetailsView extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   _buildHeader(context, model),
                   const SizedBox(height: 16),
                   _buildIAPsButton(context, model),
@@ -87,7 +91,7 @@ class ProjectDetailsView extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
+            colors: <Color>[
               Theme.of(context).primaryColor,
               Theme.of(context).primaryColor.withOpacity(0.8),
             ],
@@ -96,14 +100,14 @@ class ProjectDetailsView extends StatelessWidget {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       Text(
                         project.overview.title,
                         style: TextStyle(
@@ -114,7 +118,7 @@ class ProjectDetailsView extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Row(
-                        children: [
+                        children: <Widget>[
                           Container(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 4),
@@ -125,25 +129,6 @@ class ProjectDetailsView extends StatelessWidget {
                             child: Text(
                               'Code: ${project.overview.code}',
                               style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: project.isComplete
-                                  ? Colors.green.withOpacity(0.2)
-                                  : Colors.orange.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              project.isComplete ? 'Complete' : 'Draft',
-                              style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
                                 color: Colors.white,
@@ -166,13 +151,9 @@ class ProjectDetailsView extends StatelessWidget {
   Widget _buildDetailsSection(
       BuildContext context, ProjectDetailsViewModel model) {
     return Container(
-      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Project Overview Section
-          _buildSectionHeader(context, 'Project Overview'),
-          _buildDetailItem(context, 'Project Title', project.overview.title),
+        children: <Widget>[
           _buildDetailItem(context, 'Project Code', project.overview.code),
           _buildDetailItem(context, 'Department Reference',
               project.overview.departmentReferenceNumber),
@@ -180,7 +161,6 @@ class ProjectDetailsView extends StatelessWidget {
               project.overview.propertyNameAddressFarmNo),
 
           // Location Section
-          _buildSectionHeader(context, 'Location Details'),
           _buildDetailItem(context, 'Province',
               project.location.province ?? 'Not specified'),
           _buildDetailItem(context, 'District/Metro Municipality',
@@ -191,7 +171,6 @@ class ProjectDetailsView extends StatelessWidget {
               project.location.projectLocation ?? 'Not specified'),
 
           // Applicant and Landowner Section
-          _buildSectionHeader(context, 'Applicant & Landowner Information'),
           _buildDetailItem(context, 'Applicant',
               project.applicantLandowner.applicantName ?? 'Not specified'),
           _buildDetailItem(context, 'Applicant Details',
@@ -204,7 +183,6 @@ class ProjectDetailsView extends StatelessWidget {
               multiline: true),
 
           // Project Description Section
-          _buildSectionHeader(context, 'Project Description'),
           _buildDetailItem(context, 'Application Type',
               project.projectDescription?.applicationType ?? 'Not specified'),
           _buildDetailItem(context, 'Description',
@@ -212,7 +190,6 @@ class ProjectDetailsView extends StatelessWidget {
               multiline: true),
 
           // Environmental Details Section
-          _buildSectionHeader(context, 'Environmental Details'),
           _buildDetailItem(
               context,
               'Relevant Listing Notice',
@@ -251,7 +228,6 @@ class ProjectDetailsView extends StatelessWidget {
               multiline: true),
 
           // EIA Team and Studies Section
-          _buildSectionHeader(context, 'EIA Team & Specialist Studies'),
           _buildDetailItem(context, 'Project Team',
               model.getTeamMembersText() ?? 'Not specified',
               multiline: true),
@@ -263,7 +239,6 @@ class ProjectDetailsView extends StatelessWidget {
               multiline: true),
 
           // Public Review Periods Section
-          _buildSectionHeader(context, 'Public Review Periods'),
           _buildDetailItem(
               context,
               'First Review Period',
@@ -284,7 +259,6 @@ class ProjectDetailsView extends StatelessWidget {
                   'Not specified'),
 
           // Submission and Contacts Section
-          _buildSectionHeader(context, 'Submission & Contacts'),
           _buildDetailItem(
               context,
               'Environmental Affairs Office',
@@ -320,7 +294,6 @@ class ProjectDetailsView extends StatelessWidget {
                   'Not specified'),
 
           // Notes Section
-          _buildSectionHeader(context, 'Project Notes'),
           _buildDetailItem(
               context, 'Notes', project.projectNotes?.notes ?? 'No notes added',
               multiline: true),
@@ -334,7 +307,7 @@ class ProjectDetailsView extends StatelessWidget {
       padding: const EdgeInsets.only(top: 24, bottom: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           Text(
             title,
             style: TextStyle(
@@ -352,7 +325,7 @@ class ProjectDetailsView extends StatelessWidget {
 
   Widget _buildDetailItem(BuildContext context, String label, String value,
       {bool multiline = false, String? subtitle}) {
-    final isEmptyOrDefault = value.trim().isEmpty ||
+    final bool isEmptyOrDefault = value.trim().isEmpty ||
         value == 'Not specified' ||
         value == 'No notes added';
     if (isEmptyOrDefault) {
@@ -362,9 +335,9 @@ class ProjectDetailsView extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           Row(
-            children: [
+            children: <Widget>[
               Text(
                 label,
                 style: TextStyle(
@@ -399,7 +372,7 @@ class ProjectDetailsView extends StatelessWidget {
                 color: Colors.grey[300]!,
                 width: 1,
               ),
-              boxShadow: [
+              boxShadow: <BoxShadow>[
                 BoxShadow(
                   color: Colors.black.withOpacity(0.05),
                   blurRadius: 4,
@@ -433,16 +406,37 @@ class ProjectDetailsView extends StatelessWidget {
 
   Widget _buildIAPsButton(BuildContext context, ProjectDetailsViewModel model) {
     return Row(
-      children: [
+      children: <Widget>[
         Expanded(
           child: ElevatedButton.icon(
             onPressed: () => model.navigateToIAPs(),
-            icon: const Icon(IconsaxPlusLinear.people,
-                color: Colors.white, size: 20),
-            label: const Text(
-              "I&AP's",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            icon: Icon(Icons.people, color: Colors.white),
+            label: Text('I&APs'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).primaryColor,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: ElevatedButton.icon(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (BuildContext context) =>
+                      ProjectToDoListView(project: model.project),
+                ),
+              );
+            },
+            icon: Icon(Icons.list_alt, color: Colors.white),
+            label: Text('To Do List'),
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).primaryColor,
               foregroundColor: Colors.white,
@@ -464,9 +458,9 @@ class ProjectDetailsView extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: [
+        children: <Widget>[
           Row(
-            children: [
+            children: <Widget>[
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () => model.deleteProject(context),
@@ -492,13 +486,13 @@ class ProjectDetailsView extends StatelessWidget {
                 child: model.project.projectStatus == 'Archived'
                     ? ElevatedButton.icon(
                         onPressed: () async {
-                          final confirm = await showDialog<bool>(
+                          final bool? confirm = await showDialog<bool>(
                             context: context,
-                            builder: (context) => AlertDialog(
+                            builder: (BuildContext context) => AlertDialog(
                               title: const Text('Unarchive Project'),
                               content: const Text(
                                   'Do you want to unarchive this project? It will be restored to the Completed state.'),
-                              actions: [
+                              actions: <Widget>[
                                 TextButton(
                                   onPressed: () =>
                                       Navigator.of(context).pop(false),
@@ -541,13 +535,13 @@ class ProjectDetailsView extends StatelessWidget {
                       )
                     : ElevatedButton.icon(
                         onPressed: () async {
-                          final confirm = await showDialog<bool>(
+                          final bool? confirm = await showDialog<bool>(
                             context: context,
-                            builder: (context) => AlertDialog(
+                            builder: (BuildContext context) => AlertDialog(
                               title: Text('Archive Project'),
                               content: const Text(
                                   'Are you sure you want to archive this project? You can restore it later from the Archived Projects section.'),
-                              actions: [
+                              actions: <Widget>[
                                 TextButton(
                                   onPressed: () =>
                                       Navigator.of(context).pop(false),
