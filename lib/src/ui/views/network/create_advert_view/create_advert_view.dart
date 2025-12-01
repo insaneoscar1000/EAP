@@ -10,7 +10,7 @@ class CreateAdvertView extends StatefulWidget {
 }
 
 class _CreateAdvertViewState extends State<CreateAdvertView> {
-  final _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<CreateAdvertViewModel>.reactive(
@@ -18,7 +18,7 @@ class _CreateAdvertViewState extends State<CreateAdvertView> {
         builder:
             (BuildContext context, CreateAdvertViewModel model, Widget? child) {
           return Stack(
-            children: [
+            children: <Widget>[
               Scaffold(
                   appBar: DefaultAppBar(
                     title: 'Create Own Listing',
@@ -39,7 +39,7 @@ class _CreateAdvertViewState extends State<CreateAdvertView> {
                             key: _formKey,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
+                              children: <Widget>[
                                 Container(
                                   height: 200,
                                   decoration: BoxDecoration(
@@ -85,7 +85,7 @@ class _CreateAdvertViewState extends State<CreateAdvertView> {
                                             : Column(
                                                 mainAxisAlignment:
                                                     MainAxisAlignment.center,
-                                                children: [
+                                                children: <Widget>[
                                                   Container(
                                                     padding: EdgeInsets.all(12),
                                                     decoration: BoxDecoration(
@@ -186,13 +186,13 @@ class _CreateAdvertViewState extends State<CreateAdvertView> {
                                             // Show payment confirmation dialog
                                             showDialog(
                                               context: context,
-                                              builder: (context) {
+                                              builder: (BuildContext context) {
                                                 return AlertDialog(
                                                   title:
                                                       Text('Payment Required'),
                                                   content: Text(
                                                       'Creating an advert requires a payment of ₦100.00. Would you like to proceed with payment?'),
-                                                  actions: [
+                                                  actions: <Widget>[
                                                     TextButton(
                                                       onPressed: () {
                                                         Navigator.of(context)
@@ -235,7 +235,7 @@ class _CreateAdvertViewState extends State<CreateAdvertView> {
                                           width: 20,
                                           child: LoadingIndicator())
                                       : Text(
-                                          'Create EAP Team Advert',
+                                          'Create Listing',
                                           style: TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w600,
@@ -255,7 +255,7 @@ class _CreateAdvertViewState extends State<CreateAdvertView> {
                   child: Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
-                      children: [
+                      children: <Widget>[
                         LoadingIndicator(),
                       ],
                     ),

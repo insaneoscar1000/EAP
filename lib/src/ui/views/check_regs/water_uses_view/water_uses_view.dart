@@ -103,6 +103,7 @@ class WaterUsesView extends StatelessWidget {
                   style: TextStyle(fontSize: 16, height: 1.5),
                   toolbarOptions: ToolbarOptions(copy: true, selectAll: true),
                 ),
+                SizedBox(height: 40),
               ],
             ),
           ),

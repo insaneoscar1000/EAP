@@ -203,6 +203,7 @@ class _CreateToDoViewState extends State<CreateToDoView> {
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
+                  menuMaxHeight: 400,
                   isExpanded: true,
                   value: model.projectNames.contains(selectedProject)
                       ? selectedProject

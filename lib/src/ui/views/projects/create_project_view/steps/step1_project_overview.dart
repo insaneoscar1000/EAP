@@ -20,6 +20,15 @@ class Step1ProjectOverview extends StepBase {
         ),
         SizedBox(height: 24),
 
+        // Project Name (Title)
+        buildFormField(
+          label: 'Project Name',
+          hintText: 'Start typing...',
+          onChanged: (String value) => model.projectTitle = value,
+          initialValue: model.projectTitle,
+        ),
+        SizedBox(height: 16),
+
         // Project Code
         buildFormField(
           label: 'Project Code',
