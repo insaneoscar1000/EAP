@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "743038291349",
-    "project_id": "eap-dev-f55c4",
-    "storage_bucket": "eap-dev-f55c4.firebasestorage.app"
+    "project_number": "1026198934075",
+    "project_id": "the-eap-app",
+    "storage_bucket": "the-eap-app.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:743038291349:android:76430f4b9aa77f94727a9c",
+        "mobilesdk_app_id": "1:1026198934075:android:e78fefc5236a3c4dc0c21e",
         "android_client_info": {
           "package_name": "com.theeap.app"
         }
@@ -15,7 +15,26 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyACREu8SQeU8mtaEh9yuXJSFaswQE7TGEY"
+          "current_key": "AIzaSyBpYNSnSyTyVfMYAB7yw7nRJqidsQKp30E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1026198934075:android:5dd9f82d5190f8f1c0c21e",
+        "android_client_info": {
+          "package_name": "com.theeapapp.android"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBpYNSnSyTyVfMYAB7yw7nRJqidsQKp30E"
         }
       ],
       "services": {

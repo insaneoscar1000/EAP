@@ -3,17 +3,17 @@
 <plist version="1.0">
 <dict>
 	<key>API_KEY</key>
-	<string>AIzaSyCWjcXN_i7uO1cxlHZn6wfAbtGqdu9NRfA</string>
+	<string>AIzaSyCG9jBPxeOwKkZ7TbAmogPfG5AzvFZaI40</string>
 	<key>GCM_SENDER_ID</key>
-	<string>743038291349</string>
+	<string>1026198934075</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.theeap.app</string>
 	<key>PROJECT_ID</key>
-	<string>eap-dev-f55c4</string>
+	<string>the-eap-app</string>
 	<key>STORAGE_BUCKET</key>
-	<string>eap-dev-f55c4.firebasestorage.app</string>
+	<string>the-eap-app.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:743038291349:ios:7d7ec8773f0fa68d727a9c</string>
+	<string>1:1026198934075:ios:1fa398128fd0ba56c0c21e</string>
 </dict>
 </plist>

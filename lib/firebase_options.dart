@@ -50,19 +50,19 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyACREu8SQeU8mtaEh9yuXJSFaswQE7TGEY',
-    appId: '1:743038291349:android:76430f4b9aa77f94727a9c',
-    messagingSenderId: '743038291349',
-    projectId: 'eap-dev-f55c4',
-    storageBucket: 'eap-dev-f55c4.firebasestorage.app',
+    apiKey: 'AIzaSyBpYNSnSyTyVfMYAB7yw7nRJqidsQKp30E',
+    appId: '1:1026198934075:android:e78fefc5236a3c4dc0c21e',
+    messagingSenderId: '1026198934075',
+    projectId: 'the-eap-app',
+    storageBucket: 'the-eap-app.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCWjcXN_i7uO1cxlHZn6wfAbtGqdu9NRfA',
-    appId: '1:743038291349:ios:7d7ec8773f0fa68d727a9c',
-    messagingSenderId: '743038291349',
-    projectId: 'eap-dev-f55c4',
-    storageBucket: 'eap-dev-f55c4.firebasestorage.app',
+    apiKey: 'AIzaSyCG9jBPxeOwKkZ7TbAmogPfG5AzvFZaI40',
+    appId: '1:1026198934075:ios:1fa398128fd0ba56c0c21e',
+    messagingSenderId: '1026198934075',
+    projectId: 'the-eap-app',
+    storageBucket: 'the-eap-app.firebasestorage.app',
     iosBundleId: 'com.theeap.app',
   );
 
