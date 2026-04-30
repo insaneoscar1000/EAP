@@ -28,4 +28,5 @@ Future<void> setupLocator() async {
   locator.registerLazySingleton(() => TaskService());
   locator.registerLazySingleton(() => ProjectService());
   locator.registerLazySingleton(() => IAPService());
+  locator.registerLazySingleton(() => SubscriptionService());
 }

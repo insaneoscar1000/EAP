@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:stacked/stacked.dart';
 import 'package:the_eap_app/src/locator.dart';
 import 'package:the_eap_app/src/core/models/models.dart';
@@ -9,6 +11,8 @@ class AccountViewModel extends BaseViewModel {
   final UserService _userService = locator<UserService>();
   final StorageService _storageService = locator<StorageService>();
   final NavigationService _navigationService = locator<NavigationService>();
+  final SubscriptionService _subscriptionService =
+      locator<SubscriptionService>();
 
   Stream<UserRecord>? _userStream;
   Stream<UserRecord>? get userStream => _userStream;
@@ -25,6 +29,14 @@ class AccountViewModel extends BaseViewModel {
   Future<void> logout() async {
     setBusy(true);
     await _authService.signOut();
+
+    // Logout from RevenueCat
+    try {
+      await _subscriptionService.logout();
+    } catch (e) {
+      debugPrint('Failed to logout from RevenueCat: $e');
+    }
+
     await _storageService.clearAll();
     _navigationService.navigateToReplacement(RoutePaths.welcome);
     setBusy(false);
@@ -34,7 +46,7 @@ class AccountViewModel extends BaseViewModel {
     try {
       setBusy(true);
 
-      final currentUser = await _authService.getCurrentUser();
+      final User? currentUser = await _authService.getCurrentUser();
       if (currentUser == null) throw Exception('No user logged in');
 
       await _userService.deleteUser(currentUser.uid);

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:stacked/stacked.dart';
 import 'package:the_eap_app/src/core/constants/route_constants.dart';
+import 'package:the_eap_app/src/core/models/advert.dart';
 import 'package:the_eap_app/src/core/view_models/view_models.dart';
 import 'package:the_eap_app/src/ui/shared/widgets/widgets.dart';
 import 'package:the_eap_app/src/ui/views/network/adverts_view/listing_advert_modal.dart';
@@ -11,7 +12,8 @@ class AdvertsView extends StatelessWidget {
   Widget build(BuildContext context) {
     return ViewModelBuilder<AdvertsViewModel>.reactive(
       viewModelBuilder: () => AdvertsViewModel(),
-      builder: (context, model, child) => Scaffold(
+      builder: (BuildContext context, AdvertsViewModel model, Widget? child) =>
+          Scaffold(
         appBar: DefaultAppBar(
           title: 'Service Providers',
         ),
@@ -22,25 +24,31 @@ class AdvertsView extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () async {
-                    final result = await showDialog<bool>(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (context) => ListingAdvertModal(
-                        onConfirm: () {
-                          Navigator.of(context).pop(true);
-                        },
-                        onCancel: () {
-                          Navigator.of(context).pop(false);
-                        },
-                        userCount: model.userCount,
-                      ),
-                    );
-                    if (result == true) {
+                    if (model.isPremium) {
+                      // Premium user - go directly to create listing
                       Navigator.pushNamed(context, RoutePaths.createAdvert);
+                    } else {
+                      // Non-premium user - show modal with subscription CTA
+                      final bool? result = await showDialog<bool>(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (BuildContext context) => ListingAdvertModal(
+                          onConfirm: () {
+                            Navigator.of(context).pop(true);
+                          },
+                          onCancel: () {
+                            Navigator.of(context).pop(false);
+                          },
+                          userCount: model.userCount,
+                        ),
+                      );
+                      if (result == true) {
+                        Navigator.pushNamed(context, RoutePaths.subscription);
+                      }
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -54,7 +62,7 @@ class AdvertsView extends StatelessWidget {
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
+                    children: <Widget>[
                       Icon(IconsaxPlusLinear.message_add_1,
                           color: Colors.white),
                       SizedBox(width: 10),
@@ -85,7 +93,7 @@ class AdvertsView extends StatelessWidget {
                           : ListView.builder(
                               itemCount: model.adverts.length,
                               itemBuilder: (BuildContext context, int index) {
-                                final advert = model.adverts[index];
+                                final Advert advert = model.adverts[index];
                                 return InkWell(
                                     onTap: () {
                                       Navigator.pushNamed(
@@ -100,7 +108,7 @@ class AdvertsView extends StatelessWidget {
                                       decoration: BoxDecoration(
                                         color: Colors.white,
                                         borderRadius: BorderRadius.circular(12),
-                                        boxShadow: [
+                                        boxShadow: <BoxShadow>[
                                           BoxShadow(
                                             color:
                                                 Colors.black.withOpacity(0.05),
@@ -112,7 +120,7 @@ class AdvertsView extends StatelessWidget {
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
-                                        children: [
+                                        children: <Widget>[
                                           Text(
                                             advert.title,
                                             style: TextStyle(
@@ -122,7 +130,7 @@ class AdvertsView extends StatelessWidget {
                                           ),
                                           SizedBox(height: 8),
                                           Row(
-                                            children: [
+                                            children: <Widget>[
                                               Text(
                                                 advert.company,
                                                 style: TextStyle(

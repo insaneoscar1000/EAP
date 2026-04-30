@@ -7,24 +7,33 @@ import 'package:the_eap_app/src/locator.dart';
 class AdvertsViewModel extends StreamViewModel<List<Advert>> {
   final _advertService = locator<AdvertService>();
   final _userService = locator<UserService>();
+  final _subscriptionService = locator<SubscriptionService>();
   String _searchQuery = '';
   int _userCount = 0;
-  
+  bool _isPremium = false;
+
   int get userCount => _userCount;
+  bool get isPremium => _isPremium;
 
   String get searchQuery => _searchQuery;
 
   @override
   Stream<List<Advert>> get stream => _advertService.adverts;
-  
+
   @override
   Future<void> initialise() async {
     super.initialise();
     await _fetchUserCount();
+    await _checkSubscriptionStatus();
   }
-  
+
   Future<void> _fetchUserCount() async {
     _userCount = await _userService.getUserCount();
+    notifyListeners();
+  }
+
+  Future<void> _checkSubscriptionStatus() async {
+    _isPremium = await _subscriptionService.isPremium();
     notifyListeners();
   }
 

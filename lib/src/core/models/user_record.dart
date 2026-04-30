@@ -7,6 +7,7 @@ class UserRecord {
   UserContact? contact;
   UserDetails? details;
   Meta? meta;
+  SubscriptionInfo? subscription;
 
   UserRecord({
     this.id,
@@ -14,6 +15,7 @@ class UserRecord {
     this.contact,
     this.details,
     this.meta,
+    this.subscription,
   });
 
   factory UserRecord.fromMap(Map<String, dynamic>? data, String id) {
@@ -23,7 +25,44 @@ class UserRecord {
       contact: UserContact.fromMap(data['contact']),
       details: UserDetails.fromMap(data['details']),
       meta: Meta.fromMap(data['meta']),
+      subscription: data['subscription'] != null
+          ? SubscriptionInfo.fromMap(data['subscription'])
+          : null,
     );
+  }
+
+  bool get isPremium => subscription?.isActive ?? false;
+}
+
+class SubscriptionInfo {
+  bool? isActive;
+  String? productId;
+  Timestamp? expirationDate;
+  String? revenueCatId;
+
+  SubscriptionInfo({
+    this.isActive,
+    this.productId,
+    this.expirationDate,
+    this.revenueCatId,
+  });
+
+  factory SubscriptionInfo.fromMap(Map<String, dynamic> data) {
+    return SubscriptionInfo(
+      isActive: data['isActive'] as bool?,
+      productId: data['productId'] as String?,
+      expirationDate: data['expirationDate'] as Timestamp?,
+      revenueCatId: data['revenueCatId'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'isActive': isActive,
+      'productId': productId,
+      'expirationDate': expirationDate,
+      'revenueCatId': revenueCatId,
+    };
   }
 }
 

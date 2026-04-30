@@ -52,4 +52,5 @@ class RoutePaths {
   static const String iapDatabase = '/projects/iap_database';
   static const String addIapEntry = '/projects/iap_database/add_entry';
   static const String editIapEntry = '/projects/iap_database/edit_entry';
+  static const String subscription = '/subscription';
 }

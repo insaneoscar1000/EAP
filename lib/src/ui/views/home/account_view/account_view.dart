@@ -151,6 +151,8 @@ class AccountView extends StatelessWidget {
   Widget _buildSettingsOptions(BuildContext context) {
     return Column(
       children: [
+        _buildSettingOption('Subscription',
+            onTap: () => Navigator.pushNamed(context, RoutePaths.subscription)),
         _buildSettingOption('Support',
             onTap: () => Navigator.pushNamed(context, RoutePaths.support)),
         _buildSettingOption('Terms & Conditions',

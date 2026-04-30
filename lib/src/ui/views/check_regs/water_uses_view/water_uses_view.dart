@@ -63,7 +63,7 @@ class WaterUsesView extends StatelessWidget {
                 ),
                 SizedBox(height: 16),
                 SelectableText(
-                  'e) engaging in a controlled activity identified as such in section 37( 1 ) or declared under section 38(1)\n\n- irrigation of any land with waste or water containing waste generated through \n- any industrial activity or by a waterwork;\n- an activity aimed at the modification of atmospheric precipitation;\n- power generation activity which alters the flow regime of a water resource;\n- intentional recharging of an aquifer with any waste or water containing waste',
+                  'e) engaging in a controlled activity identified as such in section 37( 1 ) or declared under section 38(1)\n\n- irrigation of any land with waste or water containing waste generated through any industrial activity or by a waterwork;\n- an activity aimed at the modification of atmospheric precipitation;\n- power generation activity which alters the flow regime of a water resource;\n- intentional recharging of an aquifer with any waste or water containing waste',
                   style: TextStyle(fontSize: 16, height: 1.5),
                   toolbarOptions: ToolbarOptions(copy: true, selectAll: true),
                 ),

@@ -12,6 +12,8 @@ class LoginViewModel extends BaseViewModel {
   final NavigationService _navigationService = locator<NavigationService>();
   final PushNotificationService _pushNotificationService =
       locator<PushNotificationService>();
+  final SubscriptionService _subscriptionService =
+      locator<SubscriptionService>();
 
   Future<void> login(
       BuildContext context, String email, String password) async {
@@ -24,6 +26,13 @@ class LoginViewModel extends BaseViewModel {
 
       if (token != null) {
         await _userService.updateUser(userId, {'token': token});
+      }
+
+      // Login to RevenueCat with the user's Firebase ID
+      try {
+        await _subscriptionService.login(userId);
+      } catch (e) {
+        debugPrint('Failed to login to RevenueCat: $e');
       }
 
       _storageService.setString(StorageConstants.userId, userId);

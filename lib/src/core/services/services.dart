@@ -22,3 +22,4 @@ export 'data/task_service.dart';
 export 'data/project_service.dart';
 export 'data/iap_service.dart';
 export 'payment_service.dart';
+export 'subscription_service.dart';

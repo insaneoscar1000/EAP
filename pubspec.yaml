@@ -1,7 +1,7 @@
 name: the_eap_app
 description: "A new Flutter project."
 publish_to: "none"
-version: 1.0.0+10
+version: 0.0.1+1
 
 environment:
   sdk: ^3.5.4
@@ -32,6 +32,7 @@ dependencies:
   table_calendar: ^3.0.8
   share_plus: ^7.2.1
   flutter_pdfview: ^1.4.1+1
+  purchases_flutter: ^8.1.0
 
 dev_dependencies:
   flutter_test:

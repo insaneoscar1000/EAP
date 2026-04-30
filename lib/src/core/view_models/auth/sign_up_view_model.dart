@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:stacked/stacked.dart';
@@ -16,6 +17,8 @@ class SignUpViewModel extends BaseViewModel {
   final NavigationService _navigationService = locator<NavigationService>();
   final PushNotificationService _pushNotificationService =
       locator<PushNotificationService>();
+  final SubscriptionService _subscriptionService =
+      locator<SubscriptionService>();
 
   Future<void> handleSignUpProcess(
     BuildContext context,
@@ -40,6 +43,13 @@ class SignUpViewModel extends BaseViewModel {
             : null,
       ));
       if (createUserResult) {
+        // Login to RevenueCat with the new user's Firebase ID
+        try {
+          await _subscriptionService.login(user.uid);
+        } catch (e) {
+          debugPrint('Failed to login to RevenueCat: $e');
+        }
+
         await _storageService.setString(StorageConstants.userId, user.uid);
         _navigationService.navigateToReplacement(RoutePaths.home);
       } else {

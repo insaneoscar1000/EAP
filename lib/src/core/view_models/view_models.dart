@@ -40,3 +40,6 @@ export 'eia_basics/law_hubs_view_model.dart';
 export 'check_regs/nfa_trees_view_model.dart';
 export 'check_regs/nema_activities_view_model.dart';
 export 'check_regs/nema_activity_details_view_model.dart';
+
+// subscription
+export 'subscription/subscription_view_model.dart';

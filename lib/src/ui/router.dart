@@ -31,19 +31,20 @@ class AppRouter {
         return MaterialPageRoute<ArchivedProjectsView>(
             builder: (_) => ArchivedProjectsView());
       case RoutePaths.createProject:
-        final projectId = settings.arguments as String?;
+        final String? projectId = settings.arguments as String?;
         return MaterialPageRoute<CreateProjectView>(
             builder: (_) => CreateProjectView(projectId: projectId));
       case RoutePaths.projectDetails:
-        final project = settings.arguments as Project;
+        final Project project = settings.arguments as Project;
         return MaterialPageRoute<ProjectDetailsView>(
             builder: (_) => ProjectDetailsView(project: project));
       case RoutePaths.iapDatabase:
-        final projectId = settings.arguments as String;
+        final String projectId = settings.arguments as String;
         return MaterialPageRoute<IAPDatabaseView>(
             builder: (_) => IAPDatabaseView(projectId: projectId));
       case RoutePaths.addIapEntry:
-        final args = settings.arguments as Map<String, dynamic>;
+        final Map<String, dynamic> args =
+            settings.arguments as Map<String, dynamic>;
         return MaterialPageRoute<AddIAPEntryView>(
           builder: (_) => AddIAPEntryView(
             projectId: args['projectId'] as String,
@@ -51,7 +52,8 @@ class AppRouter {
           ),
         );
       case RoutePaths.editIapEntry:
-        final args = settings.arguments as Map<String, dynamic>;
+        final Map<String, dynamic> args =
+            settings.arguments as Map<String, dynamic>;
         return MaterialPageRoute<AddIAPEntryView>(
           builder: (_) => AddIAPEntryView(
             projectId: args['projectId'] as String,
@@ -65,7 +67,7 @@ class AppRouter {
         return MaterialPageRoute<CreateToDoView>(
             builder: (_) => CreateToDoView());
       case RoutePaths.editToDo:
-        final task = settings.arguments as Task;
+        final Task task = settings.arguments as Task;
         return MaterialPageRoute<CreateToDoView>(
             builder: (_) => CreateToDoView(task: task));
       case RoutePaths.myToDoList:
@@ -85,7 +87,7 @@ class AppRouter {
         return MaterialPageRoute<MyEventListingsView>(
             builder: (_) => MyEventListingsView());
       case RoutePaths.editEvent:
-        final event = settings.arguments as Event;
+        final Event event = settings.arguments as Event;
         return MaterialPageRoute<EditEventView>(
             builder: (_) => EditEventView(event: event));
       case RoutePaths.addContact:
@@ -131,14 +133,14 @@ class AppRouter {
         return MaterialPageRoute<NEMAActivitiesView>(
             builder: (_) => NEMAActivitiesView());
       case RoutePaths.nemaActivityDetails:
-        final activity = settings.arguments as NEMAActivity;
+        final NEMAActivity activity = settings.arguments as NEMAActivity;
         return MaterialPageRoute<NEMAActivityDetailsView>(
           builder: (_) => NEMAActivityDetailsView(activity: activity),
         );
       case RoutePaths.adverts:
         return MaterialPageRoute<AdvertsView>(builder: (_) => AdvertsView());
       case RoutePaths.advertDetails:
-        final advert = settings.arguments as Advert;
+        final Advert advert = settings.arguments as Advert;
         return MaterialPageRoute<AdvertDetailsView>(
           builder: (_) => AdvertDetailsView(advert: advert),
         );
@@ -148,7 +150,7 @@ class AppRouter {
         );
       // Events case is handled in the networkEvents case above
       case RoutePaths.eventDetails:
-        final event = settings.arguments as Event;
+        final Event event = settings.arguments as Event;
         return MaterialPageRoute<EventDetailsView>(
           builder: (_) => EventDetailsView(event: event),
         );
@@ -164,6 +166,9 @@ class AppRouter {
                   arguments:
                       settings.arguments as UpdateProfileDetailsArguments,
                 ));
+      case RoutePaths.subscription:
+        return MaterialPageRoute<SubscriptionView>(
+            builder: (_) => const SubscriptionView());
       default:
         return null;
     }
