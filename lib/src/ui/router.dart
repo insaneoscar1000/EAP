@@ -2,13 +2,46 @@ import 'package:flutter/material.dart';
 import 'package:the_eap_app/src/core/arguments/arguments.dart';
 import 'package:the_eap_app/src/core/constants/constants.dart';
 import 'package:the_eap_app/src/core/models/models.dart';
+import 'package:the_eap_app/src/core/services/services.dart';
+import 'package:the_eap_app/src/locator.dart';
 import 'package:the_eap_app/src/ui/views/views.dart';
 import 'package:the_eap_app/src/ui/views/projects/iap_database_view/add_iap_entry_view.dart';
 
 import 'package:the_eap_app/src/ui/landing_page.dart';
 
 class AppRouter {
+  /// Routes that are always reachable regardless of subscription state.
+  /// Everything else is gated behind an active trial or paid subscription.
+  static const Set<String> _freeAccessRoutes = <String>{
+    RoutePaths.splash,
+    RoutePaths.welcome,
+    RoutePaths.login,
+    RoutePaths.signUp,
+    RoutePaths.forgotPassword,
+    RoutePaths.home,
+    RoutePaths.account,
+    RoutePaths.updateProfileDetails,
+    RoutePaths.settings,
+    RoutePaths.support,
+    RoutePaths.subscription,
+    RoutePaths.billingHistory,
+    '/landing',
+  };
+
   static Route<dynamic>? generateRoute(RouteSettings settings) {
+    // Trial / subscription gate. The dashboard, account screens and the
+    // subscription page stay reachable so the user can manage payment,
+    // but everything content-y is locked behind a trial-or-paid check.
+    if (settings.name != null && !_freeAccessRoutes.contains(settings.name)) {
+      final SubscriptionService subscription = locator<SubscriptionService>();
+      if (!subscription.isPremiumCached && !subscription.isInTrialCached) {
+        return MaterialPageRoute<SubscriptionView>(
+          builder: (_) => const SubscriptionView(),
+          settings: const RouteSettings(name: RoutePaths.subscription),
+        );
+      }
+    }
+
     switch (settings.name) {
       case RoutePaths.welcome:
         return MaterialPageRoute<WelcomeView>(builder: (_) => WelcomeView());
@@ -169,6 +202,9 @@ class AppRouter {
       case RoutePaths.subscription:
         return MaterialPageRoute<SubscriptionView>(
             builder: (_) => const SubscriptionView());
+      case RoutePaths.billingHistory:
+        return MaterialPageRoute<BillingHistoryView>(
+            builder: (_) => const BillingHistoryView());
       default:
         return null;
     }

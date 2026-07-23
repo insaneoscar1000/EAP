@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:stacked/stacked.dart';
 import 'package:the_eap_app/src/locator.dart';
 import 'package:the_eap_app/src/core/models/models.dart';
@@ -30,12 +29,7 @@ class AccountViewModel extends BaseViewModel {
     setBusy(true);
     await _authService.signOut();
 
-    // Logout from RevenueCat
-    try {
-      await _subscriptionService.logout();
-    } catch (e) {
-      debugPrint('Failed to logout from RevenueCat: $e');
-    }
+    await _subscriptionService.unbind();
 
     await _storageService.clearAll();
     _navigationService.navigateToReplacement(RoutePaths.welcome);

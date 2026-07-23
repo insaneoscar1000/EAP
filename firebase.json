@@ -1,1 +1,75 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"the-eap-app","appId":"1:1026198934075:android:e78fefc5236a3c4dc0c21e","fileOutput":"android/app/google-services.json"}},"ios":{"default":{"projectId":"the-eap-app","appId":"1:1026198934075:ios:1fa398128fd0ba56c0c21e","uploadDebugSymbols":false,"fileOutput":"ios/Runner/GoogleService-Info.plist"}},"dart":{"lib/firebase_options.dart":{"projectId":"the-eap-app","configurations":{"android":"1:1026198934075:android:e78fefc5236a3c4dc0c21e","ios":"1:1026198934075:ios:1fa398128fd0ba56c0c21e"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "the-eap-app",
+          "appId": "1:1026198934075:android:e78fefc5236a3c4dc0c21e",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "the-eap-app",
+          "appId": "1:1026198934075:ios:1fa398128fd0ba56c0c21e",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "the-eap-app",
+          "configurations": {
+            "android": "1:1026198934075:android:e78fefc5236a3c4dc0c21e",
+            "ios": "1:1026198934075:ios:1fa398128fd0ba56c0c21e",
+            "web": "1:1026198934075:web:c4dee442bed4643ec0c21e"
+          }
+        }
+      }
+    }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": ["node_modules", ".git", "firebase-debug.log", "firebase-debug.*.log", "*.local"],
+      "predeploy": ["npm --prefix \"$RESOURCE_DIR\" run build"]
+    }
+  ],
+  "hosting": {
+    "public": "build/web",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "/",
+        "headers": [
+          {"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}
+        ]
+      },
+      {
+        "source": "/index.html",
+        "headers": [
+          {"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}
+        ]
+      },
+      {
+        "source": "/flutter_service_worker.js",
+        "headers": [
+          {"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}
+        ]
+      },
+      {
+        "source": "/flutter_bootstrap.js",
+        "headers": [
+          {"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}
+        ]
+      }
+    ]
+  }
+}

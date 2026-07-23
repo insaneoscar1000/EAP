@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -64,6 +61,16 @@ class DefaultFirebaseOptions {
     projectId: 'the-eap-app',
     storageBucket: 'the-eap-app.firebasestorage.app',
     iosBundleId: 'com.theeap.app',
+  );
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyBAK83Ya303I7iFe1jZw390w4WYURLu_r4',
+    appId: '1:1026198934075:web:c4dee442bed4643ec0c21e',
+    messagingSenderId: '1026198934075',
+    projectId: 'the-eap-app',
+    authDomain: 'the-eap-app.firebaseapp.com',
+    storageBucket: 'the-eap-app.firebasestorage.app',
+    measurementId: 'G-6L0QTVZ2NT',
   );
 
 }

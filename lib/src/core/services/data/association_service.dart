@@ -10,14 +10,15 @@ class AssociationService {
       final QuerySnapshot snapshot =
           await _firestore.collection(ServiceConstants.associations).get();
 
-      print(snapshot.docs.length);
-
-      return snapshot.docs
+      final List<Association> associations = snapshot.docs
           .map((doc) => Association.fromMap(
                 doc.data() as Map<String, dynamic>,
                 id: doc.id,
               ))
           .toList();
+      associations.sort((Association a, Association b) =>
+          a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+      return associations;
     } catch (e) {
       throw Exception('Failed to fetch associations: $e');
     }

@@ -7,6 +7,7 @@ import 'package:the_eap_app/src/ui/router.dart';
 import 'package:the_eap_app/src/ui/shared/theme.dart';
 import 'package:the_eap_app/src/ui/views/views.dart';
 import 'package:the_eap_app/src/ui/managers/dialog_manager.dart';
+import 'package:the_eap_app/src/ui/shared/responsive_scaffold.dart';
 
 class App extends StatefulWidget {
   @override
@@ -25,8 +26,10 @@ class _AppState extends State<App> {
         navigatorKey: locator<NavigationService>().navigationKey,
         onGenerateRoute: AppRouter.generateRoute,
         theme: AppTheme.themeData,
-        builder: (context, child) => DialogManager(
-          child: child ?? Container(),
+        builder: (context, child) => ResponsiveScaffold(
+          child: DialogManager(
+            child: child ?? Container(),
+          ),
         ),
         home: SplashView(),
       ),

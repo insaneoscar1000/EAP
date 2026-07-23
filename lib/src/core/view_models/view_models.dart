@@ -43,3 +43,4 @@ export 'check_regs/nema_activity_details_view_model.dart';
 
 // subscription
 export 'subscription/subscription_view_model.dart';
+export 'subscription/billing_history_view_model.dart';

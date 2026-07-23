@@ -43,3 +43,13 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Cloud Functions (Node/TypeScript)
+functions/node_modules/
+functions/lib/
+
+# Firebase CLI local cache
+.firebase/
+
+# Claude Code local session settings
+.claude/settings.local.json

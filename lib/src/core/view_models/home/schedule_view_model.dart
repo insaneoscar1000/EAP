@@ -241,22 +241,33 @@ class ScheduleViewModel extends BaseViewModel {
       await _taskSubscription?.cancel();
 
       final User? firebaseUser = await _authService.getCurrentUser();
-      if (firebaseUser != null) {
-        final UserRecord? user = await _userService.getUser(firebaseUser.uid);
-        if (user != null && user.id != null) {
-          // Fetch all tasks for the user instead of just for the selected date
-          _taskSubscription = _taskService
-              .getAllTasksForUser(user.id!)
-              .listen((List<Task> taskList) {
-            _allTasks = taskList;
-            notifyListeners();
-            setBusy(false);
-          });
-
-          // Also fetch all projects
-          await fetchProjects();
-        }
+      if (firebaseUser == null) {
+        // No signed-in user — nothing to fetch. Surface that, don't hang.
+        setBusy(false);
+        return;
       }
+      final UserRecord? user = await _userService.getUser(firebaseUser.uid);
+      if (user == null || user.id == null) {
+        setBusy(false);
+        return;
+      }
+
+      _taskSubscription = _taskService.getAllTasksForUser(user.id!).listen(
+        (List<Task> taskList) {
+          _allTasks = taskList;
+          setBusy(false);
+          notifyListeners();
+        },
+        onError: (Object e) {
+          // Without this handler the spinner would spin forever on a
+          // permission-denied or transient Firestore error.
+          setError(e.toString());
+          setBusy(false);
+        },
+      );
+
+      // Projects load in parallel — failures here don't block the task list.
+      await fetchProjects();
     } catch (e) {
       setError(e.toString());
       setBusy(false);

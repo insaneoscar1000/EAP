@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Flutter web (Chrome)",
+      "runtimeExecutable": "flutter",
+      "runtimeArgs": ["run", "-d", "chrome", "--web-port", "8080"],
+      "port": 8080
+    },
+    {
+      "name": "Firebase Functions emulator",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "functions", "run", "serve"],
+      "port": 5001
+    }
+  ]
+}

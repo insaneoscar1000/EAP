@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
+import 'package:the_eap_app/firebase_options.dart';
 import 'package:the_eap_app/src/app.dart';
 import 'package:the_eap_app/src/locator.dart';
-import 'package:the_eap_app/src/core/services/services.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  // Clean web URLs: `/home` instead of `/#/home`. No-op on mobile.
+  usePathUrlStrategy();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   setupLocator();
-
-  // Initialize RevenueCat
-  try {
-    await locator<SubscriptionService>().initialize();
-  } catch (e) {
-    debugPrint('Failed to initialize RevenueCat: $e');
-  }
 
   runApp(App());
 }

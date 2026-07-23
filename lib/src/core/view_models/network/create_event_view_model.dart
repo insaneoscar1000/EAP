@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:stacked/stacked.dart';
@@ -59,27 +60,29 @@ class CreateEventViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  /// Initiates the payment process before creating an event
+  /// Cost of a single event listing, in major currency units (ZAR).
+  static const double eventCost = 990.00;
+
+  /// Creates the event in a pending state and launches PayStack's
+  /// hosted checkout. The PayStack webhook flips the event's payment
+  /// status to `paid` once the transaction completes.
   Future<void> initiatePaymentAndCreateEvent(BuildContext context) async {
+    if (!kIsWeb) {
+      setError('Event listings are purchased on our website. '
+          'Please use the web version of The EAP App to list an event.');
+      return;
+    }
     try {
-      print('Starting payment and event creation process');
       setBusy(true);
       setProcessing(true);
       notifyListeners();
 
-      // Validate required fields
-      if (nameController.text.isEmpty) {
-        throw 'Event name is required';
-      }
+      if (nameController.text.isEmpty) throw 'Event name is required';
       if (organizationController.text.isEmpty) {
         throw 'Organization is required';
       }
-      if (contactNameController.text.isEmpty) {
-        throw 'Contact name is required';
-      }
-      if (emailController.text.isEmpty) {
-        throw 'Email address is required';
-      }
+      if (contactNameController.text.isEmpty) throw 'Contact name is required';
+      if (emailController.text.isEmpty) throw 'Email address is required';
 
       final String? userId =
           await _storageService.getString(StorageConstants.userId);
@@ -87,153 +90,75 @@ class CreateEventViewModel extends BaseViewModel {
         throw 'User ID not found. Please log in again.';
       }
 
-      // Process payment
-      print('Initiating payment...');
-      final paymentReference = 'event_${DateTime.now().millisecondsSinceEpoch}';
-
-      final paymentResult = await _paymentService.makePayment(
-        context: context,
-        email: emailController.text,
-        name: contactNameController.text,
-        amount: 100.00,
-        reference: paymentReference,
-      );
-
-      print('Payment result: $paymentResult');
-
-      // Check if payment was successful
-      if (paymentResult['status'] != 'success') {
-        print('Payment failed with status: ${paymentResult['status']}');
-        setBusy(false);
-        setProcessing(false);
-        notifyListeners();
-        throw 'Payment was not completed. Event creation cancelled.';
-      }
-
-      print('Payment was successful!');
-
-      // Get the payment reference from the result
-      final String confirmedReference =
-          paymentResult['reference'] ?? paymentReference;
-
-      // If payment is successful, proceed with event creation
-      print('Proceeding to create event after successful payment');
-      try {
-        await createEvent(confirmedReference, paymentResult);
-        print('Event creation completed successfully');
-        setBusy(false);
-        setProcessing(false);
-        notifyListeners();
-        _navigationService.pop();
-      } catch (e) {
-        print('Error creating event after payment: $e');
-        setBusy(false);
-        setProcessing(false);
-        notifyListeners();
-        setError(e);
-      }
-    } catch (e) {
-      print('Error in initiatePaymentAndCreateEvent: $e');
-      setBusy(false);
-      setProcessing(false);
-      notifyListeners();
-      setError(e);
-    }
-  }
-
-  /// Creates an event after successful payment
-  Future<void> createEvent(
-      String paymentReference, Map<String, dynamic> paymentData) async {
-    print('Starting createEvent method');
-    try {
-      print('Creating event with data:');
-      print('Name: ${nameController.text}');
-      print('Organization: ${organizationController.text}');
-      print('Expiry Date: $expiryDate');
-      print('Contact Name: ${contactNameController.text}');
-      print('Email: ${emailController.text}');
-      print('Website URL: ${websiteUrlController.text}');
-      print('Payment Reference: $paymentReference');
-
-      final String? userId =
-          await _storageService.getString(StorageConstants.userId);
-      if (userId == null) {
-        throw 'User ID not found. Please log in again.';
-      }
-
-      final event = {
-        'status': 'Approved',
-        'name': nameController.text,
-        'organization': organizationController.text,
-        'expiryDate': Timestamp.fromDate(expiryDate),
-        'contact': {
-          'id': userId,
-          'name': contactNameController.text,
-          'emailAddress': emailController.text,
-        },
-        'flyerUrl': '',
-        'linkUrl': websiteUrlController.text,
-        'payment': {
-          'amount': paymentData['amount'] ?? 100.00,
-          'currency': paymentData['currency'] ?? 'NGN',
-          'reference': paymentReference,
-          'date': Timestamp.now(),
-          'status': paymentData['status'] ?? 'success',
-        },
-        'meta': {
-          'createdDate': FieldValue.serverTimestamp(),
-          'modifiedDate': FieldValue.serverTimestamp(),
-        }
-      };
-
-      print(
-          'Calling createEvent on EventService with event data: ${event.toString()}');
-      String eventId = await _eventService.createEvent(event);
-      print('Event created with ID: $eventId');
+      final String eventId = await _createPendingEvent(userId);
 
       if (selectedImage != null) {
         try {
-          print('Uploading event image');
-          flyerUrl = await _eventService.uploadEventImage(
-            eventId,
-            selectedImage!,
-          );
-          print('Image uploaded successfully: $flyerUrl');
-
-          print('Updating event with flyer URL');
-          await _eventService.updateEvent(eventId, {
+          flyerUrl =
+              await _eventService.uploadEventImage(eventId, selectedImage!);
+          await _eventService.updateEvent(eventId, <String, dynamic>{
             'flyerUrl': flyerUrl,
           });
-          print('Event updated successfully');
-        } catch (e) {
-          print('Error uploading image: $e');
-          // Continue even if image upload fails
+        } catch (_) {
+          // Non-fatal.
         }
       }
 
-      print('Event creation and image upload completed successfully');
-      
-      // Send email notification to the creator
+      final bool launched = await _paymentService.startEventPayment(
+        eventId: eventId,
+        amount: eventCost,
+        email: emailController.text,
+      );
+      if (!launched) {
+        throw 'Could not launch PayStack checkout. Please try again.';
+      }
+
       try {
         await _mailService.sendEventCreationEmail(
           nameController.text,
           organizationController.text,
           contactNameController.text,
-          emailController.text
+          emailController.text,
         );
-        print('Event creation email sent successfully');
-      } catch (e) {
-        print('Error sending event creation email: $e');
-        // Continue even if email sending fails
+      } catch (_) {
+        // Non-fatal.
       }
-      
-      return;
+
+      _navigationService.pop();
     } catch (e) {
-      print('Error in createEvent: $e');
-      setBusy(false);
-      notifyListeners();
       setError(e);
+    } finally {
+      setBusy(false);
+      setProcessing(false);
+      notifyListeners();
     }
+  }
+
+  Future<String> _createPendingEvent(String userId) async {
+    final Map<String, dynamic> event = <String, dynamic>{
+      // Listing is hidden from public feed until payment lands.
+      'status': 'PendingPayment',
+      'name': nameController.text,
+      'organization': organizationController.text,
+      'expiryDate': Timestamp.fromDate(expiryDate),
+      'contact': <String, dynamic>{
+        'id': userId,
+        'name': contactNameController.text,
+        'emailAddress': emailController.text,
+      },
+      'flyerUrl': '',
+      'linkUrl': websiteUrlController.text,
+      'payment': <String, dynamic>{
+        'amount': eventCost,
+        'status': 'pending',
+        'date': Timestamp.now(),
+      },
+      'meta': <String, dynamic>{
+        'createdDate': FieldValue.serverTimestamp(),
+        'modifiedDate': FieldValue.serverTimestamp(),
+      },
+    };
+    return _eventService.createEvent(event);
   }
 
   void setFlyerUrl(String url) {

@@ -1542,7 +1542,7 @@ SPEC CHECKSUMS:
   FirebaseMessaging: 2b9f56aa4ed286e1f0ce2ee1d413aabb8f9f5cb9
   FirebaseSharedSwift: e17c654ef1f1a616b0b33054e663ad1035c8fd40
   FirebaseStorage: e83d1b9c8a5318d46ccfb2955f0d98095e0bf598
-  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_pdfview: 2e4d13ffb774858562ffbdfdb61b40744b191adc
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1

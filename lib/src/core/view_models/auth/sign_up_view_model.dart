@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:stacked/stacked.dart';
@@ -43,12 +42,7 @@ class SignUpViewModel extends BaseViewModel {
             : null,
       ));
       if (createUserResult) {
-        // Login to RevenueCat with the new user's Firebase ID
-        try {
-          await _subscriptionService.login(user.uid);
-        } catch (e) {
-          debugPrint('Failed to login to RevenueCat: $e');
-        }
+        await _subscriptionService.bind(user.uid);
 
         await _storageService.setString(StorageConstants.userId, user.uid);
         _navigationService.navigateToReplacement(RoutePaths.home);
@@ -75,6 +69,8 @@ class SignUpViewModel extends BaseViewModel {
     setBusy(true);
 
     String? token = await _pushNotificationService.getToken();
+    final DateTime trialEndsAt =
+        DateTime.now().add(SubscriptionService.trialDuration);
     Map<String, dynamic> data = <String, dynamic>{
       'token': token ?? '',
       'details': <String, dynamic>{
@@ -83,6 +79,12 @@ class SignUpViewModel extends BaseViewModel {
         'dateOfBirth': dateOfBirth
       },
       'contact': <String, dynamic>{'emailAddress': emailAddress},
+      'subscription': <String, dynamic>{
+        // Every new sign-up gets a 30-day free trial. Until they pay,
+        // `status` stays 'none' but `trialEndsAt` keeps access open.
+        'status': 'none',
+        'trialEndsAt': Timestamp.fromDate(trialEndsAt),
+      },
       'meta': <String, dynamic>{
         'createdDate': FieldValue.serverTimestamp(),
         'modifiedDate': FieldValue.serverTimestamp()

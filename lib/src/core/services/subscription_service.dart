@@ -1,206 +1,171 @@
 import 'dart:async';
-import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
-import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:the_eap_app/src/core/services/app/storage_service.dart';
+import 'package:the_eap_app/src/core/constants/constants.dart';
+import 'package:the_eap_app/src/locator.dart';
 
+/// Subscription state for the current user.
+///
+/// Source of truth is Firestore: `users/{uid}.subscription`, written by
+/// the PayStack webhook Cloud Function after a successful web purchase.
+/// The mobile app is read-only — purchases happen exclusively on the
+/// web build to comply with App Store / Play Store anti-steering rules.
 class SubscriptionService {
-  // RevenueCat Test Store API key (works for both platforms during testing)
-  // TODO: Replace with production API keys when ready
-  static const String _iosApiKey = 'test_rYwKiIqBYQKqZmTrgEysAmfrEto';
-  static const String _androidApiKey = 'test_rYwKiIqBYQKqZmTrgEysAmfrEto';
+  final StorageService _storageService = locator<StorageService>();
 
-  // Entitlement ID - this should match what you set up in RevenueCat dashboard
-  static const String entitlementId = 'premium';
+  /// Status values written by the webhook.
+  static const String statusActive = 'active';
+  static const String statusCancelled = 'cancelled';
+  static const String statusExpired = 'expired';
+  static const String statusNone = 'none';
 
-  // Product ID for monthly subscription
-  static const String monthlyProductId = 'com.theeap.app.premium.monthly';
+  /// Length of the free trial granted to every new sign-up.
+  static const Duration trialDuration = Duration(days: 30);
 
-  bool _isInitialized = false;
-  CustomerInfo? _customerInfo;
-  final StreamController<CustomerInfo> _customerInfoController =
-      StreamController<CustomerInfo>.broadcast();
+  Map<String, dynamic>? _subscription;
+  Map<String, dynamic>? get subscription => _subscription;
 
-  Stream<CustomerInfo> get customerInfoStream => _customerInfoController.stream;
-  CustomerInfo? get customerInfo => _customerInfo;
+  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>?
+      _userDocSubscription;
+  final StreamController<Map<String, dynamic>?> _controller =
+      StreamController<Map<String, dynamic>?>.broadcast();
+  Stream<Map<String, dynamic>?> get subscriptionStream => _controller.stream;
 
-  /// Initialize RevenueCat SDK
-  Future<void> initialize() async {
-    if (_isInitialized) return;
-
-    try {
-      final configuration = PurchasesConfiguration(
-        Platform.isIOS ? _iosApiKey : _androidApiKey,
-      );
-
-      await Purchases.configure(configuration);
-      _isInitialized = true;
-
-      // Listen for customer info updates
-      Purchases.addCustomerInfoUpdateListener((customerInfo) {
-        _customerInfo = customerInfo;
-        _customerInfoController.add(customerInfo);
-      });
-
-      // Get initial customer info
-      _customerInfo = await Purchases.getCustomerInfo();
-      debugPrint('RevenueCat initialized successfully');
-    } catch (e) {
-      debugPrint('Error initializing RevenueCat: $e');
-      rethrow;
-    }
+  /// Begin listening to the current user's subscription field.
+  /// Called after sign-in / sign-up.
+  Future<void> bind(String userId) async {
+    await _userDocSubscription?.cancel();
+    _userDocSubscription = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .snapshots()
+        .listen((DocumentSnapshot<Map<String, dynamic>> snap) {
+      final Map<String, dynamic>? data = snap.data();
+      _subscription = data?['subscription'] as Map<String, dynamic>?;
+      _controller.add(_subscription);
+    }, onError: (Object e) {
+      debugPrint('SubscriptionService stream error: $e');
+    });
   }
 
-  /// Login user to RevenueCat (call after Firebase auth)
-  Future<void> login(String userId) async {
-    try {
-      final result = await Purchases.logIn(userId);
-      _customerInfo = result.customerInfo;
-      _customerInfoController.add(result.customerInfo);
-      debugPrint('RevenueCat user logged in: $userId');
-    } catch (e) {
-      debugPrint('Error logging in to RevenueCat: $e');
-      rethrow;
-    }
+  /// Stop listening. Called on logout.
+  Future<void> unbind() async {
+    await _userDocSubscription?.cancel();
+    _userDocSubscription = null;
+    _subscription = null;
+    _controller.add(null);
   }
 
-  /// Logout user from RevenueCat
-  Future<void> logout() async {
-    try {
-      _customerInfo = await Purchases.logOut();
-      debugPrint('RevenueCat user logged out');
-    } catch (e) {
-      debugPrint('Error logging out from RevenueCat: $e');
-      rethrow;
-    }
-  }
-
-  /// Check if user has active premium subscription
+  /// One-shot fetch — useful for places that don't subscribe to the stream.
   Future<bool> isPremium() async {
+    final String? userId =
+        await _storageService.getString(StorageConstants.userId);
+    if (userId == null) {
+      return false;
+    }
     try {
-      final customerInfo = await Purchases.getCustomerInfo();
-      _customerInfo = customerInfo;
-
-      debugPrint('RevenueCat Customer ID: ${customerInfo.originalAppUserId}');
-      debugPrint(
-          'RevenueCat Active Entitlements: ${customerInfo.entitlements.active.keys.toList()}');
-      debugPrint(
-          'RevenueCat All Entitlements: ${customerInfo.entitlements.all.keys.toList()}');
-
-      final hasPremium =
-          customerInfo.entitlements.active.containsKey(entitlementId);
-      debugPrint('Has premium entitlement "$entitlementId": $hasPremium');
-
-      return hasPremium;
+      final DocumentSnapshot<Map<String, dynamic>> doc = await FirebaseFirestore
+          .instance
+          .collection('users')
+          .doc(userId)
+          .get();
+      final Map<String, dynamic>? sub =
+          doc.data()?['subscription'] as Map<String, dynamic>?;
+      _subscription = sub;
+      return _isActive(sub);
     } catch (e) {
-      debugPrint('Error checking premium status: $e');
+      debugPrint('SubscriptionService.isPremium error: $e');
       return false;
     }
   }
 
-  /// Get current subscription status synchronously (from cache)
-  bool get isPremiumCached {
-    return _customerInfo?.entitlements.active.containsKey(entitlementId) ??
-        false;
-  }
+  /// Cached premium check — uses last-known stream value, no network.
+  bool get isPremiumCached => _isActive(_subscription);
 
-  /// Get available offerings (subscription packages)
-  Future<Offerings?> getOfferings() async {
-    try {
-      final offerings = await Purchases.getOfferings();
-      return offerings;
-    } catch (e) {
-      debugPrint('Error getting offerings: $e');
-      return null;
+  /// True if the user has either a paid subscription OR is still within
+  /// the free trial window. This is the gate for "can access content".
+  bool get hasAccessCached =>
+      isPremiumCached || _isInTrial(_subscription);
+
+  /// One-shot fetch of [hasAccessCached] — useful for places that don't
+  /// subscribe to the stream.
+  Future<bool> hasAccess() async {
+    if (await isPremium()) {
+      return true;
     }
+    return _isInTrial(_subscription);
   }
 
-  /// Get the monthly subscription package
-  Future<Package?> getMonthlyPackage() async {
-    try {
-      final offerings = await getOfferings();
-      if (offerings?.current != null) {
-        // Try to get monthly package from current offering
-        return offerings!.current!.monthly;
-      }
-      return null;
-    } catch (e) {
-      debugPrint('Error getting monthly package: $e');
-      return null;
+  /// Date the free trial ends, if any.
+  DateTime? get trialEndsAt {
+    final Object? raw = _subscription?['trialEndsAt'];
+    if (raw is Timestamp) {
+      return raw.toDate();
     }
-  }
-
-  /// Purchase a subscription package
-  Future<bool> purchasePackage(Package package) async {
-    try {
-      final customerInfo = await Purchases.purchasePackage(package);
-      _customerInfo = customerInfo;
-      _customerInfoController.add(customerInfo);
-
-      // Check if purchase was successful
-      if (customerInfo.entitlements.active.containsKey(entitlementId)) {
-        debugPrint('Purchase successful!');
-        return true;
-      }
-      return false;
-    } on PurchasesErrorCode catch (e) {
-      debugPrint('Purchase error: $e');
-      if (e == PurchasesErrorCode.purchaseCancelledError) {
-        debugPrint('User cancelled purchase');
-      }
-      return false;
-    } catch (e) {
-      debugPrint('Error purchasing package: $e');
-      return false;
-    }
-  }
-
-  /// Restore previous purchases
-  Future<bool> restorePurchases() async {
-    try {
-      final customerInfo = await Purchases.restorePurchases();
-      _customerInfo = customerInfo;
-      _customerInfoController.add(customerInfo);
-
-      if (customerInfo.entitlements.active.containsKey(entitlementId)) {
-        debugPrint('Restore successful - premium access restored');
-        return true;
-      }
-      debugPrint('Restore completed - no active subscriptions found');
-      return false;
-    } catch (e) {
-      debugPrint('Error restoring purchases: $e');
-      return false;
-    }
-  }
-
-  /// Get subscription expiration date
-  DateTime? getExpirationDate() {
-    final entitlement = _customerInfo?.entitlements.active[entitlementId];
-    if (entitlement?.expirationDate != null) {
-      return DateTime.parse(entitlement!.expirationDate!);
+    if (raw is String) {
+      return DateTime.tryParse(raw);
     }
     return null;
   }
 
-  /// Check if subscription will renew
-  bool get willRenew {
-    final entitlement = _customerInfo?.entitlements.active[entitlementId];
-    return entitlement?.willRenew ?? false;
+  /// True if the user is currently inside their free trial window.
+  bool get isInTrialCached => _isInTrial(_subscription);
+
+  DateTime? get expirationDate {
+    final Object? raw = _subscription?['currentPeriodEnd'];
+    if (raw is Timestamp) {
+      return raw.toDate();
+    }
+    if (raw is String) {
+      return DateTime.tryParse(raw);
+    }
+    return null;
   }
 
-  /// Get management URL for subscription
-  Future<String?> getManagementUrl() async {
-    try {
-      final customerInfo = await Purchases.getCustomerInfo();
-      return customerInfo.managementURL;
-    } catch (e) {
-      debugPrint('Error getting management URL: $e');
-      return null;
+  String get status =>
+      (_subscription?['status'] as String?) ?? statusNone;
+
+  bool _isInTrial(Map<String, dynamic>? sub) {
+    if (sub == null) {
+      return false;
     }
+    final Object? raw = sub['trialEndsAt'];
+    final DateTime? endsAt = raw is Timestamp
+        ? raw.toDate()
+        : (raw is String ? DateTime.tryParse(raw) : null);
+    if (endsAt == null) {
+      return false;
+    }
+    return endsAt.isAfter(DateTime.now());
+  }
+
+  bool _isActive(Map<String, dynamic>? sub) {
+    if (sub == null) {
+      return false;
+    }
+    if (sub['status'] != statusActive) {
+      return false;
+    }
+    final DateTime? exp = (() {
+      final Object? raw = sub['currentPeriodEnd'];
+      if (raw is Timestamp) {
+        return raw.toDate();
+      }
+      if (raw is String) {
+        return DateTime.tryParse(raw);
+      }
+      return null;
+    })();
+    if (exp == null) {
+      return true; // No expiry recorded — treat as active.
+    }
+    return exp.isAfter(DateTime.now());
   }
 
   void dispose() {
-    _customerInfoController.close();
+    _userDocSubscription?.cancel();
+    _controller.close();
   }
 }

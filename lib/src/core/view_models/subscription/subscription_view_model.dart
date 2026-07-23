@@ -1,145 +1,89 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
-import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:stacked/stacked.dart';
+import 'package:the_eap_app/src/core/constants/constants.dart';
 import 'package:the_eap_app/src/core/services/services.dart';
 import 'package:the_eap_app/src/locator.dart';
-import 'package:url_launcher/url_launcher.dart';
 
+/// Subscription view model.
+///
+/// Mobile (iOS/Android): read-only. Shows current entitlement only.
+/// Web: also exposes [startCheckout] so users can subscribe via PayStack.
 class SubscriptionViewModel extends BaseViewModel {
   final SubscriptionService _subscriptionService =
       locator<SubscriptionService>();
   final NavigationService _navigationService = locator<NavigationService>();
+  final PaymentService _paymentService = locator<PaymentService>();
 
-  StreamSubscription<CustomerInfo>? _customerInfoSubscription;
+  StreamSubscription<Map<String, dynamic>?>? _subscriptionStreamSub;
 
-  bool _isPremium = false;
-  bool get isPremium => _isPremium;
+  bool _isStartingCheckout = false;
+  bool get isStartingCheckout => _isStartingCheckout;
 
-  Package? _monthlyPackage;
-  Package? get monthlyPackage => _monthlyPackage;
-
-  String? _priceString;
-  String? get priceString => _priceString;
-
-  DateTime? _expirationDate;
-  DateTime? get expirationDate => _expirationDate;
-
-  bool _willRenew = false;
-  bool get willRenew => _willRenew;
-
-  bool _isPurchasing = false;
-  bool get isPurchasing => _isPurchasing;
-
-  bool _isRestoring = false;
-  bool get isRestoring => _isRestoring;
+  bool _isCancelling = false;
+  bool get isCancelling => _isCancelling;
 
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
+  bool get isPremium => _subscriptionService.isPremiumCached;
+  bool get isInTrial => _subscriptionService.isInTrialCached;
+  DateTime? get trialEndsAt => _subscriptionService.trialEndsAt;
+  DateTime? get expirationDate => _subscriptionService.expirationDate;
+  String get status => _subscriptionService.status;
+
   Future<void> initialize() async {
     setBusy(true);
-
-    try {
-      // Check current subscription status
-      _isPremium = await _subscriptionService.isPremium();
-      _expirationDate = _subscriptionService.getExpirationDate();
-      _willRenew = _subscriptionService.willRenew;
-
-      // Get available package
-      _monthlyPackage = await _subscriptionService.getMonthlyPackage();
-      if (_monthlyPackage != null) {
-        _priceString = _monthlyPackage!.storeProduct.priceString;
-      }
-
-      // Listen for subscription changes
-      _customerInfoSubscription = _subscriptionService.customerInfoStream
-          .listen((CustomerInfo customerInfo) {
-        _isPremium = customerInfo.entitlements.active
-            .containsKey(SubscriptionService.entitlementId);
-        _expirationDate = _subscriptionService.getExpirationDate();
-        _willRenew = _subscriptionService.willRenew;
-        notifyListeners();
-      });
-    } catch (e) {
-      _errorMessage = 'Failed to load subscription info: $e';
-      debugPrint(_errorMessage);
-    }
-
+    await _subscriptionService.isPremium();
+    _subscriptionStreamSub =
+        _subscriptionService.subscriptionStream.listen((_) {
+      notifyListeners();
+    });
     setBusy(false);
   }
 
-  Future<bool> purchaseSubscription() async {
-    if (_monthlyPackage == null) {
-      _errorMessage = 'No subscription package available';
-      notifyListeners();
-      return false;
-    }
-
-    _isPurchasing = true;
+  /// Web only — launches PayStack hosted checkout for the monthly plan.
+  Future<void> startCheckout() async {
     _errorMessage = null;
+    _isStartingCheckout = true;
     notifyListeners();
-
     try {
-      final bool success =
-          await _subscriptionService.purchasePackage(_monthlyPackage!);
-
-      if (success) {
-        _isPremium = true;
-        _expirationDate = _subscriptionService.getExpirationDate();
-        _willRenew = _subscriptionService.willRenew;
+      final String? email = FirebaseAuth.instance.currentUser?.email;
+      if (email == null) {
+        _errorMessage = 'You must be logged in to subscribe.';
+        return;
       }
-
-      _isPurchasing = false;
-      notifyListeners();
-      return success;
+      final bool launched = await _paymentService.startSubscription(
+        planCode: PaystackConstants.monthlyPlanCode,
+        email: email,
+      );
+      if (!launched) {
+        _errorMessage = 'Could not start checkout. Please try again.';
+      }
     } catch (e) {
-      _errorMessage = 'Purchase failed: $e';
-      _isPurchasing = false;
+      _errorMessage = 'Checkout failed: $e';
+    } finally {
+      _isStartingCheckout = false;
       notifyListeners();
-      return false;
     }
   }
 
-  Future<bool> restorePurchases() async {
-    _isRestoring = true;
+  /// Cancels the user's active subscription. Renewals stop; access
+  /// continues until the current period ends.
+  Future<bool> cancelSubscription() async {
     _errorMessage = null;
+    _isCancelling = true;
     notifyListeners();
-
     try {
-      final bool success = await _subscriptionService.restorePurchases();
-
-      if (success) {
-        _isPremium = true;
-        _expirationDate = _subscriptionService.getExpirationDate();
-        _willRenew = _subscriptionService.willRenew;
-      } else {
-        _errorMessage = 'No active subscriptions found to restore';
+      final bool success = await _paymentService.cancelSubscription();
+      if (!success) {
+        _errorMessage = 'Could not cancel subscription. Please try again.';
       }
-
-      _isRestoring = false;
-      notifyListeners();
       return success;
-    } catch (e) {
-      _errorMessage = 'Restore failed: $e';
-      _isRestoring = false;
+    } finally {
+      _isCancelling = false;
       notifyListeners();
-      return false;
-    }
-  }
-
-  Future<void> openManageSubscription() async {
-    final String? url = await _subscriptionService.getManagementUrl();
-    if (url != null) {
-      final Uri uri = Uri.parse(url);
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-      } else {
-        debugPrint('Could not launch management URL: $url');
-      }
-    } else {
-      debugPrint('No management URL available');
     }
   }
 
@@ -149,7 +93,7 @@ class SubscriptionViewModel extends BaseViewModel {
 
   @override
   void dispose() {
-    _customerInfoSubscription?.cancel();
+    _subscriptionStreamSub?.cancel();
     super.dispose();
   }
 }
