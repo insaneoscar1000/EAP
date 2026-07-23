@@ -53,5 +53,8 @@ class RoutePaths {
   static const String addIapEntry = '/projects/iap_database/add_entry';
   static const String editIapEntry = '/projects/iap_database/edit_entry';
   static const String subscription = '/subscription';
+  // PayStack's checkout `callback_url` for the subscription plan — the
+  // browser is redirected here after checkout completes.
+  static const String subscriptionReturn = '/subscription/return';
   static const String billingHistory = '/billing_history';
 }

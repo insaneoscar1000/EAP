@@ -24,6 +24,7 @@ class AppRouter {
     RoutePaths.settings,
     RoutePaths.support,
     RoutePaths.subscription,
+    RoutePaths.subscriptionReturn,
     RoutePaths.billingHistory,
     '/landing',
   };
@@ -202,6 +203,14 @@ class AppRouter {
       case RoutePaths.subscription:
         return MaterialPageRoute<SubscriptionView>(
             builder: (_) => const SubscriptionView());
+      case RoutePaths.subscriptionReturn:
+        // PayStack redirects here after checkout. The webhook that flips
+        // Firestore to "active" can take anywhere from seconds to a few
+        // minutes to arrive, so land on the same view with a flag that
+        // tells it to show a "confirming payment" message in the meantime.
+        return MaterialPageRoute<SubscriptionView>(
+            builder: (_) => const SubscriptionView(justReturnedFromCheckout: true),
+            settings: const RouteSettings(name: RoutePaths.subscription));
       case RoutePaths.billingHistory:
         return MaterialPageRoute<BillingHistoryView>(
             builder: (_) => const BillingHistoryView());

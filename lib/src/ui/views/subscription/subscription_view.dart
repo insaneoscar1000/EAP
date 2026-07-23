@@ -14,7 +14,14 @@ import 'package:the_eap_app/src/ui/shared/widgets/widgets.dart';
 /// button, pricing, or link to a web checkout. Premium subscriptions
 /// are sold exclusively on the web app.
 class SubscriptionView extends StatelessWidget {
-  const SubscriptionView({Key? key}) : super(key: key);
+  const SubscriptionView({Key? key, this.justReturnedFromCheckout = false})
+      : super(key: key);
+
+  /// True when the user was just redirected back from PayStack checkout.
+  /// The webhook that activates the subscription in Firestore can take a
+  /// few minutes to arrive, so show a "confirming payment" message instead
+  /// of letting the free-account state look like the payment failed.
+  final bool justReturnedFromCheckout;
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +41,10 @@ class SubscriptionView extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: <Widget>[
                         _Header(isPremium: model.isPremium),
+                        if (justReturnedFromCheckout && !model.isPremium) ...<Widget>[
+                          const SizedBox(height: 16),
+                          const _ConfirmingPaymentBanner(),
+                        ],
                         const SizedBox(height: 24),
                         if (model.isPremium)
                           _ActiveStatus(expirationDate: model.expirationDate)
@@ -355,6 +366,39 @@ class _WebCancelCta extends StatelessWidget {
               'Cancel subscription',
               style: TextStyle(fontSize: 16, color: Colors.grey[700]),
             ),
+    );
+  }
+}
+
+class _ConfirmingPaymentBanner extends StatelessWidget {
+  const _ConfirmingPaymentBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.amber.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.amber.withOpacity(0.4)),
+      ),
+      child: const Row(
+        children: <Widget>[
+          SizedBox(
+            height: 18,
+            width: 18,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+          SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'Payment received — confirming your subscription. This page '
+              'will update automatically, which can take a few minutes.',
+              style: TextStyle(fontSize: 14, color: Colors.black87),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
