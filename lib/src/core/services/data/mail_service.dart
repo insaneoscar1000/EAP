@@ -232,7 +232,7 @@ class MailService {
                                         <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                             <tr>
                                                 <td style="padding: 0 0 0 0; font-size: 16px; line-height: 25px; color: #232323;" class="padding">
-                                                    <h2 style="font-size: 20px; font-weight: 400; color: #232323; margin: 0;">Dear Forget The Socks Team,</h2>
+                                                    <h2 style="font-size: 20px; font-weight: 400; color: #232323; margin: 0;">Dear EAP App Team,</h2>
                                                 </td>
                                             </tr>
                                             <tr>
@@ -261,7 +261,7 @@ class MailService {
                 <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" style="max-width: 500px;" class="responsive-table">
                     <tr>
                         <td align="center" style="font-size: 12px; line-height: 18px; font-family: Helvetica, Arial, sans-serif; color:#666666;">
-                            Forget The Socks Pty Ltd | 123 Main St., Anytown, ST 12345
+                            The EAP App | Environmental Assessment Practitioners
                         </td>
                     </tr>
                 </table>
@@ -272,7 +272,7 @@ class MailService {
 </html>''',
         },
         'to': <String?>[
-          'harley@origensoftware.com',
+          'sandyvanderwaal@gmail.com',
         ]
       };
       await _firestore.collection(ServiceConstants.mail).add(doc);
