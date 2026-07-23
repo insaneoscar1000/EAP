@@ -297,7 +297,9 @@ export const initializeEventPayment = onCall(
 // ---------------------------------------------------------------------------
 
 export const paystackWebhook = onRequest(
-  {secrets: [paystackSecret]},
+  // Keep one warm instance so PayStack's webhook never sits behind a
+  // cold start -- delivery timing is otherwise on PayStack's side.
+  {secrets: [paystackSecret], minInstances: 1},
   async (req, res) => {
     // Verify signature. PayStack signs the raw body with HMAC-SHA512
     // using the secret key.
