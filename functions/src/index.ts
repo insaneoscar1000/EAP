@@ -18,7 +18,6 @@
 import * as crypto from 'crypto';
 import axios from 'axios';
 import {initializeApp} from 'firebase-admin/app';
-import {getAuth} from 'firebase-admin/auth';
 import {getFirestore, FieldValue, Timestamp} from 'firebase-admin/firestore';
 import {
   onCall,
@@ -32,11 +31,6 @@ import {logger} from 'firebase-functions/v2';
 initializeApp();
 
 const paystackSecret = defineSecret('PAYSTACK_SECRET_KEY');
-
-// Temporary — bootstraps the first admin-portal accounts, since the portal
-// has no way to create its own first admin (every path requires already
-// being logged in as one). Remove this function once it's been called.
-const bootstrapSecret = defineSecret('ADMIN_BOOTSTRAP_SECRET');
 
 // Firebase Hosting auto-provisions `https://<project-id>.web.app` until a
 // custom domain is connected. Update when the production domain is live.
@@ -348,49 +342,6 @@ export const paystackWebhook = onRequest(
       logger.error('Webhook handler error', e);
       res.status(500).send('Handler error');
     }
-  },
-);
-
-// ---------------------------------------------------------------------------
-// Temporary: bootstrap admin-portal accounts
-// ---------------------------------------------------------------------------
-
-export const bootstrapAdmins = onRequest(
-  {secrets: [bootstrapSecret]},
-  async (req, res) => {
-    if (req.header('x-bootstrap-secret') !== bootstrapSecret.value()) {
-      res.status(403).send('Forbidden');
-      return;
-    }
-
-    const admins = req.body?.admins as
-      | Array<{email: string; password: string; name: string}>
-      | undefined;
-    if (!admins?.length) {
-      res.status(400).send('Expected { admins: [{ email, password, name }] }');
-      return;
-    }
-
-    const results: Array<{email: string; uid: string}> = [];
-    for (const {email, password, name} of admins) {
-      const userRecord = await getAuth().createUser({
-        email,
-        password,
-        displayName: name,
-      });
-      await getFirestore().collection('admins').doc(userRecord.uid).set({
-        contact: {emailAddress: email},
-        details: {name},
-        isEnabled: true,
-        meta: {
-          createdDate: FieldValue.serverTimestamp(),
-          modifiedDate: FieldValue.serverTimestamp(),
-        },
-      });
-      results.push({email, uid: userRecord.uid});
-    }
-
-    res.status(200).json({created: results});
   },
 );
 
