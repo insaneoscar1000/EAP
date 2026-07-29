@@ -396,14 +396,27 @@ async function handleChargeSuccess(data: any): Promise<void> {
   }
 
   if (purpose === 'subscription') {
-    // First charge of a new subscription — record the entitlement.
-    // `subscription.create` will follow with the canonical period end.
+    // Every successful charge (first payment AND each monthly renewal)
+    // extends access by one billing cycle from here directly, rather than
+    // waiting on `subscription.create`/`subscription.enable` to supply the
+    // canonical period end. Those lifecycle events only fire once, when a
+    // subscription is first created (or re-enabled from a disabled state)
+    // -- NOT on every recurring renewal charge -- so relying on them alone
+    // left `currentPeriodEnd` frozen at the first cycle's date forever,
+    // silently cutting off access after ~30 days even though PayStack kept
+    // charging the customer every month. `handleSubscriptionActive` below
+    // still runs when PayStack does send those events and will refine this
+    // with the real `next_payment_date` if available.
+    const currentPeriodEnd = Timestamp.fromMillis(
+      Date.now() + 30 * 24 * 60 * 60 * 1000,
+    );
     await getFirestore().collection('users').doc(uid).set(
       {
         subscription: {
           status: 'active',
           plan: data?.plan?.plan_code ?? null,
           lastPaymentRef: data.reference,
+          currentPeriodEnd,
           updatedAt: FieldValue.serverTimestamp(),
         },
       },
