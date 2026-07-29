@@ -37,11 +37,25 @@ class SubscriptionService {
   /// Called after sign-in / sign-up.
   Future<void> bind(String userId) async {
     await _userDocSubscription?.cancel();
-    _userDocSubscription = FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .snapshots()
-        .listen((DocumentSnapshot<Map<String, dynamic>> snap) {
+    final DocumentReference<Map<String, dynamic>> ref =
+        FirebaseFirestore.instance.collection('users').doc(userId);
+
+    // Eager one-shot fetch so `_subscription` is guaranteed fresh the
+    // instant `bind()` returns. The snapshot listener below attaches
+    // asynchronously and its first event isn't guaranteed to have arrived
+    // yet — without this, a caller that navigates immediately after
+    // `await bind(...)` could hit a stale/null cached value and get
+    // bounced to the paywall despite having an active subscription.
+    try {
+      final DocumentSnapshot<Map<String, dynamic>> snap = await ref.get();
+      _subscription = snap.data()?['subscription'] as Map<String, dynamic>?;
+      _controller.add(_subscription);
+    } catch (e) {
+      debugPrint('SubscriptionService.bind initial fetch error: $e');
+    }
+
+    _userDocSubscription = ref.snapshots().listen(
+        (DocumentSnapshot<Map<String, dynamic>> snap) {
       final Map<String, dynamic>? data = snap.data();
       _subscription = data?['subscription'] as Map<String, dynamic>?;
       _controller.add(_subscription);
