@@ -502,9 +502,11 @@ class CreateProjectViewModel extends BaseViewModel {
             
             // Save the updated project
             await _projectService.updateProject(updatedProject);
-            
+
             // Move to the next step
             _currentStep++;
+          } else {
+            throw Exception('Could not load this project — check your connection and try again');
           }
         } else {
           throw Exception('Project ID is missing');
@@ -531,9 +533,11 @@ class CreateProjectViewModel extends BaseViewModel {
             
             // Save the updated project
             await _projectService.updateProject(updatedProject);
-            
+
             // Move to the next step
             _currentStep++;
+          } else {
+            throw Exception('Could not load this project — check your connection and try again');
           }
         } else {
           throw Exception('Project ID is missing');
@@ -558,9 +562,11 @@ class CreateProjectViewModel extends BaseViewModel {
             
             // Save the updated project
             await _projectService.updateProject(updatedProject);
-            
+
             // Move to the next step
             _currentStep++;
+          } else {
+            throw Exception('Could not load this project — check your connection and try again');
           }
         } else {
           throw Exception('Project ID is missing');
@@ -590,9 +596,11 @@ class CreateProjectViewModel extends BaseViewModel {
             
             // Save the updated project
             await _projectService.updateProject(updatedProject);
-            
+
             // Move to the next step
             _currentStep++;
+          } else {
+            throw Exception('Could not load this project — check your connection and try again');
           }
         } else {
           throw Exception('Project ID is missing');
@@ -618,9 +626,11 @@ class CreateProjectViewModel extends BaseViewModel {
             
             // Save the updated project
             await _projectService.updateProject(updatedProject);
-            
+
             // Move to the next step
             _currentStep++;
+          } else {
+            throw Exception('Could not load this project — check your connection and try again');
           }
         } else {
           throw Exception('Project ID is missing');
@@ -649,9 +659,11 @@ class CreateProjectViewModel extends BaseViewModel {
             
             // Save the updated project
             await _projectService.updateProject(updatedProject);
-            
+
             // Move to the next step
             _currentStep++;
+          } else {
+            throw Exception('Could not load this project — check your connection and try again');
           }
         } else {
           throw Exception('Project ID is missing');
@@ -680,9 +692,11 @@ class CreateProjectViewModel extends BaseViewModel {
             
             // Save the updated project
             await _projectService.updateProject(updatedProject);
-            
+
             // Move to the next step
             _currentStep++;
+          } else {
+            throw Exception('Could not load this project — check your connection and try again');
           }
         } else {
           throw Exception('Project ID is missing');
@@ -712,6 +726,8 @@ class CreateProjectViewModel extends BaseViewModel {
             await _projectService.completeProject(_projectId!);
             _navigationService.pop(); // Return to projects list
             return;
+          } else {
+            throw Exception('Could not load this project — check your connection and try again');
           }
         } else {
           throw Exception('Project ID is missing');

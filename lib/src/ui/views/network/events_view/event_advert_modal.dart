@@ -38,7 +38,7 @@ class EventAdvertModal extends StatelessWidget {
               ),
               child: Center(
                 child: Text(
-                  'R999/month',
+                  'R990/month',
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w700,
@@ -49,7 +49,7 @@ class EventAdvertModal extends StatelessWidget {
             ),
             SizedBox(height: 24),
             Text(
-              'New Event or short course',
+              'New event or short course',
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.w700,

@@ -74,12 +74,12 @@ class _CreateEventViewState extends State<CreateEventView> {
                                               fit: BoxFit.cover,
                                             ),
                                           )
-                                        : model.selectedImage != null
+                                        : model.selectedImageBytes != null
                                             ? ClipRRect(
                                                 borderRadius:
                                                     BorderRadius.circular(12),
-                                                child: Image.file(
-                                                  model.selectedImage!,
+                                                child: Image.memory(
+                                                  model.selectedImageBytes!,
                                                   fit: BoxFit.cover,
                                                 ),
                                               )
@@ -268,9 +268,8 @@ class _CreateEventViewState extends State<CreateEventView> {
                                 ),
                                 SizedBox(height: 16),
                                 _buildTextField(
-                                  'Role*',
+                                  'Role',
                                   model.roleController,
-                                  required: true,
                                 ),
                                 SizedBox(height: 16),
                                 _buildTextField(
@@ -325,7 +324,7 @@ class _CreateEventViewState extends State<CreateEventView> {
                                                   title:
                                                       Text('Payment Required'),
                                                   content: Text(
-                                                      'Creating an event requires a payment of ₦100.00. Would you like to proceed with payment?'),
+                                                      'Creating an event requires a payment of R${CreateEventViewModel.eventCost.toStringAsFixed(2)}. Would you like to proceed with payment?'),
                                                   actions: [
                                                     TextButton(
                                                       onPressed: () {
@@ -342,6 +341,35 @@ class _CreateEventViewState extends State<CreateEventView> {
                                                           await model
                                                               .initiatePaymentAndCreateEvent(
                                                                   context);
+                                                          // The model
+                                                          // catches its own
+                                                          // errors
+                                                          // (setError)
+                                                          // rather than
+                                                          // rethrowing, so
+                                                          // this catch
+                                                          // block never
+                                                          // actually saw a
+                                                          // failure --
+                                                          // "Proceed to
+                                                          // Payment" would
+                                                          // just silently
+                                                          // do nothing.
+                                                          if (model.hasError &&
+                                                              context
+                                                                  .mounted) {
+                                                            ScaffoldMessenger
+                                                                    .of(context)
+                                                                .showSnackBar(
+                                                              SnackBar(
+                                                                content: Text(model
+                                                                    .modelError
+                                                                    .toString()),
+                                                                backgroundColor:
+                                                                    Colors.red,
+                                                              ),
+                                                            );
+                                                          }
                                                         } catch (e) {
                                                           ScaffoldMessenger.of(
                                                                   context)

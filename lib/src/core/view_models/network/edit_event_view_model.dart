@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,7 +14,10 @@ class EditEventViewModel extends BaseViewModel {
   final _imagePicker = ImagePicker();
   final _navigationService = locator<NavigationService>();
 
-  File? selectedImage;
+  // XFile (not dart:io's File) -- this flow runs on the web build only,
+  // where File's path-based APIs don't work at all.
+  XFile? selectedImage;
+  Uint8List? selectedImageBytes;
   String? flyerUrl;
   late DateTime expiryDate;
   late String eventId;
@@ -46,7 +49,8 @@ class EditEventViewModel extends BaseViewModel {
       );
       if (image == null) return;
 
-      selectedImage = File(image.path);
+      selectedImage = image;
+      selectedImageBytes = await image.readAsBytes();
       notifyListeners();
     } catch (e) {
       setError('Failed to pick image: $e');

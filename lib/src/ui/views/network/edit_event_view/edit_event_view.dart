@@ -117,11 +117,11 @@ class _EditEventViewState extends State<EditEventView> {
                             );
                           }
                         },
-                        child: model.selectedImage != null
+                        child: model.selectedImageBytes != null
                             ? ClipRRect(
                                 borderRadius: BorderRadius.circular(12),
-                                child: Image.file(
-                                  model.selectedImage!,
+                                child: Image.memory(
+                                  model.selectedImageBytes!,
                                   fit: BoxFit.cover,
                                 ),
                               )

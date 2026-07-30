@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +16,10 @@ class CreateAdvertViewModel extends BaseViewModel {
   final _mailService = locator<MailService>();
   final _subscriptionService = locator<SubscriptionService>();
 
-  File? selectedImage;
+  // XFile (not dart:io's File) -- this flow runs on the web build only,
+  // where File's path-based APIs don't work at all.
+  XFile? selectedImage;
+  Uint8List? selectedImageBytes;
 
   // Track if we're processing the payment and advert creation
   bool _isProcessing = false;
@@ -47,7 +50,8 @@ class CreateAdvertViewModel extends BaseViewModel {
       );
       if (image == null) return;
 
-      selectedImage = File(image.path);
+      selectedImage = image;
+      selectedImageBytes = await image.readAsBytes();
       notifyListeners();
     } catch (e) {
       setError('Failed to pick image: $e');
@@ -90,7 +94,9 @@ class CreateAdvertViewModel extends BaseViewModel {
       // 1. Create the listing tied to the subscription. No payment row.
       final String advertId = await _createSubscriptionAdvert(userId);
 
-      // 2. Upload image (if any). Non-fatal on failure.
+      // 2. Upload image (if any). Non-fatal on failure -- but surfaced to
+      // the user now instead of silently vanishing, since that previously
+      // left them with no idea their photo never attached.
       if (selectedImage != null) {
         try {
           photoUrl =
@@ -98,8 +104,16 @@ class CreateAdvertViewModel extends BaseViewModel {
           await _advertService.updateAdvert(advertId, <String, dynamic>{
             'photoUrl': photoUrl,
           });
-        } catch (_) {
-          // Non-fatal.
+        } catch (e) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                    'Listing created, but the photo failed to upload. Please contact us if you\'d like it added.'),
+                backgroundColor: Colors.orange,
+              ),
+            );
+          }
         }
       }
 

@@ -56,5 +56,10 @@ class RoutePaths {
   // PayStack's checkout `callback_url` for the subscription plan — the
   // browser is redirected here after checkout completes.
   static const String subscriptionReturn = '/subscription/return';
+  // Same idea for the one-off event/ad payments — PayStack redirects here
+  // after checkout, and these should land the user back on the relevant
+  // listing page rather than a dead end.
+  static const String eventsReturn = '/events/return';
+  static const String advertsReturn = '/adverts/return';
   static const String billingHistory = '/billing_history';
 }

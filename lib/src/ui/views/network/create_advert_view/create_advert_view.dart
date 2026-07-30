@@ -73,12 +73,12 @@ class _CreateAdvertViewState extends State<CreateAdvertView> {
                                               fit: BoxFit.cover,
                                             ),
                                           )
-                                        : model.selectedImage != null
+                                        : model.selectedImageBytes != null
                                             ? ClipRRect(
                                                 borderRadius:
                                                     BorderRadius.circular(12),
-                                                child: Image.file(
-                                                  model.selectedImage!,
+                                                child: Image.memory(
+                                                  model.selectedImageBytes!,
                                                   fit: BoxFit.cover,
                                                 ),
                                               )
@@ -183,37 +183,34 @@ class _CreateAdvertViewState extends State<CreateAdvertView> {
 
                                           if (_formKey.currentState!
                                               .validate()) {
-                                            // Show payment confirmation dialog
-                                            showDialog(
-                                              context: context,
-                                              builder: (BuildContext context) {
-                                                return AlertDialog(
-                                                  title:
-                                                      Text('Payment Required'),
-                                                  content: Text(
-                                                      'Creating an advert requires a payment of ₦100.00. Would you like to proceed with payment?'),
-                                                  actions: <Widget>[
-                                                    TextButton(
-                                                      onPressed: () {
-                                                        Navigator.of(context)
-                                                            .pop();
-                                                      },
-                                                      child: Text('Cancel'),
-                                                    ),
-                                                    TextButton(
-                                                      onPressed: () async {
-                                                        Navigator.of(context)
-                                                            .pop();
-                                                        await model
-                                                            .initiatePaymentAndCreateAdvert(
-                                                                context);
-                                                      },
-                                                      child: Text('Proceed'),
-                                                    ),
-                                                  ],
-                                                );
-                                              },
-                                            );
+                                            // Listings are included free with
+                                            // a premium subscription -- no
+                                            // payment step here (that used to
+                                            // show a leftover "Payment
+                                            // Required" dialog from before
+                                            // this became a subscription
+                                            // perk).
+                                            await model
+                                                .initiatePaymentAndCreateAdvert(
+                                                    context);
+                                            // The model catches its own
+                                            // errors (setError) rather than
+                                            // rethrowing, so nothing here
+                                            // ever surfaced a failure --
+                                            // "Create Listing" would just
+                                            // silently do nothing.
+                                            if (model.hasError &&
+                                                context.mounted) {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                SnackBar(
+                                                  content: Text(model
+                                                      .modelError
+                                                      .toString()),
+                                                  backgroundColor: Colors.red,
+                                                ),
+                                              );
+                                            }
                                           }
                                         },
                                   style: ElevatedButton.styleFrom(

@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -16,8 +16,14 @@ class CreateEventViewModel extends BaseViewModel {
   final _paymentService = locator<PaymentService>();
   final _mailService = locator<MailService>();
 
-  File? selectedImage;
+  // XFile (not dart:io's File) -- this flow runs on the web build only,
+  // where File's path-based APIs don't work at all. selectedImageBytes is
+  // read once up front so the picker preview (Image.memory) works
+  // identically on web and mobile, since Image.file also doesn't work on web.
+  XFile? selectedImage;
+  Uint8List? selectedImageBytes;
   String? flyerUrl;
+  String? imageError;
 
   // Track if we're processing the payment and event creation
   bool _isProcessing = false;
@@ -48,7 +54,9 @@ class CreateEventViewModel extends BaseViewModel {
       );
       if (image == null) return;
 
-      selectedImage = File(image.path);
+      selectedImage = image;
+      selectedImageBytes = await image.readAsBytes();
+      imageError = null;
       notifyListeners();
     } catch (e) {
       setError('Failed to pick image: $e');
@@ -99,8 +107,19 @@ class CreateEventViewModel extends BaseViewModel {
           await _eventService.updateEvent(eventId, <String, dynamic>{
             'flyerUrl': flyerUrl,
           });
-        } catch (_) {
-          // Non-fatal.
+        } catch (e) {
+          // Non-fatal -- the event/payment still goes ahead without a
+          // flyer image -- but silently swallowing this previously left
+          // the organiser with no idea their image never attached.
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                    'Event created, but the flyer image failed to upload. You can add it later by editing the event.'),
+                backgroundColor: Colors.orange,
+              ),
+            );
+          }
         }
       }
 
