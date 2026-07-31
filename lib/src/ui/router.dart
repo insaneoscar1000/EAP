@@ -32,10 +32,21 @@ class AppRouter {
   };
 
   static Route<dynamic>? generateRoute(RouteSettings settings) {
+    // PayStack's checkout redirects always append query params (e.g.
+    // ?reference=xxx&trxref=xxx) to the callback URL -- RouteSettings.name
+    // carries the full "path?query" string as-is, so matching it against a
+    // bare path like RoutePaths.eventsReturn always failed the instant a
+    // real PayStack redirect (as opposed to a manually-typed URL) arrived,
+    // silently falling through to the default case and landing on Home
+    // instead of the intended return page. Strip the query string before
+    // any matching -- both the gate check below and the switch.
+    final String? path =
+        settings.name == null ? null : Uri.parse(settings.name!).path;
+
     // Trial / subscription gate. The dashboard, account screens and the
     // subscription page stay reachable so the user can manage payment,
     // but everything content-y is locked behind a trial-or-paid check.
-    if (settings.name != null && !_freeAccessRoutes.contains(settings.name)) {
+    if (path != null && !_freeAccessRoutes.contains(path)) {
       final SubscriptionService subscription = locator<SubscriptionService>();
       if (!subscription.isPremiumCached && !subscription.isInTrialCached) {
         return MaterialPageRoute<SubscriptionView>(
@@ -45,7 +56,7 @@ class AppRouter {
       }
     }
 
-    switch (settings.name) {
+    switch (path) {
       case RoutePaths.welcome:
         return MaterialPageRoute<WelcomeView>(builder: (_) => WelcomeView());
       case RoutePaths.login:
