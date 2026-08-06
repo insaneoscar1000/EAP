@@ -55,7 +55,7 @@ class Step9Notes extends StepBase {
               ),
               SizedBox(height: 8),
               Text(
-                'You have completed all the steps for creating your project. Click "Save & Continue" to finalize your project.',
+                'Review everything above, then click the button below to finish.',
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.green.shade800,
