@@ -62,4 +62,6 @@ class RoutePaths {
   static const String eventsReturn = '/events/return';
   static const String advertsReturn = '/adverts/return';
   static const String billingHistory = '/billing_history';
+  static const String termsAndConditions = '/account/terms';
+  static const String privacyPolicy = '/account/privacy';
 }

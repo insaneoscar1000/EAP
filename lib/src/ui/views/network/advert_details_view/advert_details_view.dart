@@ -32,27 +32,55 @@ class AdvertDetailsView extends StatelessWidget {
                   children: [
                     Padding(
                       padding: EdgeInsets.fromLTRB(24, 24, 24, 0),
-                      child: Container(
-                        height: 200,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: Theme.of(context).secondaryHeaderColor,
-                            width: 1,
-                          ),
-                        ),
-                        child: model.advert.photoUrl.isNotEmpty
-                            ? ClipRRect(
+                      child: GestureDetector(
+                        onTap: model.advert.photoUrl.isNotEmpty
+                            ? () => showFullScreenImage(
+                                context, model.advert.photoUrl)
+                            : null,
+                        child: Stack(
+                          children: [
+                            Container(
+                              height: 200,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(12),
-                                child: Image.network(
-                                  model.advert.photoUrl,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      _buildAppLogo(context),
+                                border: Border.all(
+                                  color: Theme.of(context).secondaryHeaderColor,
+                                  width: 1,
                                 ),
-                              )
-                            : _buildAppLogo(context),
+                              ),
+                              child: model.advert.photoUrl.isNotEmpty
+                                  ? ClipRRect(
+                                      borderRadius: BorderRadius.circular(12),
+                                      child: Image.network(
+                                        model.advert.photoUrl,
+                                        fit: BoxFit.cover,
+                                        errorBuilder:
+                                            (context, error, stackTrace) =>
+                                                _buildAppLogo(context),
+                                      ),
+                                    )
+                                  : _buildAppLogo(context),
+                            ),
+                            if (model.advert.photoUrl.isNotEmpty)
+                              Positioned(
+                                right: 8,
+                                bottom: 8,
+                                child: Container(
+                                  padding: EdgeInsets.all(6),
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withOpacity(0.55),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    IconsaxPlusLinear.maximize_4,
+                                    color: Colors.white,
+                                    size: 18,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
                     ),
                     Padding(

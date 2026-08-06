@@ -20,6 +20,19 @@ class AdvertService {
     });
   }
 
+  /// True if this subscriber already has a listing (any status -- Pending
+  /// counts too, since they've already used their subscription's one
+  /// listing slot even before it's been approved). A subscription includes
+  /// exactly one listing, so this is checked before creating a new one to
+  /// stop a single account listing e.g. an entire team of EAPs.
+  Future<bool> hasAdvertForSubscriber(String userId) async {
+    final snapshot = await _advertsCollection
+        .where('payment.subscriberUid', isEqualTo: userId)
+        .limit(1)
+        .get();
+    return snapshot.docs.isNotEmpty;
+  }
+
   Future<String> createAdvert(Map<String, dynamic> advert) async {
     try {
       // Validate required fields -- must match exactly what the create

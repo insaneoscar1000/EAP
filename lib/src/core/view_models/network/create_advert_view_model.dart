@@ -91,6 +91,16 @@ class CreateAdvertViewModel extends BaseViewModel {
             'and try again.';
       }
 
+      // One listing per subscription — otherwise a single account could
+      // list an entire team under one R199 fee.
+      final bool alreadyHasListing =
+          await _advertService.hasAdvertForSubscriber(userId);
+      if (alreadyHasListing) {
+        throw 'Your subscription includes one service provider listing, '
+            'and you already have one on file. Contact us if you need to '
+            'change or replace it.';
+      }
+
       // 1. Create the listing tied to the subscription. No payment row.
       final String advertId = await _createSubscriptionAdvert(userId);
 

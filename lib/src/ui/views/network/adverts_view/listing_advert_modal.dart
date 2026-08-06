@@ -40,7 +40,7 @@ class ListingAdvertModal extends StatelessWidget {
               ),
               child: Center(
                 child: Text(
-                  'R99/month',
+                  'R199/month',
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w700,
@@ -61,7 +61,7 @@ class ListingAdvertModal extends StatelessWidget {
             ),
             SizedBox(height: 12),
             Text(
-              'Make a payment to add your details to the database. Your listing will be seen by all EAP App users for the month you have paid for. Cancel at any time.',
+              'One listing is included in your Premium Subscription of R199/month.',
               style: TextStyle(
                 fontSize: 16,
                 color: Color(0xFF6A6A6A),

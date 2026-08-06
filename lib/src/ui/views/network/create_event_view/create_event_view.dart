@@ -268,11 +268,6 @@ class _CreateEventViewState extends State<CreateEventView> {
                                 ),
                                 SizedBox(height: 16),
                                 _buildTextField(
-                                  'Role',
-                                  model.roleController,
-                                ),
-                                SizedBox(height: 16),
-                                _buildTextField(
                                   'Contact Number*',
                                   model.contactNumberController,
                                   keyboardType: TextInputType.phone,

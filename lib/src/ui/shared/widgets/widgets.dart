@@ -21,3 +21,4 @@ export 'states/empty_state.dart';
 export 'misc/loading_indicator.dart';
 export 'loading_overlay.dart';
 export 'misc/default_app_bar.dart';
+export 'misc/full_screen_image_viewer.dart';

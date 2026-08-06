@@ -28,6 +28,8 @@ class AppRouter {
     RoutePaths.eventsReturn,
     RoutePaths.advertsReturn,
     RoutePaths.billingHistory,
+    RoutePaths.termsAndConditions,
+    RoutePaths.privacyPolicy,
     '/landing',
   };
 
@@ -227,6 +229,22 @@ class AppRouter {
       case RoutePaths.billingHistory:
         return MaterialPageRoute<BillingHistoryView>(
             builder: (_) => const BillingHistoryView());
+      case RoutePaths.termsAndConditions:
+        return MaterialPageRoute<LegalDocumentView>(
+          builder: (_) => const LegalDocumentView(
+            title: 'Terms & Conditions',
+            lastUpdated: LegalContent.lastUpdated,
+            body: LegalContent.termsAndConditions,
+          ),
+        );
+      case RoutePaths.privacyPolicy:
+        return MaterialPageRoute<LegalDocumentView>(
+          builder: (_) => const LegalDocumentView(
+            title: 'Privacy Policy',
+            lastUpdated: LegalContent.lastUpdated,
+            body: LegalContent.privacyPolicy,
+          ),
+        );
       case RoutePaths.eventsReturn:
         // PayStack redirects here after a one-off event listing payment.
         // Land back on the Events list (where the new listing shows up)

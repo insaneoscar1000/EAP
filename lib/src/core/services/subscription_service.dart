@@ -22,7 +22,7 @@ class SubscriptionService {
   static const String statusNone = 'none';
 
   /// Length of the free trial granted to every new sign-up.
-  static const Duration trialDuration = Duration(days: 30);
+  static const Duration trialDuration = Duration(days: 7);
 
   Map<String, dynamic>? _subscription;
   Map<String, dynamic>? get subscription => _subscription;

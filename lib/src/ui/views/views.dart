@@ -8,6 +8,7 @@ export 'auth/sign_up_view/sign_up_view.dart';
 // home
 export 'home/home_view/home_view.dart';
 export 'home/account_view/account_view.dart';
+export 'home/legal_document_view.dart';
 export 'home/support_view/support_view.dart';
 export 'home/update_profile_details_view/update_profile_details_view.dart';
 export 'home/schedule_view/schedule_view.dart';

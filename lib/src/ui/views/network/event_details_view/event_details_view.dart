@@ -48,15 +48,38 @@ class EventDetailsView extends StatelessWidget {
                     if (model.event.flyerUrl.isNotEmpty)
   Padding(
     padding: EdgeInsets.fromLTRB(24, 24, 24, 0),
-    child: Container(
-      height: 200,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        image: DecorationImage(
-          image: NetworkImage(model.event.flyerUrl),
-          fit: BoxFit.cover,
-        ),
+    child: GestureDetector(
+      onTap: () => showFullScreenImage(context, model.event.flyerUrl),
+      child: Stack(
+        children: [
+          Container(
+            height: 200,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              image: DecorationImage(
+                image: NetworkImage(model.event.flyerUrl),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          Positioned(
+            right: 8,
+            bottom: 8,
+            child: Container(
+              padding: EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.55),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                IconsaxPlusLinear.maximize_4,
+                color: Colors.white,
+                size: 18,
+              ),
+            ),
+          ),
+        ],
       ),
     ),
   )

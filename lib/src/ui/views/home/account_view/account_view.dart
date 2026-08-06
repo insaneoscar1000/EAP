@@ -3,7 +3,6 @@ import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:intl/intl.dart';
 import 'package:stacked/stacked.dart';
 import 'package:the_eap_app/src/core/arguments/arguments.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 import 'package:the_eap_app/src/core/models/models.dart';
 import 'package:the_eap_app/src/core/constants/constants.dart';
 import 'package:the_eap_app/src/core/view_models/view_models.dart';
@@ -11,14 +10,6 @@ import 'package:the_eap_app/src/ui/shared/theme.dart';
 import 'package:the_eap_app/src/ui/shared/widgets/widgets.dart';
 
 class AccountView extends StatelessWidget {
-  void _launchURL(String url) async {
-    if (await canLaunchUrlString(url)) {
-      await launchUrlString(url);
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<AccountViewModel>.reactive(
@@ -156,10 +147,11 @@ class AccountView extends StatelessWidget {
         _buildSettingOption('Support',
             onTap: () => Navigator.pushNamed(context, RoutePaths.support)),
         _buildSettingOption('Terms & Conditions',
-            onTap: () =>
-                _launchURL('http://www.forgetthesocks.app/conditions')),
+            onTap: () => Navigator.pushNamed(
+                context, RoutePaths.termsAndConditions)),
         _buildSettingOption('Privacy Policy',
-            onTap: () => _launchURL('http://www.forgetthesocks.app/privacy')),
+            onTap: () =>
+                Navigator.pushNamed(context, RoutePaths.privacyPolicy)),
       ],
     );
   }
