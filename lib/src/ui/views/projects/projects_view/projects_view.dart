@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:stacked/stacked.dart';
 import 'package:intl/intl.dart';
+import 'package:the_eap_app/src/core/constants/project_stages.dart';
 import 'package:the_eap_app/src/core/models/models.dart';
 import 'package:the_eap_app/src/core/view_models/projects/projects_view_model.dart';
 import 'package:the_eap_app/src/ui/shared/widgets/widgets.dart';
@@ -206,6 +207,17 @@ class ProjectsView extends StatelessWidget {
                     color: Colors.grey[700],
                   ),
                 ),
+                if (ProjectStages.byNumber(project.projectStage) != null) ...[
+                  SizedBox(height: 6),
+                  Text(
+                    ProjectStages.byNumber(project.projectStage)!.label,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                ],
                 SizedBox(height: 10),
                 if (!project.isComplete)
                   _buildProgressIndicator(context, project),

@@ -520,6 +520,7 @@ class Project {
   // Other fields
   final String? projectType;
   final String? projectStatus;
+  final int? projectStage;
   final List<String>? teamMembers;
   final List<String>? documents;
   final Timestamp? createdAt;
@@ -543,6 +544,7 @@ class Project {
     // Other fields
     this.projectType,
     this.projectStatus,
+    this.projectStage,
     this.teamMembers,
     this.documents,
     this.createdAt,
@@ -696,6 +698,7 @@ class Project {
       // Other fields
       projectType: data['projectType'],
       projectStatus: data['projectStatus'],
+      projectStage: data['projectStage'],
       teamMembers: List<String>.from(data['teamMembers'] ?? []),
       documents: List<String>.from(data['documents'] ?? []),
       createdAt: data['createdAt'],
@@ -734,6 +737,7 @@ class Project {
       // Other fields
       'projectType': projectType,
       'projectStatus': projectStatus,
+      'projectStage': projectStage,
       'teamMembers': teamMembers,
       'documents': documents,
       'createdAt': createdAt ?? Timestamp.now(),
@@ -760,6 +764,7 @@ class Project {
     // Other fields
     String? projectType,
     String? projectStatus,
+    int? projectStage,
     List<String>? teamMembers,
     List<String>? documents,
     Timestamp? createdAt,
@@ -784,6 +789,7 @@ class Project {
       // Other fields
       projectType: projectType ?? this.projectType,
       projectStatus: projectStatus ?? this.projectStatus,
+      projectStage: projectStage ?? this.projectStage,
       teamMembers: teamMembers ?? this.teamMembers,
       documents: documents ?? this.documents,
       createdAt: createdAt ?? this.createdAt,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
+import 'package:the_eap_app/src/core/constants/project_stages.dart';
 import 'package:the_eap_app/src/core/view_models/view_models.dart';
 import 'package:the_eap_app/src/ui/shared/widgets/widgets.dart';
 import 'steps/step1_project_overview.dart';
@@ -14,9 +15,9 @@ import 'steps/step9_notes.dart';
 
 class CreateProjectView extends StatelessWidget {
   final String? projectId;
-  
+
   const CreateProjectView({Key? key, this.projectId}) : super(key: key);
-  
+
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<CreateProjectViewModel>.reactive(
@@ -46,18 +47,12 @@ class CreateProjectView extends StatelessWidget {
           child: SafeArea(
             child: Column(
               children: [
-                // Progress indicator
-                _buildProgressIndicator(context, model),
-                
-                // Form content
                 Expanded(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.all(24),
                     child: _buildFormContent(context, model),
                   ),
                 ),
-                
-                // Save & Continue button
                 _buildSaveButton(context, model),
               ],
             ),
@@ -66,149 +61,175 @@ class CreateProjectView extends StatelessWidget {
       ),
     );
   }
-  
-  Widget _buildProgressIndicator(BuildContext context, CreateProjectViewModel model) {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Step ${model.currentStep} of ${model.totalSteps}',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black87,
-                ),
-              ),
-              Text(
-                '${model.progress.toInt()}%',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black87,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          LinearProgressIndicator(
-            value: model.progress / 100,
-            backgroundColor: Colors.grey[300],
-            valueColor: AlwaysStoppedAnimation<Color>(
-              Theme.of(context).primaryColor,
-            ),
-            minHeight: 8,
-            borderRadius: BorderRadius.circular(4),
-          ),
-        ],
-      ),
+
+  Widget _buildFormContent(BuildContext context, CreateProjectViewModel model) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Step1ProjectOverview(model: model),
+        const SizedBox(height: 8),
+        _buildStagePicker(context, model),
+        const Divider(height: 32),
+        Step2LocationDetails(model: model),
+        const Divider(height: 32),
+        Step3ApplicantLandowner(model: model),
+        const Divider(height: 32),
+        Step4ProjectDescription(model: model),
+        const Divider(height: 32),
+        Step5EnvironmentalDetails(model: model),
+        const Divider(height: 32),
+        Step6EiaTeam(model: model),
+        const Divider(height: 32),
+        Step7PublicReview(model: model),
+        const Divider(height: 32),
+        Step8SubmissionContacts(model: model),
+        const Divider(height: 32),
+        Step9Notes(model: model),
+      ],
     );
   }
-  
-  Widget _buildFormContent(BuildContext context, CreateProjectViewModel model) {
-    // Show different form content based on the current step
-    switch (model.currentStep) {
-      case 1:
-        return Step1ProjectOverview(model: model);
-      case 2:
-        return Step2LocationDetails(model: model);
-      case 3:
-        return Step3ApplicantLandowner(model: model);
-      case 4:
-        return Step4ProjectDescription(model: model);
-      case 5:
-        return Step5EnvironmentalDetails(model: model);
-      case 6:
-        return Step6EiaTeam(model: model);
-      case 7:
-        return Step7PublicReview(model: model);
-      case 8:
-        return Step8SubmissionContacts(model: model);
-      case 9:
-        return Step9Notes(model: model);
-      default:
-        return Step1ProjectOverview(model: model);
-    }
-  }
-  
-  Widget _buildSaveButton(BuildContext context, CreateProjectViewModel model) {
+
+  Widget _buildStagePicker(BuildContext context, CreateProjectViewModel model) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(24),
-          child: Row(
-            children: [
-              // Back button (only show if not on first step)
-              if (model.currentStep > 1)
-                Expanded(
-                  flex: 1,
-                  child: OutlinedButton(
-                    onPressed: model.isBusy ? null : () => model.navigateBack(),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Theme.of(context).primaryColor,
-                      side: BorderSide(color: Theme.of(context).primaryColor),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text(
-                      'Back',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-              
-              // Add spacing between buttons if back button is shown
-              if (model.currentStep > 1) const SizedBox(width: 16),
-              
-              // Save & Continue button (or Finish on last step)
-              Expanded(
-                flex: 2,
-                child: ElevatedButton(
-                  onPressed: model.canContinue ? () => model.saveAndContinue() : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: model.currentStep == model.totalSteps 
-                        ? Colors.green 
-                        : Theme.of(context).primaryColor,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: model.isBusy
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : Text(
-                          model.currentStep == model.totalSteps ? 'Finish' : 'Save & Continue',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                ),
+        Row(
+          children: [
+            const Text(
+              'Project Stage',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Colors.black87,
               ),
-            ],
+            ),
+            IconButton(
+              icon: Icon(Icons.info_outline, color: Colors.grey[600], size: 20),
+              tooltip: 'What do the stages mean?',
+              onPressed: () => _showStageInfoModal(context),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.grey[300]!, width: 1),
+          ),
+          child: DropdownButtonFormField<int>(
+            decoration: const InputDecoration(
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            ),
+            hint: const Text('Not set'),
+            value: model.projectStage,
+            isExpanded: true,
+            items: ProjectStages.all
+                .map((stage) => DropdownMenuItem<int>(
+                      value: stage.number,
+                      child: Text(stage.label),
+                    ))
+                .toList(),
+            onChanged: (value) => model.projectStage = value,
           ),
         ),
       ],
+    );
+  }
+
+  void _showStageInfoModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return SizedBox(
+          height: MediaQuery.of(context).size.height * 0.75,
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Project Stages',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: ListView.separated(
+                    itemCount: ProjectStages.all.length,
+                    separatorBuilder: (context, index) =>
+                        const Divider(height: 24),
+                    itemBuilder: (context, index) {
+                      final stage = ProjectStages.all[index];
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            stage.label,
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            stage.description,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[700],
+                              height: 1.4,
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildSaveButton(BuildContext context, CreateProjectViewModel model) {
+    final isEditing = projectId != null;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      child: ElevatedButton(
+        onPressed: model.canSave ? () => model.saveProject() : null,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Theme.of(context).primaryColor,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: 0,
+        ),
+        child: model.isBusy
+            ? const SizedBox(
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  strokeWidth: 2,
+                ),
+              )
+            : Text(
+                isEditing ? 'Save Changes' : 'Create Project',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+      ),
     );
   }
 }

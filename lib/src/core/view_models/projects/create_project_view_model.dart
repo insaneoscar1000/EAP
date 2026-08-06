@@ -66,21 +66,13 @@ class CreateProjectViewModel extends BaseViewModel {
   
   // Form fields for step 9 - Notes
   String _notes = '';
-  
-  // Current step in the wizard
-  int _currentStep = 1;
-  int get currentStep => _currentStep;
-  
-  // Total number of steps in the wizard
-  final int _totalSteps = 9;
-  int get totalSteps => _totalSteps;
-  
-  // Progress percentage
-  double get progress => (_currentStep / _totalSteps) * 100;
-  
-  // Whether the user can continue to the next step
-  bool get canContinue => !isBusy && validateCurrentStep();
-  
+
+  // Project Status stage (1-10), null means not set
+  int? _projectStage;
+
+  // Whether the whole form can be saved
+  bool get canSave => !isBusy;
+
   // Getters and setters for step 1 form fields
   String get projectTitle => _projectTitle;
   set projectTitle(String value) {
@@ -323,7 +315,14 @@ class CreateProjectViewModel extends BaseViewModel {
     _notes = value;
     notifyListeners();
   }
-  
+
+  // Getter and setter for the Project Status stage
+  int? get projectStage => _projectStage;
+  set projectStage(int? value) {
+    _projectStage = value;
+    notifyListeners();
+  }
+
   // Initialize the view model
   void initialize({String? projectId}) async {
     setBusy(true);
@@ -336,12 +335,9 @@ class CreateProjectViewModel extends BaseViewModel {
     // If we have a project ID, load the existing project
     if (_projectId != null) {
       _project = await _projectService.getProject(_projectId!);
-      
+
       if (_project != null) {
-        // Set the current step from the project
-        _currentStep = _project!.currentStep;
-        
-        // Load data for the current step
+        // Load the existing project's data into the form fields
         _loadProjectData();
       }
     }
@@ -417,339 +413,137 @@ class CreateProjectViewModel extends BaseViewModel {
       if (_project!.projectNotes != null) {
         _notes = _project!.projectNotes!.notes ?? '';
       }
+
+      // Project Status stage
+      _projectStage = _project!.projectStage;
     }
   }
   
-  // Validate the current step
-  // All fields are now optional for saving a project.
-  bool validateCurrentStep() {
-    return true;
-  }
-  
-  // Save the current step and continue to the next step
-  Future<void> saveAndContinue() async {
-    if (!validateCurrentStep()) {
-      setError('Please fill in all required fields');
-      return;
-    }
-    
+  // Save the whole form in one go (the wizard's per-step saving was
+  // collapsed into a single long form at the client's request).
+  Future<void> saveProject() async {
     try {
       setBusy(true);
-      
-      // Create or update the project based on the current step
-      if (_currentStep == 1) {
-        // Create the project overview data
-        final projectOverview = ProjectOverview(
-          title: _projectTitle,
-          code: _projectCode,
-          departmentReferenceNumber: _departmentReferenceNumber,
-          propertyNameAddressFarmNo: _propertyNameAddressFarmNo,
+
+      final overview = ProjectOverview(
+        title: _projectTitle,
+        code: _projectCode,
+        departmentReferenceNumber: _departmentReferenceNumber,
+        propertyNameAddressFarmNo: _propertyNameAddressFarmNo,
+      );
+      final projectDescription = ProjectDescription(
+        applicationType: _applicationType,
+        projectDescription: _projectDescription,
+      );
+      final environmentalDetails = EnvironmentalDetails(
+        relevantListingNotice: _relevantListingNotice,
+        currentPropertyZoning: _currentPropertyZoning,
+        propertySize: _propertySize,
+        existingServicesOnSite: _existingServicesOnSite,
+        plannedServicesWater: _plannedServicesWater,
+        plannedServicesElectricity: _plannedServicesElectricity,
+        plannedServicesSanitation: _plannedServicesSanitation,
+      );
+      final eiaTeamAndStudies = EiaTeamAndStudies(
+        eiaProjectTeam: _eiaProjectTeam,
+        specialistStudiesRequired: _specialistStudiesRequired,
+        specialistStudiesCompleted: _specialistStudiesCompleted,
+      );
+      final publicReviewPeriods = PublicReviewPeriods(
+        publicReviewPeriod1StartDate: _publicReviewPeriod1StartDate,
+        publicReviewPeriod1EndDate: _publicReviewPeriod1EndDate,
+        publicReviewPeriod1Duration: _publicReviewPeriod1Duration,
+        publicReviewPeriod2StartDate: _publicReviewPeriod2StartDate,
+        publicReviewPeriod2EndDate: _publicReviewPeriod2EndDate,
+        publicReviewPeriod2Duration: _publicReviewPeriod2Duration,
+      );
+      final submissionAndContacts = SubmissionAndContacts(
+        relevantEnvironmentalAffairsOffice: _relevantEnvironmentalAffairsOffice,
+        environmentalAffairsContacts: _environmentalAffairsContacts,
+        dateOfPreapplicationMeeting: _dateOfPreapplicationMeeting,
+        dateOfSubmissionOfApplication: _dateOfSubmissionOfApplication,
+        dateOfSubmissionOfDraftDocuments: _dateOfSubmissionOfDraftDocuments,
+        dateOfSubmissionOfFinalDocuments: _dateOfSubmissionOfFinalDocuments,
+      );
+      final projectNotes = ProjectNotes(notes: _notes);
+
+      if (_projectId != null) {
+        final existingProject = await _projectService.getProject(_projectId!);
+        if (existingProject == null) {
+          throw Exception(
+              'Could not load this project — check your connection and try again');
+        }
+
+        final updatedLocation = existingProject.location.copyWith(
+          province: _province,
+          districtOrMetroMunicipality: _districtOrMetroMunicipality,
+          localMunicipality: _localMunicipality,
         );
-        
-        // Check if we're editing an existing project or creating a new one
-        if (_projectId != null) {
-          // Get the existing project
-          final existingProject = await _projectService.getProject(_projectId!);
-          
-          if (existingProject != null) {
-            // Update the project with step 1 data
-            final updatedProject = existingProject.copyWith(
-              overview: projectOverview,
-              currentStep: _currentStep,
-            );
-            
-            // Save the updated project
-            await _projectService.updateProject(updatedProject);
-          } else {
-            throw Exception('Project not found');
-          }
-        } else {
-          // Create empty location and applicant details for new project
-          final locationDetails = LocationDetails();
-          final applicantLandowner = ApplicantLandownerInfo();
-          
-          final project = Project(
-            overview: projectOverview,
-            location: locationDetails,
-            applicantLandowner: applicantLandowner,
-            currentStep: _currentStep,
-          );
-          
-          // Save the project and get the ID
-          _projectId = await _projectService.createProject(project);
-        }
-        
-        // Move to the next step
-        _currentStep++;
-      } else if (_currentStep == 2) {
-        // Get the existing project
-        if (_projectId != null) {
-          final existingProject = await _projectService.getProject(_projectId!);
-          
-          if (existingProject != null) {
-            // Create updated location details
-            final updatedLocation = existingProject.location.copyWith(
-              province: _province,
-              districtOrMetroMunicipality: _districtOrMetroMunicipality,
-              localMunicipality: _localMunicipality,
-            );
-            
-            // Update the project with step 2 data
-            final updatedProject = existingProject.copyWith(
-              location: updatedLocation,
-              currentStep: _currentStep,
-            );
-            
-            // Save the updated project
-            await _projectService.updateProject(updatedProject);
+        final updatedApplicantLandowner =
+            existingProject.applicantLandowner.copyWith(
+          applicantName: _applicantName,
+          applicantDetails: _applicantDetails,
+          landowner: _landowner,
+          landownerDetails: _landownerDetails,
+        );
 
-            // Move to the next step
-            _currentStep++;
-          } else {
-            throw Exception('Could not load this project — check your connection and try again');
-          }
-        } else {
-          throw Exception('Project ID is missing');
-        }
-      } else if (_currentStep == 3) {
-        // Get the existing project
-        if (_projectId != null) {
-          final existingProject = await _projectService.getProject(_projectId!);
-          
-          if (existingProject != null) {
-            // Create updated applicant and landowner info
-            final updatedApplicantLandowner = existingProject.applicantLandowner.copyWith(
-              applicantName: _applicantName,
-              applicantDetails: _applicantDetails,
-              landowner: _landowner,
-              landownerDetails: _landownerDetails,
-            );
-            
-            // Update the project with step 3 data
-            final updatedProject = existingProject.copyWith(
-              applicantLandowner: updatedApplicantLandowner,
-              currentStep: _currentStep,
-            );
-            
-            // Save the updated project
-            await _projectService.updateProject(updatedProject);
+        final updatedProject = existingProject.copyWith(
+          overview: overview,
+          location: updatedLocation,
+          applicantLandowner: updatedApplicantLandowner,
+          projectDescription: projectDescription,
+          environmentalDetails: environmentalDetails,
+          eiaTeamAndStudies: eiaTeamAndStudies,
+          publicReviewPeriods: publicReviewPeriods,
+          submissionAndContacts: submissionAndContacts,
+          projectNotes: projectNotes,
+          projectStage: _projectStage,
+          currentStep: 9,
+          isComplete: true,
+        );
 
-            // Move to the next step
-            _currentStep++;
-          } else {
-            throw Exception('Could not load this project — check your connection and try again');
-          }
-        } else {
-          throw Exception('Project ID is missing');
-        }
-      } else if (_currentStep == 4) {
-        // Get the existing project
-        if (_projectId != null) {
-          final existingProject = await _projectService.getProject(_projectId!);
-          
-          if (existingProject != null) {
-            // Create updated project description
-            final updatedProjectDescription = ProjectDescription(
-              applicationType: _applicationType,
-              projectDescription: _projectDescription,
-            );
-            
-            // Update the project with step 4 data
-            final updatedProject = existingProject.copyWith(
-              projectDescription: updatedProjectDescription,
-              currentStep: _currentStep,
-            );
-            
-            // Save the updated project
-            await _projectService.updateProject(updatedProject);
+        await _projectService.updateProject(updatedProject);
+      } else {
+        final location = LocationDetails(
+          province: _province,
+          districtOrMetroMunicipality: _districtOrMetroMunicipality,
+          localMunicipality: _localMunicipality,
+        );
+        final applicantLandowner = ApplicantLandownerInfo(
+          applicantName: _applicantName,
+          applicantDetails: _applicantDetails,
+          landowner: _landowner,
+          landownerDetails: _landownerDetails,
+        );
 
-            // Move to the next step
-            _currentStep++;
-          } else {
-            throw Exception('Could not load this project — check your connection and try again');
-          }
-        } else {
-          throw Exception('Project ID is missing');
-        }
-      } else if (_currentStep == 5) {
-        // Get the existing project
-        if (_projectId != null) {
-          final existingProject = await _projectService.getProject(_projectId!);
-          
-          if (existingProject != null) {
-            // Create updated environmental details
-            final updatedEnvironmentalDetails = EnvironmentalDetails(
-              relevantListingNotice: _relevantListingNotice,
-              currentPropertyZoning: _currentPropertyZoning,
-              propertySize: _propertySize,
-              existingServicesOnSite: _existingServicesOnSite,
-              plannedServicesWater: _plannedServicesWater,
-              plannedServicesElectricity: _plannedServicesElectricity,
-              plannedServicesSanitation: _plannedServicesSanitation,
-            );
-            
-            // Update the project with step 5 data
-            final updatedProject = existingProject.copyWith(
-              environmentalDetails: updatedEnvironmentalDetails,
-              currentStep: _currentStep,
-            );
-            
-            // Save the updated project
-            await _projectService.updateProject(updatedProject);
+        final project = Project(
+          overview: overview,
+          location: location,
+          applicantLandowner: applicantLandowner,
+          projectDescription: projectDescription,
+          environmentalDetails: environmentalDetails,
+          eiaTeamAndStudies: eiaTeamAndStudies,
+          publicReviewPeriods: publicReviewPeriods,
+          submissionAndContacts: submissionAndContacts,
+          projectNotes: projectNotes,
+          projectStage: _projectStage,
+          currentStep: 9,
+          isComplete: true,
+        );
 
-            // Move to the next step
-            _currentStep++;
-          } else {
-            throw Exception('Could not load this project — check your connection and try again');
-          }
-        } else {
-          throw Exception('Project ID is missing');
-        }
-      } else if (_currentStep == 6) {
-        // Get the existing project
-        if (_projectId != null) {
-          final existingProject = await _projectService.getProject(_projectId!);
-          
-          if (existingProject != null) {
-            // Create updated EIA team and specialist studies
-            final updatedEiaTeamAndStudies = EiaTeamAndStudies(
-              eiaProjectTeam: _eiaProjectTeam,
-              specialistStudiesRequired: _specialistStudiesRequired,
-              specialistStudiesCompleted: _specialistStudiesCompleted,
-            );
-            
-            // Update the project with step 6 data
-            final updatedProject = existingProject.copyWith(
-              eiaTeamAndStudies: updatedEiaTeamAndStudies,
-              currentStep: _currentStep,
-            );
-            
-            // Save the updated project
-            await _projectService.updateProject(updatedProject);
-
-            // Move to the next step
-            _currentStep++;
-          } else {
-            throw Exception('Could not load this project — check your connection and try again');
-          }
-        } else {
-          throw Exception('Project ID is missing');
-        }
-      } else if (_currentStep == 7) {
-        // Get the existing project
-        if (_projectId != null) {
-          final existingProject = await _projectService.getProject(_projectId!);
-          
-          if (existingProject != null) {
-            // Create updated public review periods
-            final updatedPublicReviewPeriods = PublicReviewPeriods(
-              publicReviewPeriod1StartDate: _publicReviewPeriod1StartDate,
-              publicReviewPeriod1EndDate: _publicReviewPeriod1EndDate,
-              publicReviewPeriod1Duration: _publicReviewPeriod1Duration,
-              publicReviewPeriod2StartDate: _publicReviewPeriod2StartDate,
-              publicReviewPeriod2EndDate: _publicReviewPeriod2EndDate,
-              publicReviewPeriod2Duration: _publicReviewPeriod2Duration,
-            );
-            
-            // Update the project with step 7 data
-            final updatedProject = existingProject.copyWith(
-              publicReviewPeriods: updatedPublicReviewPeriods,
-              currentStep: _currentStep,
-            );
-            
-            // Save the updated project
-            await _projectService.updateProject(updatedProject);
-
-            // Move to the next step
-            _currentStep++;
-          } else {
-            throw Exception('Could not load this project — check your connection and try again');
-          }
-        } else {
-          throw Exception('Project ID is missing');
-        }
-      } else if (_currentStep == 8) {
-        // Get the existing project
-        if (_projectId != null) {
-          final existingProject = await _projectService.getProject(_projectId!);
-          
-          if (existingProject != null) {
-            // Create updated submission and contacts
-            final updatedSubmissionAndContacts = SubmissionAndContacts(
-              relevantEnvironmentalAffairsOffice: _relevantEnvironmentalAffairsOffice,
-              environmentalAffairsContacts: _environmentalAffairsContacts,
-              dateOfPreapplicationMeeting: _dateOfPreapplicationMeeting,
-              dateOfSubmissionOfApplication: _dateOfSubmissionOfApplication,
-              dateOfSubmissionOfDraftDocuments: _dateOfSubmissionOfDraftDocuments,
-              dateOfSubmissionOfFinalDocuments: _dateOfSubmissionOfFinalDocuments,
-            );
-            
-            // Update the project with step 8 data
-            final updatedProject = existingProject.copyWith(
-              submissionAndContacts: updatedSubmissionAndContacts,
-              currentStep: _currentStep,
-            );
-            
-            // Save the updated project
-            await _projectService.updateProject(updatedProject);
-
-            // Move to the next step
-            _currentStep++;
-          } else {
-            throw Exception('Could not load this project — check your connection and try again');
-          }
-        } else {
-          throw Exception('Project ID is missing');
-        }
-      } else if (_currentStep == 9) {
-        // Get the existing project
-        if (_projectId != null) {
-          final existingProject = await _projectService.getProject(_projectId!);
-          
-          if (existingProject != null) {
-            // Create updated project notes
-            final updatedProjectNotes = ProjectNotes(
-              notes: _notes,
-            );
-            
-            // Update the project with step 9 data
-            final updatedProject = existingProject.copyWith(
-              projectNotes: updatedProjectNotes,
-              currentStep: _currentStep,
-              isComplete: true,
-            );
-            
-            // Save the updated project
-            await _projectService.updateProject(updatedProject);
-            
-            // Complete the project
-            await _projectService.completeProject(_projectId!);
-            _navigationService.pop(); // Return to projects list
-            return;
-          } else {
-            throw Exception('Could not load this project — check your connection and try again');
-          }
-        } else {
-          throw Exception('Project ID is missing');
-        }
+        _projectId = await _projectService.createProject(project);
       }
-      
+
       setBusy(false);
-      notifyListeners(); // Update the UI with the new step
-      
+      _navigationService.pop(); // Return to projects list
     } catch (e) {
       setBusy(false);
       setError('Failed to save project: ${e.toString()}');
     }
   }
-  
-  // Navigate to the previous step or back to projects list
+
+  // Return to the projects list
   void navigateBack() {
-    if (_currentStep > 1) {
-      _currentStep--;
-      notifyListeners();
-    } else {
-      _navigationService.pop(); // Return to projects list
-    }
+    _navigationService.pop();
   }
 }
