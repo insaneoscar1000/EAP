@@ -12,6 +12,7 @@ class HomeView extends StatelessWidget {
   Widget build(BuildContext context) {
     return ViewModelBuilder<HomeViewModel>.reactive(
       viewModelBuilder: () => HomeViewModel(),
+      onModelReady: (HomeViewModel model) => model.initialize(),
       builder: (BuildContext context, HomeViewModel model, Widget? child) {
         return Scaffold(
             appBar: DefaultAppBar(title: 'Home', showBackButton: false),
