@@ -1,13 +1,13 @@
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:stacked/stacked.dart';
 import 'package:the_eap_app/src/core/constants/route_constants.dart';
 import 'package:the_eap_app/src/core/models/models.dart';
 import 'package:the_eap_app/src/core/services/services.dart';
 import 'package:the_eap_app/src/locator.dart';
+
+import 'package:the_eap_app/src/core/services/iap_export_stub.dart'
+    if (dart.library.html) 'package:the_eap_app/src/core/services/iap_export_web.dart';
 
 class IAPDatabaseViewModel extends StreamViewModel<List<IAP>> {
   final NavigationService _navigationService = locator<NavigationService>();
@@ -341,52 +341,48 @@ class IAPDatabaseViewModel extends StreamViewModel<List<IAP>> {
     _navigationService.pop();
   }
 
+  String _csvField(String value) => '"${value.replaceAll('"', '""')}"';
+
   Future<void> exportIAPDatabase() async {
     try {
       setBusy(true);
-      
-      // Create a text buffer for the export content
+
       final buffer = StringBuffer();
-      
-      // Add project information header
-      buffer.writeln('I&AP DATABASE EXPORT');
-      buffer.writeln('Project: $_projectName');
-      buffer.writeln('Date: ${DateFormat('dd MMMM yyyy').format(DateTime.now())}');
-      buffer.writeln('Total I&APs: ${_filteredIAPs.length}');
-      buffer.writeln('\n');
-      
-      // Add each I&AP's information
-      for (int i = 0; i < _filteredIAPs.length; i++) {
-        final iap = _filteredIAPs[i];
-        
-        buffer.writeln('I&AP #${i + 1}');
-        buffer.writeln('Name: ${iap.name}');
-        buffer.writeln('Organization: ${iap.organization ?? 'N/A'}');
-        buffer.writeln('Email: ${iap.email ?? 'N/A'}');
-        buffer.writeln('Phone: ${iap.phone ?? 'N/A'}');
-        if (iap.contactNumber2 != null && iap.contactNumber2!.isNotEmpty) {
-          buffer.writeln('Alternative Contact: ${iap.contactNumber2}');
-        }
-        if (iap.address != null && iap.address!.isNotEmpty) {
-          buffer.writeln('Address: ${iap.address}');
-        }
-        buffer.writeln('Correspondence Date: ${iap.correspondenceDate ?? 'N/A'}');
-        buffer.writeln('Issue Raised: ${iap.issueRaised ?? 'N/A'}');
-        buffer.writeln('EAP Response: ${iap.eapResponse ?? 'N/A'}');
-        if (iap.comments != null && iap.comments!.isNotEmpty) {
-          buffer.writeln('Comments: ${iap.comments}');
-        }
-        buffer.writeln('\n');
+      buffer.writeln([
+        'Name',
+        'Organization',
+        'Email',
+        'Phone',
+        'Alternative Contact',
+        'Address',
+        'Correspondence Date',
+        'Issue Raised',
+        'EAP Response',
+        'Comments',
+      ].map(_csvField).join(','));
+
+      for (final iap in _filteredIAPs) {
+        buffer.writeln([
+          iap.name,
+          iap.organization ?? '',
+          iap.email ?? '',
+          iap.phone ?? '',
+          iap.contactNumber2 ?? '',
+          iap.address ?? '',
+          iap.correspondenceDate ?? '',
+          iap.issueRaised ?? '',
+          iap.eapResponse ?? '',
+          iap.comments ?? '',
+        ].map(_csvField).join(','));
       }
-      
-      // Create a temporary file and write the content
-      final directory = await getTemporaryDirectory();
-      final file = File('${directory.path}/iap_database_export.txt');
-      await file.writeAsString(buffer.toString());
-      
-      // Share the file
-      await Share.shareXFiles([XFile(file.path)], text: 'I&AP Database Export');
-      
+
+      final dateStamp = DateFormat('yyyy-MM-dd').format(DateTime.now());
+      final safeProjectName =
+          _projectName.replaceAll(RegExp(r'[^A-Za-z0-9_-]+'), '_');
+      final filename = 'IAP_Database_${safeProjectName}_$dateStamp.csv';
+
+      await saveIAPExportFile(buffer.toString(), filename);
+
       setBusy(false);
     } catch (e) {
       setBusy(false);
