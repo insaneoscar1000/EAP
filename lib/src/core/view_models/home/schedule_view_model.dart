@@ -51,10 +51,6 @@ class ScheduleViewModel extends BaseViewModel {
   String _selectedCategory = 'General';
   String get selectedCategory => _selectedCategory;
 
-  // Project type filter (General or Projects)
-  bool _showGeneralOnly = true;
-  bool get showGeneralOnly => _showGeneralOnly;
-
   // Completion status filter (To Do or Complete)
   bool _showCompletedOnly = false;
   bool get showCompletedOnly => _showCompletedOnly;
@@ -74,15 +70,21 @@ class ScheduleViewModel extends BaseViewModel {
   List<Task> get allTasksForSelectedDate {
     // First filter the tasks
     final List<Task> filtered = _allTasks.where((Task task) {
-      // Check if the selected date falls within the task's date range
-      bool isInDateRange = false;
+      // A to-do created without calendar details has no date, so it can
+      // never fall on any specific day -- it only ever shows in the
+      // merged My To Do List, not on the calendar.
+      final Timestamp? taskDate = task.date;
+      if (taskDate == null) {
+        return false;
+      }
 
       // Get start date
-      final DateTime startDate = task.date.toDate();
+      final DateTime startDate = taskDate.toDate();
 
       // Get end date (if available)
       final DateTime? endDate = task.endDate?.toDate();
 
+      bool isInDateRange;
       if (endDate == null) {
         // If there's no end date, just check if it's the same day as the start date
         isInDateRange = _isSameDay(startDate, _selectedDate);
@@ -104,10 +106,10 @@ class ScheduleViewModel extends BaseViewModel {
     // Then sort based on completion status
     if (_showCompletedOnly) {
       // For completed tasks: sort from most recent to oldest
-      filtered.sort((Task a, Task b) => b.date.compareTo(a.date));
+      filtered.sort((Task a, Task b) => b.date!.compareTo(a.date!));
     } else {
       // For to-do tasks: sort from closest date to furthest
-      filtered.sort((Task a, Task b) => a.date.compareTo(b.date));
+      filtered.sort((Task a, Task b) => a.date!.compareTo(b.date!));
     }
 
     return filtered;
@@ -115,15 +117,18 @@ class ScheduleViewModel extends BaseViewModel {
 
   List<Task> get tasks {
     final List<Task> filtered = _allTasks.where((Task task) {
-      // Check if the selected date falls within the task's date range
-      bool isInDateRange = false;
+      final Timestamp? taskDate = task.date;
+      if (taskDate == null) {
+        return false;
+      }
 
       // Get start date
-      final DateTime startDate = task.date.toDate();
+      final DateTime startDate = taskDate.toDate();
 
       // Get end date (if available)
       final DateTime? endDate = task.endDate?.toDate();
 
+      bool isInDateRange;
       if (endDate == null) {
         // If there's no end date, just check if it's the same day as the start date
         isInDateRange = _isSameDay(startDate, _selectedDate);
@@ -143,22 +148,25 @@ class ScheduleViewModel extends BaseViewModel {
     }).toList();
 
     // Sort to-do tasks from closest date to furthest
-    filtered.sort((Task a, Task b) => a.date.compareTo(b.date));
+    filtered.sort((Task a, Task b) => a.date!.compareTo(b.date!));
 
     return filtered;
   }
 
   List<Task> get completedTasks {
     final List<Task> filtered = _allTasks.where((Task task) {
-      // Check if the selected date falls within the task's date range
-      bool isInDateRange = false;
+      final Timestamp? taskDate = task.date;
+      if (taskDate == null) {
+        return false;
+      }
 
       // Get start date
-      final DateTime startDate = task.date.toDate();
+      final DateTime startDate = taskDate.toDate();
 
       // Get end date (if available)
       final DateTime? endDate = task.endDate?.toDate();
 
+      bool isInDateRange;
       if (endDate == null) {
         // If there's no end date, just check if it's the same day as the start date
         isInDateRange = _isSameDay(startDate, _selectedDate);
@@ -178,7 +186,7 @@ class ScheduleViewModel extends BaseViewModel {
     }).toList();
 
     // Sort completed tasks from most recent to oldest
-    filtered.sort((Task a, Task b) => b.date.compareTo(a.date));
+    filtered.sort((Task a, Task b) => b.date!.compareTo(a.date!));
 
     return filtered;
   }
@@ -205,12 +213,6 @@ class ScheduleViewModel extends BaseViewModel {
 
   void setSelectedCategory(String? category) {
     _selectedCategory = category ?? 'General';
-    notifyListeners();
-  }
-
-  // Toggle between General and Projects filter
-  void toggleProjectTypeFilter(bool showGeneralOnly) {
-    _showGeneralOnly = showGeneralOnly;
     notifyListeners();
   }
 
@@ -318,7 +320,7 @@ class ScheduleViewModel extends BaseViewModel {
             'projectId': effectiveProjectId,
             'projectName': projectName ?? _selectedCategory,
             'description': description,
-            'date': Timestamp.fromDate(startDate ?? _selectedDate),
+            'date': startDate != null ? Timestamp.fromDate(startDate) : null,
             'startTime': startTime,
             'endDate': endDate != null ? Timestamp.fromDate(endDate) : null,
             'endTime': endTime,
@@ -396,10 +398,6 @@ class ScheduleViewModel extends BaseViewModel {
 
   void navigateToEditToDo(Task task) {
     _navigationService.navigateTo(RoutePaths.editToDo, arguments: task);
-  }
-
-  void navigateToMyToDoList() {
-    _navigationService.navigateTo(RoutePaths.myToDoList);
   }
 
   @override

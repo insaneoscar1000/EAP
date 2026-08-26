@@ -28,10 +28,12 @@ class TaskItemWidget extends StatelessWidget {
     final DateFormat dateFormat = DateFormat('d MMMM yyyy');
     String dateText = '';
 
-    dateText = dateFormat.format(task.date.toDate());
-    if (task.endDate != null) {
-      dateText =
-          '${dateFormat.format(task.date.toDate())} - ${dateFormat.format(task.endDate!.toDate())}';
+    if (task.date != null) {
+      dateText = dateFormat.format(task.date!.toDate());
+      if (task.endDate != null) {
+        dateText =
+            '$dateText - ${dateFormat.format(task.endDate!.toDate())}';
+      }
     }
 
     return Container(

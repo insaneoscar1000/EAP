@@ -19,15 +19,10 @@ class ScheduleView extends StatelessWidget {
             centerTitle: true,
             backgroundColor: Theme.of(context).primaryColor,
             foregroundColor: Colors.white,
-            leading: (ModalRoute.of(context)?.settings.arguments is Map &&
-                    (ModalRoute.of(context)?.settings.arguments
-                            as Map)['fromHome'] ==
-                        true)
-                ? IconButton(
-                    icon: Icon(Icons.arrow_back, color: Colors.white),
-                    onPressed: () => Navigator.of(context).pop(),
-                  )
-                : null,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
             title: Text('Schedule', style: TextStyle(color: Colors.white)),
           ),
           floatingActionButton: FloatingActionButton(
@@ -48,10 +43,7 @@ class ScheduleView extends StatelessWidget {
                           children: [
                             _buildCalendar(context, model),
                             SizedBox(height: 12),
-                            _buildMyToDoListButton(context, model),
-                            SizedBox(height: 12),
-                            _buildCategorySelector(context, model),
-
+                            _buildTodaysLineUpHeader(context),
                             SizedBox(height: 8),
                             // Task list
                             model.allTasksForSelectedDate
@@ -182,14 +174,6 @@ class ScheduleView extends StatelessWidget {
     );
   }
 
-  Widget _buildCategorySelector(BuildContext context, ScheduleViewModel model) {
-    return Column(
-      children: [
-        // Removed Project Type Filter (General or Projects)
-      ],
-    );
-  }
-
   Widget _buildTaskItem(
       BuildContext context, ScheduleViewModel model, Task task) {
     return TaskItemWidget(
@@ -201,34 +185,21 @@ class ScheduleView extends StatelessWidget {
     );
   }
 
-  Widget _buildMyToDoListButton(BuildContext context, ScheduleViewModel model) {
-    return Card(
-      elevation: 1,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: InkWell(
-        onTap: () => model.navigateToMyToDoList(),
+  Widget _buildTodaysLineUpHeader(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
         borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.list_alt,
-                color: Theme.of(context).primaryColor,
-                size: 24,
-              ),
-              SizedBox(width: 8),
-              Text(
-                'My To Do List',
-                style: TextStyle(
-                  color: Theme.of(context).primaryColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
-            ],
-          ),
+      ),
+      child: Text(
+        "Today's line up...",
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          color: Colors.grey[700],
+          fontWeight: FontWeight.w600,
+          fontSize: 14,
         ),
       ),
     );

@@ -49,7 +49,7 @@ class HomeViewModel extends BaseViewModel {
         title: 'Your Free Trial Ends Tomorrow',
         description:
             'Your 7-day free trial ends tomorrow. Upgrade now to keep full '
-            'access to your Projects, Schedule and the Check REG\'s '
+            'access to your Projects, Planning and the Check REG\'s '
             'database.',
         showUpgradeCta: true,
       );
@@ -57,7 +57,7 @@ class HomeViewModel extends BaseViewModel {
       await _showTrialReminderOnce(
         key: StorageConstants.trialReminderDay3Shown,
         title: 'Have You Tried These Yet?',
-        description: "Don't miss Schedule for tracking your project "
+        description: "Don't miss Planning for tracking your project "
             'deadlines, or Network to find and connect with other EAPs.',
       );
     } else if (daysLeft <= 6) {
@@ -65,7 +65,7 @@ class HomeViewModel extends BaseViewModel {
         key: StorageConstants.trialReminderDay1Shown,
         title: 'Welcome to The EAP App!',
         description: "Get started with Check REG's to look up regulations, "
-            'Schedule to track deadlines, and Network to build your '
+            'Planning to track deadlines, and Network to build your '
             'contacts.',
       );
     }

@@ -6,7 +6,7 @@ class Task {
   final String? projectId;    // Project ID for project-specific tasks
   final String? projectName;  // 'General' or custom project name
   final String? description;
-  final Timestamp date;        // Start date
+  final Timestamp? date;       // Start date — null for a quick to-do with no scheduled date
   final String? startTime;     // Start time as string (HH:MM)
   final Timestamp? endDate;    // End date
   final String? endTime;       // End time as string (HH:MM)
@@ -19,7 +19,7 @@ class Task {
     this.projectId,
     this.projectName,
     this.description,
-    required this.date,
+    this.date,
     this.startTime,
     this.endDate,
     this.endTime,
@@ -34,7 +34,7 @@ class Task {
       projectId: map['projectId'],
       projectName: map['projectName'] ?? map['category'] ?? 'General', // Support for legacy data
       description: map['description'],
-      date: map['date'] ?? Timestamp.now(),
+      date: map['date'],
       startTime: map['startTime'],
       endDate: map['endDate'],
       endTime: map['endTime'],

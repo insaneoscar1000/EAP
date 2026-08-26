@@ -39,6 +39,11 @@ class _CreateToDoViewState extends State<CreateToDoView> {
   final bool _endDateError = false;
   bool _endTimeError = false;
 
+  // Whether the "Add details for calendar" section is expanded. A quick
+  // to-do (no date) starts collapsed; a to-do that's already scheduled
+  // opens with its calendar details visible, unchanged from before.
+  bool _showCalendarDetails = false;
+
   @override
   void initState() {
     super.initState();
@@ -60,8 +65,11 @@ class _CreateToDoViewState extends State<CreateToDoView> {
       selectedProjectId = task.projectId;
 
       // Set start date
-      startDateController.text =
-          DateFormat('dd/MM/yyyy').format(task.date.toDate());
+      if (task.date != null) {
+        startDateController.text =
+            DateFormat('dd/MM/yyyy').format(task.date!.toDate());
+        _showCalendarDetails = true;
+      }
 
       // Set start time
       if (task.startTime != null && task.startTime!.isNotEmpty) {
@@ -125,10 +133,20 @@ class _CreateToDoViewState extends State<CreateToDoView> {
                       _buildTaskNameField(context),
                       SizedBox(height: 20),
                       _buildDescriptionField(context),
+                      SizedBox(height: 24),
+                      _buildQuickSaveButton(context, model),
                       SizedBox(height: 20),
-                      _buildDateTimeFields(context),
-                      SizedBox(height: 40),
-                      _buildCreateButton(context, model),
+                      _buildCalendarDetailsToggle(context),
+                      if (_showCalendarDetails) ...<Widget>[
+                        SizedBox(height: 16),
+                        _buildDateTimeFields(context),
+                        SizedBox(height: 20),
+                        _buildCalendarSaveButton(context, model),
+                      ],
+                      if (isEditing) ...<Widget>[
+                        SizedBox(height: 20),
+                        _buildDeleteButton(context, model),
+                      ],
                     ],
                   ),
                 ),
@@ -590,110 +608,145 @@ class _CreateToDoViewState extends State<CreateToDoView> {
     }
   }
 
-  Widget _buildCreateButton(BuildContext context, ScheduleViewModel model) {
-    // Determine if we're editing or creating
+  // Quick-capture path: name + project + description only, no date/time
+  // required. Works for both a brand new to-do and editing one that was
+  // never given calendar details.
+  Widget _buildQuickSaveButton(BuildContext context, ScheduleViewModel model) {
     final bool isEditing = widget.task != null;
-
-    if (isEditing) {
-      // For editing, show both delete and update buttons side by side
-      return Row(
-        children: <Widget>[
-          // Delete button
-          Expanded(
-            child: SizedBox(
-              height: 56,
-              child: ElevatedButton.icon(
-                icon: Icon(Icons.delete, color: Colors.white),
-                label: Text('Delete', style: TextStyle(color: Colors.white)),
-                onPressed: () {
-                  // Show confirmation dialog
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) => AlertDialog(
-                      title: Text('Delete Task'),
-                      content:
-                          Text('Are you sure you want to delete this task?'),
-                      actions: <Widget>[
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: Text('Cancel'),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context); // Close dialog
-                            model.deleteTask(widget.task!.id);
-                            model.navigateBack(); // Go back to schedule view
-                          },
-                          child: Text('Delete',
-                              style: TextStyle(color: Colors.red)),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          SizedBox(width: 16), // Spacing between buttons
-          // Update button
-          Expanded(
-            child: SizedBox(
-              height: 56,
-              child: ElevatedButton(
-                onPressed: () {
-                  _validateAndSubmit(context, model);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: Text(
-                  'Update',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      );
-    } else {
-      // For creating, show only the create button
-      return SizedBox(
-        height: 56,
-        width: double.infinity,
-        child: ElevatedButton(
-          onPressed: () {
-            _validateAndSubmit(context, model);
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).primaryColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-          child: Text(
-            'Create',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+    return SizedBox(
+      height: 56,
+      width: double.infinity,
+      child: OutlinedButton(
+        onPressed: () => _submitWithoutTimeDetails(context, model),
+        style: OutlinedButton.styleFrom(
+          side: BorderSide(color: Theme.of(context).primaryColor, width: 2),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
           ),
         ),
+        child: Text(
+          isEditing ? 'Save without time details' : 'Create without time details',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).primaryColor,
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Collapsed chip that reveals the date/time fields -- not all to-dos need
+  // a deadline, so this is opt-in rather than shown by default.
+  Widget _buildCalendarDetailsToggle(BuildContext context) {
+    if (_showCalendarDetails) {
+      return const SizedBox.shrink();
+    }
+    return Center(
+      child: TextButton.icon(
+        onPressed: () => setState(() => _showCalendarDetails = true),
+        icon: Icon(Icons.add, color: Theme.of(context).primaryColor),
+        label: Text(
+          'Add details for calendar',
+          style: TextStyle(
+            color: Theme.of(context).primaryColor,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCalendarSaveButton(BuildContext context, ScheduleViewModel model) {
+    final bool isEditing = widget.task != null;
+    return SizedBox(
+      height: 56,
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: () => _validateAndSubmit(context, model),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Theme.of(context).primaryColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+        child: Text(
+          isEditing ? 'Update with time details' : 'Create with time details',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDeleteButton(BuildContext context, ScheduleViewModel model) {
+    return SizedBox(
+      height: 48,
+      width: double.infinity,
+      child: TextButton.icon(
+        icon: Icon(Icons.delete, color: Colors.red),
+        label: Text('Delete', style: TextStyle(color: Colors.red)),
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              title: Text('Delete Task'),
+              content: Text('Are you sure you want to delete this task?'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context); // Close dialog
+                    model.deleteTask(widget.task!.id);
+                    model.navigateBack();
+                  },
+                  child: Text('Delete', style: TextStyle(color: Colors.red)),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _submitWithoutTimeDetails(BuildContext context, ScheduleViewModel model) {
+    setState(() {
+      if (taskNameController.text.trim().isEmpty) {
+        _taskNameError = true;
+      } else {
+        _taskNameError = false;
+      }
+    });
+
+    if (taskNameController.text.trim().isEmpty) {
+      return;
+    }
+
+    if (widget.task != null) {
+      model.updateTask(
+        widget.task!.id,
+        taskNameController.text.trim(),
+        selectedProject,
+        descriptionController.text.trim(),
+        projectId: selectedProjectId,
+      );
+    } else {
+      model.addTask(
+        taskNameController.text.trim(),
+        selectedProject,
+        descriptionController.text.trim(),
+        projectId: selectedProjectId,
       );
     }
+
+    model.navigateBack();
   }
 
   void _validateAndSubmit(BuildContext context, ScheduleViewModel model) {

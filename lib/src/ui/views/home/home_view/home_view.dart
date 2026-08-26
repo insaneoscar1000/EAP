@@ -72,9 +72,9 @@ class HomeView extends StatelessWidget {
                                   _buildMenuItem(
                                       context,
                                       model,
-                                      'Schedule',
+                                      'Planning',
                                       IconsaxPlusLinear.calendar,
-                                      RoutePaths.schedule),
+                                      RoutePaths.myToDoList),
                                   _buildMenuItem(
                                       context,
                                       model,

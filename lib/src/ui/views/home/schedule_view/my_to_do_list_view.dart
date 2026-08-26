@@ -106,93 +106,99 @@ class MyToDoListView extends StatelessWidget {
   }
 
   Widget _buildFilterTabs(BuildContext context, MyToDoListViewModel model) {
-    return Column(
+    return Row(
       children: [
-        // Project Type Filter (General or Projects)
-        Card(
-          elevation: 1,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildFilterButton(
-                  context,
-                  'General',
-                  model.showGeneralOnly,
-                  () => model.toggleProjectTypeFilter(true),
-                ),
-                _buildFilterButton(
-                  context,
-                  'Projects',
-                  !model.showGeneralOnly,
-                  () => model.toggleProjectTypeFilter(false),
-                ),
-              ],
+        // Completed / To do toggle pill
+        InkWell(
+          onTap: () =>
+              model.toggleCompletionStatusFilter(!model.showCompletedOnly),
+          borderRadius: BorderRadius.circular(20),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: model.showCompletedOnly
+                  ? Theme.of(context).primaryColor
+                  : Colors.grey[200],
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              'Completed',
+              style: TextStyle(
+                color: model.showCompletedOnly
+                    ? Colors.white
+                    : Theme.of(context).primaryColor,
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+              ),
             ),
           ),
         ),
-
-        SizedBox(height: 10),
-
-        // Completion Status Filter (To Do or Complete)
-        Card(
-          elevation: 1,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        SizedBox(width: 8),
+        // Search/filter by project
+        Expanded(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.grey.shade300),
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String?>(
+                isExpanded: true,
+                value: model.selectedProjectName,
+                icon: Icon(Icons.search, size: 18, color: Colors.grey),
+                hint: Text('Search by project',
+                    style: TextStyle(fontSize: 13, color: Colors.grey[600])),
+                style: TextStyle(fontSize: 13, color: Colors.black87),
+                items: <DropdownMenuItem<String?>>[
+                  DropdownMenuItem<String?>(
+                    value: null,
+                    child: Text('All to-dos'),
+                  ),
+                  ...model.projectNames.map(
+                    (String name) => DropdownMenuItem<String?>(
+                      value: name,
+                      child: Text(name),
+                    ),
+                  ),
+                ],
+                onChanged: model.setSelectedProject,
+              ),
+            ),
+          ),
+        ),
+        SizedBox(width: 8),
+        // Jump to the calendar view
+        InkWell(
+          onTap: () => model.navigateToSchedule(),
+          borderRadius: BorderRadius.circular(20),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Theme.of(context).primaryColor),
+            ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                _buildFilterButton(
-                  context,
-                  'To do',
-                  !model.showCompletedOnly,
-                  () => model.toggleCompletionStatusFilter(false),
-                ),
-                _buildFilterButton(
-                  context,
-                  'Completed',
-                  model.showCompletedOnly,
-                  () => model.toggleCompletionStatusFilter(true),
+                Icon(Icons.calendar_today,
+                    size: 16, color: Theme.of(context).primaryColor),
+                SizedBox(width: 6),
+                Text(
+                  'Open Schedule',
+                  style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
                 ),
               ],
             ),
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildFilterButton(
-      BuildContext context, String label, bool isSelected, VoidCallback onTap) {
-    return Expanded(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-          decoration: BoxDecoration(
-            color: isSelected
-                ? Theme.of(context).primaryColor
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Center(
-            child: Text(
-              label,
-              style: TextStyle(
-                color:
-                    isSelected ? Colors.white : Theme.of(context).primaryColor,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 

@@ -12,13 +12,27 @@ class MyToDoListViewModel extends BaseViewModel {
   final UserService _userService = locator<UserService>();
   final NavigationService _navigationService = locator<NavigationService>();
   final AuthService _authService = locator<AuthService>();
+  final ProjectService _projectService = locator<ProjectService>();
 
   List<Task> _allTasks = [];
   List<Task> get allTasks => _allTasks;
 
-  // Project type filter (General or Projects)
-  bool _showGeneralOnly = true;
-  bool get showGeneralOnly => _showGeneralOnly;
+  List<Project> _projects = <Project>[];
+
+  // Project names for the "search by project" filter, 'General' always first.
+  List<String> get projectNames {
+    final List<String> names = <String>['General'];
+    names.addAll(_projects
+        .where((Project p) =>
+            p.projectStatus != 'Archived' && p.overview.title.isNotEmpty)
+        .map((Project p) => p.overview.title));
+    return names;
+  }
+
+  // Selected project filter. Null means show every to-do (General and every
+  // project) together, which is the default merged view Sandy asked for.
+  String? _selectedProjectName;
+  String? get selectedProjectName => _selectedProjectName;
 
   // Completion status filter (To Do or Complete)
   bool _showCompletedOnly = false;
@@ -29,29 +43,38 @@ class MyToDoListViewModel extends BaseViewModel {
     // First filter the tasks
     final filtered = _allTasks
         .where((task) =>
-            // Filter by project type (General or Projects)
-            (_showGeneralOnly
-                ? task.projectName == 'General'
-                : task.projectName != 'General') &&
+            // Only narrow by project when one has been picked
+            (_selectedProjectName == null ||
+                task.projectName == _selectedProjectName) &&
             // Filter by completion status
             (task.isCompleted == _showCompletedOnly))
         .toList();
 
-    // Then sort based on completion status
+    // Then sort based on completion status. Quick to-dos with no date sink
+    // to the bottom of the to-do list (there's nothing to sort them by),
+    // sorted alphabetically among themselves.
     if (_showCompletedOnly) {
-      // For completed tasks: sort from most recent to oldest
-      filtered.sort((a, b) => b.date.compareTo(a.date));
+      filtered.sort((a, b) => _compareByDate(a, b, mostRecentFirst: true));
     } else {
-      // For to-do tasks: sort from closest date to furthest
-      filtered.sort((a, b) => a.date.compareTo(b.date));
+      filtered.sort((a, b) => _compareByDate(a, b, mostRecentFirst: false));
     }
 
     return filtered;
   }
 
-  // Toggle between General and Projects filter
-  void toggleProjectTypeFilter(bool showGeneralOnly) {
-    _showGeneralOnly = showGeneralOnly;
+  int _compareByDate(Task a, Task b, {required bool mostRecentFirst}) {
+    if (a.date == null && b.date == null) {
+      return a.name.compareTo(b.name);
+    }
+    if (a.date == null) return 1;
+    if (b.date == null) return -1;
+    return mostRecentFirst ? b.date!.compareTo(a.date!) : a.date!.compareTo(b.date!);
+  }
+
+  // Narrow the merged list down to a single project ('General' included),
+  // or pass null to show everything again.
+  void setSelectedProject(String? projectName) {
+    _selectedProjectName = projectName;
     notifyListeners();
   }
 
@@ -63,10 +86,12 @@ class MyToDoListViewModel extends BaseViewModel {
 
   Future<void> initialize() async {
     await fetchAllTasks();
+    await fetchProjects();
   }
 
-  // Store the current stream subscription to cancel it when needed
+  // Store the current stream subscriptions to cancel them when needed
   StreamSubscription? _taskSubscription;
+  StreamSubscription? _projectSubscription;
 
   Future<void> fetchAllTasks() async {
     setBusy(true);
@@ -98,6 +123,21 @@ class MyToDoListViewModel extends BaseViewModel {
     }
   }
 
+  Future<void> fetchProjects() async {
+    try {
+      await _projectSubscription?.cancel();
+      _projectSubscription =
+          _projectService.getProjects().listen((List<Project> projectList) {
+        _projects = projectList
+            .where((Project p) => p.projectStatus != 'Archived')
+            .toList();
+        notifyListeners();
+      });
+    } catch (e) {
+      setError(e.toString());
+    }
+  }
+
   Future<void> toggleTaskCompletion(String taskId, bool isCompleted) async {
     try {
       await _taskService.toggleTaskCompletion(taskId, isCompleted);
@@ -118,10 +158,15 @@ class MyToDoListViewModel extends BaseViewModel {
     _navigationService.navigateTo(RoutePaths.editToDo, arguments: task);
   }
 
+  void navigateToSchedule() {
+    _navigationService.navigateTo(RoutePaths.schedule);
+  }
+
   @override
   void dispose() {
-    // Clean up the subscription when the view model is disposed
+    // Clean up the subscriptions when the view model is disposed
     _taskSubscription?.cancel();
+    _projectSubscription?.cancel();
     super.dispose();
   }
 }

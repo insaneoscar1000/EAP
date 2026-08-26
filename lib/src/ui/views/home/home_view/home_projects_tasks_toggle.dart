@@ -42,9 +42,7 @@ class HomeProjectsTasksToggle extends StatelessWidget {
               Flexible(
                 child: MyToDoListView(
                   tasks: model.tasks
-                      .where((Task task) =>
-                          (task.projectName ?? 'General') == 'General' &&
-                          (task.isCompleted == false))
+                      .where((Task task) => task.isCompleted == false)
                       .toList(),
                 ),
               )
