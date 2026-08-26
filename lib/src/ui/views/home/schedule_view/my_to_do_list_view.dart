@@ -154,7 +154,7 @@ class MyToDoListView extends StatelessWidget {
                 items: <DropdownMenuItem<String?>>[
                   DropdownMenuItem<String?>(
                     value: null,
-                    child: Text('All to-dos'),
+                    child: Text('List by project'),
                   ),
                   ...model.projectNames.map(
                     (String name) => DropdownMenuItem<String?>(

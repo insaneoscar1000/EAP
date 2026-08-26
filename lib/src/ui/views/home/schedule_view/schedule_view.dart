@@ -194,7 +194,7 @@ class ScheduleView extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
-        "Today's line up...",
+        "Day's line up...",
         textAlign: TextAlign.center,
         style: TextStyle(
           color: Colors.grey[700],
