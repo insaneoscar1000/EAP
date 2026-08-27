@@ -154,7 +154,7 @@ class MyToDoListView extends StatelessWidget {
                 items: <DropdownMenuItem<String?>>[
                   DropdownMenuItem<String?>(
                     value: null,
-                    child: Text('List by project'),
+                    child: Text('Project list'),
                   ),
                   ...model.projectNames.map(
                     (String name) => DropdownMenuItem<String?>(
@@ -187,7 +187,7 @@ class MyToDoListView extends StatelessWidget {
                     size: 16, color: Theme.of(context).primaryColor),
                 SizedBox(width: 6),
                 Text(
-                  'Open Schedule',
+                  'Schedule',
                   style: TextStyle(
                     color: Theme.of(context).primaryColor,
                     fontWeight: FontWeight.bold,

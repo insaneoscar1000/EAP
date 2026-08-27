@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:the_eap_app/src/locator.dart';
 import 'package:the_eap_app/src/core/services/services.dart';
@@ -25,6 +26,12 @@ class _AppState extends State<App> {
         debugShowCheckedModeBanner: false,
         navigatorKey: locator<NavigationService>().navigationKey,
         onGenerateRoute: AppRouter.generateRoute,
+        // Automatic screen-view tracking, per Sandy's approved analytics setup (2026-08-27):
+        // FirebaseAnalyticsObserver reads each pushed route's RouteSettings.name (already set
+        // on every named route in router.dart) with no per-screen wiring needed.
+        navigatorObservers: [
+          FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
+        ],
         theme: AppTheme.themeData,
         builder: (context, child) => ResponsiveScaffold(
           child: DialogManager(
