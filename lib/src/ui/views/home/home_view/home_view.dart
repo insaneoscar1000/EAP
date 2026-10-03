@@ -35,11 +35,10 @@ class HomeView extends StatelessWidget {
                                     AsyncSnapshot snapshot) {
                                   DateTime now = DateTime.now();
                                   String dateStr =
-                                      DateFormat("EE, d'th' MMMM").format(now);
-                                  String timeStr =
-                                      DateFormat('HH:mm').format(now);
+                                      DateFormat('EE, d MMMM, HH:mm')
+                                          .format(now);
                                   return Text(
-                                    '$dateStr | $timeStr',
+                                    dateStr,
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       fontSize: 22,
