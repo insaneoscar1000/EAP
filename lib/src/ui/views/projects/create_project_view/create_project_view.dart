@@ -31,9 +31,9 @@ class CreateProjectView extends StatelessWidget {
             icon: const Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () => model.navigateBack(),
           ),
-          title: const Text(
-            'New Project',
-            style: TextStyle(
+          title: Text(
+            projectId != null ? 'Edit Project' : 'New Project',
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 20,
               fontWeight: FontWeight.w600,
