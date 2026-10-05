@@ -17,6 +17,20 @@ class App extends StatefulWidget {
 
 class _AppState extends State<App> {
   @override
+  void initState() {
+    super.initState();
+    // Once the app has had a moment to settle past the splash, check whether a newer release
+    // is published and offer the update. Silent on any failure; once per app open.
+    Future<void>.delayed(const Duration(seconds: 3), () {
+      final BuildContext? navContext =
+          locator<NavigationService>().navigationKey.currentState?.overlay?.context;
+      if (navContext != null) {
+        locator<UpdateService>().checkForUpdate(navContext);
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 

@@ -9,6 +9,7 @@ Future<void> setupLocator() async {
   locator.registerLazySingleton(() => StorageService());
   locator.registerLazySingleton(() => PushNotificationService());
   locator.registerLazySingleton(() => DialogService());
+  locator.registerLazySingleton(() => UpdateService());
 
   // Firebase Services
   locator.registerLazySingleton(() => AuthService());

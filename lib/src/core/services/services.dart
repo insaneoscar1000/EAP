@@ -3,6 +3,7 @@ export 'app/navigation_service.dart';
 export 'app/storage_service.dart';
 export 'app/push_notification_service.dart';
 export 'app/dialog_service.dart';
+export 'app/update_service.dart';
 
 // data
 export 'data/auth_service.dart';

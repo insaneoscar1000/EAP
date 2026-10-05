@@ -62,6 +62,18 @@
         ]
       },
       {
+        "source": "/version.json",
+        "headers": [
+          {"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}
+        ]
+      },
+      {
+        "source": "/update.json",
+        "headers": [
+          {"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}
+        ]
+      },
+      {
         "source": "/flutter_service_worker.js",
         "headers": [
           {"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}
