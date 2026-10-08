@@ -37,49 +37,29 @@ class AdvertDetailsView extends StatelessWidget {
                             ? () => showFullScreenImage(
                                 context, model.advert.photoUrl)
                             : null,
-                        child: Stack(
-                          children: [
-                            Container(
-                              height: 200,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: Theme.of(context).secondaryHeaderColor,
-                                  width: 1,
-                                ),
+                        child: Center(
+                          child: Container(
+                            height: 200,
+                            width: 200,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Theme.of(context).secondaryHeaderColor,
+                                width: 1,
                               ),
+                            ),
+                            child: ClipOval(
                               child: model.advert.photoUrl.isNotEmpty
-                                  ? ClipRRect(
-                                      borderRadius: BorderRadius.circular(12),
-                                      child: Image.network(
-                                        model.advert.photoUrl,
-                                        fit: BoxFit.cover,
-                                        errorBuilder:
-                                            (context, error, stackTrace) =>
-                                                _buildAppLogo(context),
-                                      ),
+                                  ? Image.network(
+                                      model.advert.photoUrl,
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) =>
+                                              _buildAppLogo(context),
                                     )
                                   : _buildAppLogo(context),
                             ),
-                            if (model.advert.photoUrl.isNotEmpty)
-                              Positioned(
-                                right: 8,
-                                bottom: 8,
-                                child: Container(
-                                  padding: EdgeInsets.all(6),
-                                  decoration: BoxDecoration(
-                                    color: Colors.black.withOpacity(0.55),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Icon(
-                                    IconsaxPlusLinear.maximize_4,
-                                    color: Colors.white,
-                                    size: 18,
-                                  ),
-                                ),
-                              ),
-                          ],
+                          ),
                         ),
                       ),
                     ),

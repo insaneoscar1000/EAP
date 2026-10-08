@@ -40,84 +40,98 @@ class _CreateAdvertViewState extends State<CreateAdvertView> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: <Widget>[
-                                Container(
-                                  height: 200,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(
-                                      color: Theme.of(context)
-                                          .secondaryHeaderColor,
-                                      width: 1,
+                                Center(
+                                  child: Container(
+                                    height: 200,
+                                    width: 200,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: Theme.of(context)
+                                            .secondaryHeaderColor,
+                                        width: 1,
+                                      ),
                                     ),
-                                  ),
-                                  child: InkWell(
-                                    onTap: () async {
-                                      try {
-                                        await model.pickImage();
-                                      } catch (e) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                            content: Text(e.toString()),
-                                            backgroundColor: Colors.red,
-                                          ),
-                                        );
-                                      }
-                                    },
-                                    child: model.photoUrl != null
-                                        ? ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                            child: Image.network(
-                                              model.photoUrl!,
-                                              fit: BoxFit.cover,
-                                            ),
-                                          )
-                                        : model.selectedImageBytes != null
+                                    child: ClipOval(
+                                      child: InkWell(
+                                        onTap: () async {
+                                          try {
+                                            await model.pickImage();
+                                          } catch (e) {
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                content: Text(e.toString()),
+                                                backgroundColor: Colors.red,
+                                              ),
+                                            );
+                                          }
+                                        },
+                                        child: model.photoUrl != null
                                             ? ClipRRect(
                                                 borderRadius:
-                                                    BorderRadius.circular(12),
-                                                child: Image.memory(
-                                                  model.selectedImageBytes!,
+                                                    BorderRadius.circular(100),
+                                                child: Image.network(
+                                                  model.photoUrl!,
                                                   fit: BoxFit.cover,
                                                 ),
                                               )
-                                            : Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: <Widget>[
-                                                  Container(
-                                                    padding: EdgeInsets.all(12),
-                                                    decoration: BoxDecoration(
-                                                      color: Colors.white,
-                                                      shape: BoxShape.circle,
+                                            : model.selectedImageBytes != null
+                                                ? ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            100),
+                                                    child: Image.memory(
+                                                      model.selectedImageBytes!,
+                                                      fit: BoxFit.cover,
                                                     ),
-                                                    child: Icon(
-                                                      IconsaxPlusLinear
-                                                          .document_upload,
-                                                      color: Theme.of(context)
-                                                          .primaryColor,
-                                                    ),
+                                                  )
+                                                : Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: <Widget>[
+                                                      Container(
+                                                        padding:
+                                                            EdgeInsets.all(12),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: Colors.white,
+                                                          shape:
+                                                              BoxShape.circle,
+                                                        ),
+                                                        child: Icon(
+                                                          IconsaxPlusLinear
+                                                              .document_upload,
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .primaryColor,
+                                                        ),
+                                                      ),
+                                                      SizedBox(height: 8),
+                                                      Text(
+                                                        'Upload',
+                                                        style: TextStyle(
+                                                          fontSize: 16,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                        ),
+                                                      ),
+                                                      SizedBox(height: 4),
+                                                      Text(
+                                                        'PNG or JPG',
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style: TextStyle(
+                                                          fontSize: 12,
+                                                          color:
+                                                              Colors.grey[600],
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
-                                                  SizedBox(height: 8),
-                                                  Text(
-                                                    'Upload',
-                                                    style: TextStyle(
-                                                      fontSize: 16,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                    ),
-                                                  ),
-                                                  SizedBox(height: 4),
-                                                  Text(
-                                                    'SVG, PNG, JPG or GIF (max 800x400px)',
-                                                    style: TextStyle(
-                                                      fontSize: 12,
-                                                      color: Colors.grey[600],
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
+                                      ),
+                                    ),
                                   ),
                                 ),
                                 SizedBox(height: 24),
@@ -204,8 +218,7 @@ class _CreateAdvertViewState extends State<CreateAdvertView> {
                                               ScaffoldMessenger.of(context)
                                                   .showSnackBar(
                                                 SnackBar(
-                                                  content: Text(model
-                                                      .modelError
+                                                  content: Text(model.modelError
                                                       .toString()),
                                                   backgroundColor: Colors.red,
                                                 ),
