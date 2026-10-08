@@ -38,6 +38,13 @@ class RoutePaths {
   static const String nfaTrees = '/nfa_trees';
   static const String nemaActivities = '/nema_activities';
   static const String nemaActivityDetails = '/nema_activity_details';
+  static const String nemWaste = '/nem_waste';
+  static const String nemWasteActivities = '/nem_waste/activities';
+  static const String nemWasteActivityDetails = '/nem_waste/activity_details';
+  static const String nemWasteUnclassified = '/nem_waste/unclassified';
+  static const String nemAq = '/nem_aq';
+  static const String nemAqActivities = '/nem_aq/activities';
+  static const String nemAqActivityDetails = '/nem_aq/activity_details';
   static const String adverts = '/network/adverts';
   static const String advertDetails = '/network/advert_details';
   static const String createAdvert = '/network/create_advert';

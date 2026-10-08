@@ -186,6 +186,30 @@ class AppRouter {
         return MaterialPageRoute<NEMAActivityDetailsView>(
           builder: (_) => NEMAActivityDetailsView(activity: activity),
         );
+      case RoutePaths.nemWaste:
+        return MaterialPageRoute<NEMWasteView>(builder: (_) => NEMWasteView());
+      case RoutePaths.nemWasteActivities:
+        return MaterialPageRoute<NEMWasteActivitiesView>(
+            builder: (_) => NEMWasteActivitiesView());
+      case RoutePaths.nemWasteActivityDetails:
+        final NEMWasteActivity wasteActivity =
+            settings.arguments as NEMWasteActivity;
+        return MaterialPageRoute<NEMWasteActivityDetailsView>(
+          builder: (_) => NEMWasteActivityDetailsView(activity: wasteActivity),
+        );
+      case RoutePaths.nemWasteUnclassified:
+        return MaterialPageRoute<NEMWasteUnclassifiedView>(
+            builder: (_) => NEMWasteUnclassifiedView());
+      case RoutePaths.nemAq:
+        return MaterialPageRoute<NEMAQView>(builder: (_) => NEMAQView());
+      case RoutePaths.nemAqActivities:
+        return MaterialPageRoute<NEMAQActivitiesView>(
+            builder: (_) => NEMAQActivitiesView());
+      case RoutePaths.nemAqActivityDetails:
+        final NEMAQActivity aqActivity = settings.arguments as NEMAQActivity;
+        return MaterialPageRoute<NEMAQActivityDetailsView>(
+          builder: (_) => NEMAQActivityDetailsView(activity: aqActivity),
+        );
       case RoutePaths.adverts:
         return MaterialPageRoute<AdvertsView>(builder: (_) => AdvertsView());
       case RoutePaths.advertDetails:

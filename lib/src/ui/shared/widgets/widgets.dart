@@ -15,6 +15,7 @@ export 'form/date_input_field.dart';
 // inputs
 export 'inputs/search_input.dart';
 export 'items/menu_item.dart';
+export 'items/nem_info_field.dart';
 export 'states/empty_state.dart';
 
 // misc

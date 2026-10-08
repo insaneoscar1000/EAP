@@ -17,6 +17,7 @@ export 'data/contact_service.dart';
 export 'data/nwa_reg_service.dart';
 export 'data/nfa_tree_service.dart';
 export 'data/nema_activity_service.dart';
+export 'data/nem_service.dart';
 export 'data/advert_service.dart';
 export 'data/event_service.dart';
 export 'data/task_service.dart';

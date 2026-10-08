@@ -49,21 +49,19 @@ class CheckRegsView extends StatelessWidget {
                 SizedBox(height: 12),
                 MenuItem(
                   title: 'NEM: Air Quality',
-                  subtitle: 'Coming soon',
+                  subtitle: 'Do I need an AEL?',
                   borderColor: Theme.of(context).primaryColor.withOpacity(0.7),
-                  enabled: false,
                   onTap: () {
-                    // Disabled
+                    Navigator.pushNamed(context, RoutePaths.nemAq);
                   },
                 ),
                 SizedBox(height: 12),
                 MenuItem(
                   title: 'NEM: Waste',
-                  subtitle: 'Coming soon',
+                  subtitle: 'Do I need a WML?',
                   borderColor: Color(0xFFD1D1D1),
-                  enabled: false,
                   onTap: () {
-                    // Disabled
+                    Navigator.pushNamed(context, RoutePaths.nemWaste);
                   },
                 ),
               ],

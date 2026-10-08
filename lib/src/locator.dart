@@ -23,6 +23,7 @@ Future<void> setupLocator() async {
   locator.registerLazySingleton(() => NWARegService());
   locator.registerLazySingleton(() => NFATreeService());
   locator.registerLazySingleton(() => NEMAActivityService());
+  locator.registerLazySingleton(() => NEMService());
   locator.registerLazySingleton(() => AdvertService());
   locator.registerLazySingleton(() => EventService());
   locator.registerLazySingleton(() => PaymentService());

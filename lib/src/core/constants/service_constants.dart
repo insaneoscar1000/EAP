@@ -6,8 +6,13 @@ class ServiceConstants {
   static const String users = 'users';
   static const String contacts = 'contacts';
   static const String nwaRegs = 'nwa-regs';
+  static const String appSettings = 'app-settings';
+  static const String wulaGuideDoc = 'wula-guide';
   static const String nfaTrees = 'nfa-trees';
   static const String nemaActivities = 'nema-activities';
+  static const String nemWasteActivities = 'nem-waste-activities';
+  static const String nemWasteNorms = 'nem-waste-norms';
+  static const String nemAqActivities = 'nem-aq-activities';
   static const String adverts = 'adverts';
   static const String events = 'events';
   static const String supportTickets = 'support-tickets';

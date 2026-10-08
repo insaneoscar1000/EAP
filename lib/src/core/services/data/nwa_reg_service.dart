@@ -11,4 +11,13 @@ class NWARegService {
             .map((doc) => NWAReg.fromMap(doc.id, doc.data()))
             .toList());
   }
+
+  /// Editable "How to do a WULA" card (subtitle + PDF link), or null if unset.
+  Future<Map<String, dynamic>?> getWulaGuide() async {
+    final DocumentSnapshot<Map<String, dynamic>> doc = await _firestore
+        .collection(ServiceConstants.appSettings)
+        .doc(ServiceConstants.wulaGuideDoc)
+        .get();
+    return doc.data();
+  }
 }

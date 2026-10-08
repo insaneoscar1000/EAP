@@ -9,6 +9,34 @@ class NWARegsViewModel extends StreamViewModel<List<NWAReg>> {
   List<NWAReg> _allRegs = [];
   String _searchQuery = '';
 
+  // Defaults, overridden by the app-settings/wula-guide doc (editable in the admin portal).
+  static const String _defaultWulaSubtitle =
+      'Procedural Requirements (GNR 267 of 24 March 2017)';
+  static const String _defaultWulaUrl =
+      'https://firebasestorage.googleapis.com/v0/b/the-eap-app.firebasestorage.app/o/system%2FWULA_Procedural_Requirements_GNR267_of_24_March_2017.pdf?alt=media&token=5acbaf8b-3e3a-45b0-b0d1-0039870a1e8b';
+  String wulaSubtitle = _defaultWulaSubtitle;
+  String _wulaUrl = _defaultWulaUrl;
+
+  @override
+  void initialise() {
+    super.initialise();
+    _loadWulaGuide();
+  }
+
+  Future<void> _loadWulaGuide() async {
+    try {
+      final Map<String, dynamic>? data = await _nwaRegService.getWulaGuide();
+      if (data == null) return;
+      final String subtitle = (data['subtitle'] ?? '').toString().trim();
+      final String url = (data['pdfUrl'] ?? '').toString().trim();
+      if (subtitle.isNotEmpty) wulaSubtitle = subtitle;
+      if (url.isNotEmpty) _wulaUrl = url;
+      notifyListeners();
+    } catch (e) {
+      print('Error loading WULA guide settings: $e');
+    }
+  }
+
   List<NWAReg> get nwaRegs {
     if (_searchQuery.isEmpty) return data ?? [];
     return _allRegs.where((reg) {
@@ -47,7 +75,7 @@ class NWARegsViewModel extends StreamViewModel<List<NWAReg>> {
   }
 
   Future<void> downloadWULAGuide() async {
-    const url = 'https://example.com/wula-guide.pdf';
+    final String url = _wulaUrl;
     try {
       if (await canLaunchUrl(Uri.parse(url))) {
         await launchUrl(Uri.parse(url));

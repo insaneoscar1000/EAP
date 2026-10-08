@@ -55,6 +55,13 @@ export 'check_regs/nwa_regs_view/nwa_regs_view.dart';
 export 'check_regs/nfa_trees_view/nfa_trees_view.dart';
 export 'check_regs/nema_activities_view/nema_activities_view.dart';
 export 'check_regs/nema_activities_view/nema_activity_details_view.dart';
+export 'check_regs/nem_waste_view/nem_waste_view.dart';
+export 'check_regs/nem_waste_view/nem_waste_activities_view.dart';
+export 'check_regs/nem_waste_view/nem_waste_activity_details_view.dart';
+export 'check_regs/nem_waste_view/nem_waste_unclassified_view.dart';
+export 'check_regs/nem_aq_view/nem_aq_view.dart';
+export 'check_regs/nem_aq_view/nem_aq_activities_view.dart';
+export 'check_regs/nem_aq_view/nem_aq_activity_details_view.dart';
 
 // subscription
 export 'subscription/subscription_view.dart';

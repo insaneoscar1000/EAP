@@ -80,7 +80,7 @@ class NWARegsView extends StatelessWidget {
                                                     ),
                                                     SizedBox(height: 4),
                                                     SelectableText(
-                                                      'Procedural Requirements (GNR 3434 of 19 May 2023)',
+                                                      model.wulaSubtitle,
                                                       style: TextStyle(
                                                         fontSize: 14,
                                                         color: Colors.grey,
