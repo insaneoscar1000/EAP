@@ -350,8 +350,20 @@ export const paystackWebhook = onRequest(
 // ---------------------------------------------------------------------------
 
 async function handleChargeSuccess(data: any): Promise<void> {
-  const purpose = data?.metadata?.purpose as string | undefined;
-  const uid = data?.metadata?.uid as string | undefined;
+  let purpose = data?.metadata?.purpose as string | undefined;
+  let uid = data?.metadata?.uid as string | undefined;
+
+  // Automatic monthly renewals are charged by PayStack itself, so they do
+  // NOT carry the uid/purpose metadata we attach at checkout. Recognise them
+  // (no purpose, but a plan) and resolve the user from the customer email,
+  // otherwise renewals are ignored and access lapses after the first cycle.
+  // One-off ad/event charges always carry a purpose, so are unaffected.
+  const renewalEmail = data?.customer?.email as string | undefined;
+  if (!uid && !purpose && data?.plan?.plan_code && renewalEmail) {
+    uid = (await uidForEmail(renewalEmail)) ?? undefined;
+    if (uid) purpose = 'subscription';
+  }
+
   if (!uid) {
     logger.warn('charge.success without uid metadata', {reference: data?.reference});
     return;
