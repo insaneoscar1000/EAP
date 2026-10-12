@@ -129,44 +129,20 @@ class AdvertsView extends StatelessWidget {
                                             ),
                                           ),
                                           SizedBox(height: 8),
-                                          Row(
-                                            children: <Widget>[
-                                              Text(
-                                                advert.company,
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  color: Colors.grey[700],
-                                                ),
-                                              ),
-                                              Text(
-                                                ' • ',
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  color: Colors.grey[400],
-                                                ),
-                                              ),
-                                              Text(
-                                                advert.location,
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  color: Colors.grey[700],
-                                                ),
-                                              ),
-                                              Text(
-                                                ' • ',
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  color: Colors.grey[400],
-                                                ),
-                                              ),
-                                              Text(
-                                                advert.role,
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  color: Colors.grey[700],
-                                                ),
-                                              ),
-                                            ],
+                                          Text(
+                                            advert.company,
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.grey[700],
+                                            ),
+                                          ),
+                                          SizedBox(height: 2),
+                                          Text(
+                                            advert.contact.name,
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.grey[700],
+                                            ),
                                           ),
                                           SizedBox(height: 4),
                                           Text(

@@ -474,6 +474,22 @@ async function handleSubscriptionInactive(data: any): Promise<void> {
   const uid = await uidForEmail(customerEmail);
   if (!uid) return;
 
+  // A user can own more than one PayStack subscription (e.g. an old one
+  // left over from an earlier plan price). Disabling one that is not the
+  // subscription on file must not cancel the account.
+  const eventCode = data?.subscription_code as string | undefined;
+  const userDoc = await getFirestore().collection('users').doc(uid).get();
+  const onFile = userDoc.data()?.subscription?.subscriptionCode as
+    | string
+    | undefined;
+  if (eventCode && onFile && eventCode !== onFile) {
+    logger.info('Ignoring disable for a different subscription', {
+      eventCode,
+      onFile,
+    });
+    return;
+  }
+
   await getFirestore().collection('users').doc(uid).set(
     {
       subscription: {
