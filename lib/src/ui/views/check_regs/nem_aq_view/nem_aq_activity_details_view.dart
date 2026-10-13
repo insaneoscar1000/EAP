@@ -60,7 +60,7 @@ class NEMAQActivityDetailsView extends StatelessWidget {
                     titleColor: teal,
                   ),
                   NEMInfoField(
-                    title: 'Application',
+                    title: 'This applies to...',
                     content: activity.application,
                     titleColor: teal,
                   ),
