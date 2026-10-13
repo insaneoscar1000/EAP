@@ -49,11 +49,6 @@ class NEMAQActivitiesView extends StatelessWidget {
                                 itemBuilder: (BuildContext context, int index) {
                                   final NEMAQActivity activity =
                                       model.activities[index];
-                                  final String sub = activity
-                                              .categoryDescription ==
-                                          activity.subcategory
-                                      ? activity.category
-                                      : '${activity.category} · ${activity.categoryDescription}';
                                   return Container(
                                     margin: EdgeInsets.only(bottom: 16),
                                     decoration: BoxDecoration(
@@ -73,21 +68,13 @@ class NEMAQActivitiesView extends StatelessWidget {
                                         vertical: 12,
                                       ),
                                       title: Text(
-                                        activity.subcategory,
+                                        activity.subcategoryDescription
+                                                .isNotEmpty
+                                            ? activity.subcategoryDescription
+                                            : activity.subcategory,
                                         style: TextStyle(
                                           fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                          color: teal,
-                                        ),
-                                      ),
-                                      subtitle: Padding(
-                                        padding: EdgeInsets.only(top: 4),
-                                        child: Text(
-                                          sub,
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.black54,
-                                          ),
+                                          color: Colors.black87,
                                         ),
                                       ),
                                       trailing: Icon(

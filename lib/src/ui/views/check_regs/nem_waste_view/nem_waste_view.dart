@@ -64,7 +64,7 @@ class NEMWasteView extends StatelessWidget {
                         backgroundColor: terracotta,
                         foregroundColor: Colors.white,
                         padding:
-                            EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                            EdgeInsets.symmetric(horizontal: 36, vertical: 22),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -74,7 +74,7 @@ class NEMWasteView extends StatelessWidget {
                       child: Text(
                         'Check NEM: Waste Activities  >',
                         style: TextStyle(
-                            fontSize: 17, fontWeight: FontWeight.w600),
+                            fontSize: 20, fontWeight: FontWeight.w600),
                       ),
                     ),
                   ),

@@ -81,28 +81,10 @@ class NEMWasteActivitiesView extends StatelessWidget {
                                         horizontal: 16,
                                         vertical: 12,
                                       ),
-                                      title: Padding(
-                                        padding: EdgeInsets.only(bottom: 6),
-                                        child: Text(
-                                          <String>[
-                                            activity.wasteCategory,
-                                            activity.applicationProcess,
-                                            if (activity.gnrSection.isNotEmpty)
-                                              activity.gnrSection,
-                                          ].join(' · '),
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w600,
-                                            color: terracotta,
-                                          ),
-                                        ),
-                                      ),
-                                      subtitle: Text(
+                                      title: Text(
                                         activity.activity,
-                                        maxLines: 4,
-                                        overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
-                                          fontSize: 15,
+                                          fontSize: 16,
                                           color: Colors.black87,
                                         ),
                                       ),
