@@ -7,17 +7,16 @@
 /// The public key here is safe to ship; it only authorizes
 /// client-side checkout flows.
 class PaystackConstants {
-  /// PayStack public key. Test key for now — swap to `pk_live_...` before
-  /// going to production.
+  /// PayStack public key (live).
   static const String publicKey =
-      'pk_test_9aab6fa3db73d657a720810507a265e0642ee7c5';
+      'pk_live_dae4055188f08de1e4ad5a9300f616d6d38e3c23';
 
   /// ISO currency code used for all transactions.
   /// Likely 'ZAR' for South Africa. PayStack also supports NGN, GHS, USD, KES.
   static const String currency = 'ZAR';
 
   /// Subscription plan codes from the PayStack dashboard.
-  static const String monthlyPlanCode = 'PLN_bqeulw5krg3ifjt';
+  static const String monthlyPlanCode = 'PLN_r7o0pauedfbhzhd';
 
   /// Public URL of the web app — used as the callback / return URL
   /// after PayStack checkout completes. Firebase Hosting auto-provisions
