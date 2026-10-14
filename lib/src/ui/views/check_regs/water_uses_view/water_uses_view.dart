@@ -20,12 +20,25 @@ class WaterUsesView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 SizedBox(height: 24),
-                MenuItem(
-                  title: 'Check REGs For NWA Water Use',
-                  borderColor: Color(0xff60788E),
-                  onTap: () {
-                    Navigator.pushNamed(context, RoutePaths.nwaRegs);
-                  },
+                Center(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xff6F8AA6),
+                      foregroundColor: Colors.white,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    onPressed: () =>
+                        Navigator.pushNamed(context, RoutePaths.nwaRegs),
+                    child: Text(
+                      'Check NWA: Water Uses  >',
+                      style:
+                          TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                    ),
+                  ),
                 ),
                 SizedBox(height: 32),
                 SelectableText(

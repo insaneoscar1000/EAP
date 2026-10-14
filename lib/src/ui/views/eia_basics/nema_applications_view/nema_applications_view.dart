@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:the_eap_app/src/core/view_models/view_models.dart';
 import 'package:the_eap_app/src/ui/shared/widgets/widgets.dart';
 
@@ -46,6 +47,35 @@ class NEMAApplicationsView extends StatelessWidget {
                     icon: IconsaxPlusLinear.document_text,
                     onTap: () => model.navigateToEAAmendment(),
                   ),
+                  SizedBox(height: 24),
+                  Text(
+                    'New EIA applications to be submitted electronically through the National Environmental Authorisation System (NEAS)',
+                    style: TextStyle(fontSize: 16, height: 1.5),
+                  ),
+                  SizedBox(height: 16),
+                  Center(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).primaryColor,
+                        foregroundColor: Colors.white,
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onPressed: () => launchUrl(
+                        Uri.parse('https://neas.environment.gov.za/dea_neas/'),
+                        mode: LaunchMode.externalApplication,
+                      ),
+                      child: Text(
+                        'Go to the NEAS',
+                        style: TextStyle(
+                            fontSize: 17, fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 40),
                 ],
               ),
             ),

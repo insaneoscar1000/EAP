@@ -64,7 +64,7 @@ class NEMWasteView extends StatelessWidget {
                         backgroundColor: terracotta,
                         foregroundColor: Colors.white,
                         padding:
-                            EdgeInsets.symmetric(horizontal: 36, vertical: 22),
+                            EdgeInsets.symmetric(horizontal: 24, vertical: 14),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -74,7 +74,7 @@ class NEMWasteView extends StatelessWidget {
                       child: Text(
                         'Check NEM: Waste Activities  >',
                         style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.w600),
+                            fontSize: 17, fontWeight: FontWeight.w600),
                       ),
                     ),
                   ),
@@ -178,7 +178,8 @@ class NEMWasteView extends StatelessWidget {
           else
             ...model.norms.map((NEMWasteNorm norm) => InkWell(
                   borderRadius: BorderRadius.circular(8),
-                  onTap: norm.pdfUrl.isEmpty ? null : () => model.openNorm(norm),
+                  onTap:
+                      norm.pdfUrl.isEmpty ? null : () => model.openNorm(norm),
                   child: Padding(
                     padding: EdgeInsets.symmetric(vertical: 8),
                     child: Row(
@@ -192,7 +193,9 @@ class NEMWasteView extends StatelessWidget {
                           child: Text(
                             norm.title,
                             style: TextStyle(
-                                fontSize: 14, color: Colors.black87, height: 1.3),
+                                fontSize: 14,
+                                color: Colors.black87,
+                                height: 1.3),
                           ),
                         ),
                         if (norm.pdfUrl.isNotEmpty) ...<Widget>[
