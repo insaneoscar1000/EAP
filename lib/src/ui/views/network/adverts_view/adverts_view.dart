@@ -28,8 +28,8 @@ class AdvertsView extends StatelessWidget {
                 SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () async {
-                    if (model.isPremium) {
-                      // Premium user - go directly to create listing
+                    if (model.canCreateListing) {
+                      // Premium or trial user - go directly to create listing
                       Navigator.pushNamed(context, RoutePaths.createAdvert);
                     } else {
                       // Non-premium user - show modal with subscription CTA

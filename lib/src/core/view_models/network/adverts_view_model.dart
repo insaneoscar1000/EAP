@@ -15,6 +15,11 @@ class AdvertsViewModel extends StreamViewModel<List<Advert>> {
   int get userCount => _userCount;
   bool get isPremium => _isPremium;
 
+  /// Paid subscribers and users inside their free trial may create their
+  /// one listing.
+  bool get canCreateListing =>
+      _isPremium || _subscriptionService.isInTrialCached;
+
   String get searchQuery => _searchQuery;
 
   @override

@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:stacked/stacked.dart';
 import 'package:the_eap_app/src/locator.dart';
 import 'package:the_eap_app/src/core/services/services.dart';
@@ -83,9 +84,10 @@ class CreateAdvertViewModel extends BaseViewModel {
         throw 'User ID not found. Please log in again.';
       }
 
-      // Premium gate — service provider listings are a subscription perk.
+      // Gate — a listing needs a paid subscription or a running free trial.
       final bool isPremium = await _subscriptionService.isPremium();
-      if (!isPremium) {
+      final bool inTrial = _subscriptionService.isInTrialCached;
+      if (!isPremium && !inTrial) {
         throw 'A Premium subscription is required to create a service '
             'provider listing. Please subscribe from the Subscription page '
             'and try again.';
@@ -99,6 +101,17 @@ class CreateAdvertViewModel extends BaseViewModel {
         throw 'Your subscription includes one service provider listing, '
             'and you already have one on file. Contact us if you need to '
             'change or replace it.';
+      }
+
+      // Trial users must acknowledge that the listing only lasts as long
+      // as their access does.
+      if (!isPremium) {
+        final bool? agreed = context.mounted
+            ? await _showTrialListingNotice(context)
+            : false;
+        if (agreed != true) {
+          return;
+        }
       }
 
       // 1. Create the listing tied to the subscription. No payment row.
@@ -149,6 +162,39 @@ class CreateAdvertViewModel extends BaseViewModel {
     }
   }
 
+  Future<bool?> _showTrialListingNotice(BuildContext context) {
+    final DateTime? ends = _subscriptionService.trialEndsAt;
+    final String endText = ends == null
+        ? 'your free trial ends'
+        : 'your free trial ends on ${DateFormat('d MMMM yyyy').format(ends)}';
+    return showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext ctx) => AlertDialog(
+        title: const Text('Your listing and your free trial'),
+        content: Text(
+          'Your listing will be visible while you are on your free trial.\n\n'
+          'If you have not subscribed by the time $endText, your listing '
+          'will come down.\n\n'
+          'If you subscribe (R199/month) within the trial, your listing stays '
+          'live for as long as your subscription runs.\n\n'
+          'We keep your profile and listing safe, so if you subscribe later '
+          'your listing comes back automatically.',
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('I understand, create listing'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<String> _createSubscriptionAdvert(String userId) async {
     final Map<String, dynamic> advert = <String, dynamic>{
       // Awaits admin moderation. The advert service hides anything not
@@ -166,10 +212,15 @@ class CreateAdvertViewModel extends BaseViewModel {
         'phoneNumber': phoneController.text,
       },
       'photoUrl': '',
+      // Listing is public until this date; the `syncAdvertAccess` cloud
+      // function moves it when the owner subscribes, cancels or lapses.
+      'accessUntil': _subscriptionService.accessUntilCached == null
+          ? null
+          : Timestamp.fromDate(_subscriptionService.accessUntilCached!),
       'linkUrl': websiteUrlController.text,
       'payment': <String, dynamic>{
         // Subscription-backed: no one-off charge.
-        'type': 'subscription',
+        'type': _subscriptionService.isPremiumCached ? 'subscription' : 'trial',
         'status': 'paid',
         'subscriberUid': userId,
         'date': Timestamp.now(),

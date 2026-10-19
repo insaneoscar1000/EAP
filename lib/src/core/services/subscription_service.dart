@@ -138,6 +138,23 @@ class SubscriptionService {
     return null;
   }
 
+  /// Latest date the user's access runs to: the end of the trial or of the
+  /// paid period, whichever is later. Used to stamp listings so they can be
+  /// hidden when it passes.
+  DateTime? get accessUntilCached {
+    final DateTime? trial = trialEndsAt;
+    final DateTime? paid = isPremiumCached
+        ? (expirationDate ?? DateTime(2100))
+        : null;
+    if (trial == null) {
+      return paid;
+    }
+    if (paid == null) {
+      return trial;
+    }
+    return trial.isAfter(paid) ? trial : paid;
+  }
+
   String get status =>
       (_subscription?['status'] as String?) ?? statusNone;
 

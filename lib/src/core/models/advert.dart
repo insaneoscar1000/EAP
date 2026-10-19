@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Advert {
   final String id;
   final String title;
@@ -10,6 +12,10 @@ class Advert {
   final String services;
   final String status;
 
+  /// Date until which the owner's trial/subscription keeps this listing
+  /// public. Null on legacy listings, which are treated as always visible.
+  final DateTime? accessUntil;
+
   Advert({
     required this.id,
     required this.title,
@@ -21,6 +27,7 @@ class Advert {
     required this.photoUrl,
     required this.services,
     required this.status,
+    this.accessUntil,
   });
 
   factory Advert.fromMap(Map<String, dynamic> map, String id) {
@@ -35,6 +42,7 @@ class Advert {
       photoUrl: map['photoUrl'] ?? '',
       services: map['services'] ?? '',
       status: map['status'] ?? '',
+      accessUntil: (map['accessUntil'] as Timestamp?)?.toDate(),
     );
   }
 

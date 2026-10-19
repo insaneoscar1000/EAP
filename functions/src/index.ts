@@ -178,6 +178,7 @@ export const cancelSubscription = onCall(
       {merge: true},
     );
 
+    await syncAdvertAccess(uid);
     return {status: 'cancelled'};
   },
 );
@@ -434,6 +435,7 @@ async function handleChargeSuccess(data: any): Promise<void> {
       },
       {merge: true},
     );
+    await syncAdvertAccess(uid);
   }
 }
 
@@ -466,6 +468,7 @@ async function handleSubscriptionActive(data: any): Promise<void> {
     },
     {merge: true},
   );
+  await syncAdvertAccess(uid);
 }
 
 async function handleSubscriptionInactive(data: any): Promise<void> {
@@ -499,6 +502,7 @@ async function handleSubscriptionInactive(data: any): Promise<void> {
     },
     {merge: true},
   );
+  await syncAdvertAccess(uid);
 }
 
 async function handlePaymentFailed(data: any): Promise<void> {
@@ -516,6 +520,7 @@ async function handlePaymentFailed(data: any): Promise<void> {
     },
     {merge: true},
   );
+  await syncAdvertAccess(uid);
 }
 
 async function uidForEmail(email: string): Promise<string | null> {
@@ -526,4 +531,59 @@ async function uidForEmail(email: string): Promise<string | null> {
     .get();
   if (snap.empty) return null;
   return snap.docs[0].id;
+}
+
+
+// ---------------------------------------------------------------------------
+// Firestore trigger: keep listing visibility in step with the owner's access
+// ---------------------------------------------------------------------------
+
+/**
+ * Latest date a user's access runs to: end of the free trial or of the paid
+ * (or cancelled-but-paid-through) period, whichever is later. Null if none.
+ */
+function accessUntilFor(sub: any): Timestamp | null {
+  if (!sub) return null;
+  const candidates: number[] = [];
+  const trial = sub.trialEndsAt;
+  if (trial && typeof trial.toMillis === 'function') {
+    candidates.push(trial.toMillis());
+  }
+  if (sub.status === 'active' || sub.status === 'cancelled') {
+    const end = sub.currentPeriodEnd;
+    if (end && typeof end.toMillis === 'function') {
+      candidates.push(end.toMillis());
+    } else if (sub.status === 'active') {
+      candidates.push(Date.UTC(2100, 0, 1)); // active, no expiry recorded
+    }
+  }
+  return candidates.length
+    ? Timestamp.fromMillis(Math.max(...candidates))
+    : null;
+}
+
+/**
+ * The public feed hides any listing whose `accessUntil` has passed, so a
+ * listing comes down when its owner's trial/subscription lapses and returns
+ * on its own when they subscribe again. The listing itself is never deleted.
+ * Called after every write to a user's `subscription` (payment, renewal,
+ * cancellation). Best-effort: a failure here must never fail the webhook.
+ */
+async function syncAdvertAccess(uid: string): Promise<void> {
+  try {
+    const userDoc = await getFirestore().collection('users').doc(uid).get();
+    const accessUntil = accessUntilFor(userDoc.data()?.subscription);
+    const adverts = await getFirestore()
+      .collection('adverts')
+      .where('payment.subscriberUid', '==', uid)
+      .get();
+    for (const doc of adverts.docs) {
+      const cur = doc.data().accessUntil as Timestamp | undefined | null;
+      if ((cur?.toMillis() ?? null) !== (accessUntil?.toMillis() ?? null)) {
+        await doc.ref.update({accessUntil});
+      }
+    }
+  } catch (e) {
+    logger.error('syncAdvertAccess failed', {uid, e});
+  }
 }

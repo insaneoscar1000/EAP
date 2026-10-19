@@ -13,9 +13,14 @@ class AdvertService {
         .where('status', isEqualTo: 'Approved')
         .snapshots()
         .map((snapshot) {
+      final DateTime now = DateTime.now();
+      // A listing stays in the database when its owner's trial or
+      // subscription lapses, it just drops out of the public feed. It
+      // returns automatically when the owner subscribes again.
       return snapshot.docs
           .map((doc) =>
               Advert.fromMap(doc.data() as Map<String, dynamic>, doc.id))
+          .where((Advert a) => a.accessUntil == null || a.accessUntil!.isAfter(now))
           .toList();
     });
   }
