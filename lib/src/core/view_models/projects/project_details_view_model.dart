@@ -1,14 +1,13 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:stacked/stacked.dart';
 import 'package:the_eap_app/src/core/constants/route_constants.dart';
 import 'package:the_eap_app/src/core/models/models.dart';
 import 'package:the_eap_app/src/core/services/services.dart';
 import 'package:the_eap_app/src/core/services/data/project_service.dart';
+import 'package:the_eap_app/src/core/services/text_export_stub.dart'
+    if (dart.library.html) 'package:the_eap_app/src/core/services/text_export_web.dart';
 import 'package:the_eap_app/src/locator.dart';
 
 class ProjectDetailsViewModel extends BaseViewModel {
@@ -225,11 +224,8 @@ class ProjectDetailsViewModel extends BaseViewModel {
       buffer.writeln('Notes:');
       buffer.writeln('  ${_project.projectNotes?.notes ?? ''}');
       buffer.writeln('');
-      final directory = await getTemporaryDirectory();
-      final file = File('${directory.path}/project_export.txt');
-      await file.writeAsString(buffer.toString());
-      await Share.shareXFiles([XFile(file.path)],
-          text: 'Project Details Export');
+      await saveTextExportFile(
+          buffer.toString(), 'project_export.txt', 'Project Details Export');
     } catch (e) {
       _dialogService.showDialog(
         title: 'Export Failed',

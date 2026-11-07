@@ -1,10 +1,14 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 class PushNotificationService {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
 
   Future<String?> getToken() async {
+    // Web push is not set up (no service worker / VAPID key), and iPhone Safari
+    // does not support it outside an installed Home Screen app.
+    if (kIsWeb) return '';
     try {
       if (Platform.isIOS) {
         // Check if running on simulator
@@ -32,14 +36,19 @@ class PushNotificationService {
   }
 
   Future<void> requestNotificationPermissions() async {
-    await messaging.requestPermission(
-      alert: true,
-      announcement: false,
-      badge: true,
-      carPlay: false,
-      criticalAlert: false,
-      provisional: false,
-      sound: true,
-    );
+    if (kIsWeb) return;
+    try {
+      await messaging.requestPermission(
+        alert: true,
+        announcement: false,
+        badge: true,
+        carPlay: false,
+        criticalAlert: false,
+        provisional: false,
+        sound: true,
+      );
+    } catch (_) {
+      // Never let a notification problem block app start-up.
+    }
   }
 }
